@@ -272,3 +272,5 @@ That's it — no other env vars are needed for the basic deployment.
 3. **Intraday live scanning** (`/api/intraday-scan`) — works on Vercel but depends on Yahoo Finance's intraday API, which is rate-limited and occasionally blocked from cloud IPs. For reliable intraday, connect Upstox.
 
 Everything else — the 4 EOD timeframe predictions, paper trade tracking, P&L updates, and the dashboard UI — works fully on Vercel.
+
+# Trigger deployment
