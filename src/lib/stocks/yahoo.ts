@@ -1,0 +1,314 @@
+// Yahoo Finance live data fetcher for NSE stocks.
+//
+// Yahoo provides free EOD OHLCV via the `/v8/finance/chart/{symbol}.NS` endpoint.
+// No API key required. We use it server-side only (CORS would block browser calls).
+//
+// Rate-limit strategy:
+//   - Batch parallel fetches (≤8 concurrent) to avoid hammering Yahoo
+//   - Cache per-symbol results in memory for 4 hours
+//   - On any failure (network/HTTP/parse), return null so the caller can fall
+//     back to the synthetic engine — never crash the API
+
+import { Candle, StockSeries } from './engine'
+import { NSE_UNIVERSE, StockMeta } from './universe'
+
+const YAHOO_HOSTS = ['query1.finance.yahoo.com', 'query2.finance.yahoo.com']
+// Yahoo rate-limits the full Chrome UA aggressively. A minimal "Mozilla/5.0"
+// UA is treated more leniently — verified empirically (Chrome UA → HTTP 429,
+// Mozilla/5.0 → HTTP 200 from the same IP within the same second).
+const UA = 'Mozilla/5.0'
+
+// 4-hour in-memory cache for successful fetches; 1-minute cache for nulls so
+// we retry quickly after a transient 429 storm.
+const cache = new Map<string, { ts: number; series: StockSeries | null }>()
+const CACHE_TTL_HITS_MS = 4 * 60 * 60 * 1000
+const CACHE_TTL_NULLS_MS = 60 * 1000
+// Round-robin host counter (alternates between query1 and query2)
+let hostIdx = 0
+
+function cacheFresh(cached: { ts: number; series: StockSeries | null } | undefined): boolean {
+  if (!cached) return false
+  const ttl = cached.series ? CACHE_TTL_HITS_MS : CACHE_TTL_NULLS_MS
+  return Date.now() - cached.ts < ttl
+}
+
+interface YahooResponse {
+  chart: {
+    result?: Array<{
+      meta?: {
+        regularMarketPrice?: number
+        longName?: string
+        shortName?: string
+      }
+      timestamp?: number[]
+      indicators?: {
+        quote?: Array<{
+          open?: number[]
+          high?: number[]
+          low?: number[]
+          close?: number[]
+          volume?: number[]
+        }>
+        adjclose?: Array<{ adjclose?: number[] }>
+      }
+    }>
+    error?: { code?: string; description?: string }
+  }
+}
+
+async function fetchOne(meta: StockMeta, range = '1y', interval = '1d', retries = 2): Promise<StockSeries | null> {
+  const key = `${meta.symbol}-${range}`
+  const cached = cache.get(key)
+  if (cacheFresh(cached)) {
+    return cached!.series
+  }
+
+  const yahooSym = meta.yahooSymbol ?? `${meta.symbol}.NS`
+  // Round-robin between query1 and query2 hosts to halve per-host request rate.
+  const host = YAHOO_HOSTS[hostIdx++ % YAHOO_HOSTS.length]
+  const url = `https://${host}/v8/finance/chart/${encodeURIComponent(yahooSym)}?range=${range}&interval=${interval}&includeAdjustedClose=true`
+
+  // Retry with exponential backoff on 429 (rate limit) or transient network errors.
+  // Yahoo typically allows ~2 req/sec per host; we use 2-concurrency cap upstream
+  // and round-robin between query1/query2 to effectively get 4 req/sec capacity.
+  const maxRetries = retries
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 10000)
+      const res = await fetch(url, {
+        headers: {
+          'User-Agent': UA,
+          Accept: 'application/json',
+        },
+        signal: controller.signal,
+        // Prevent Next.js from caching the fetch — we want fresh data each call.
+        cache: 'no-store',
+      } as RequestInit)
+      clearTimeout(timeout)
+
+      if (res.status === 429) {
+        // Rate limited — wait and retry with exponential backoff
+        if (attempt < maxRetries) {
+          const waitMs = 2000 * Math.pow(2, attempt) + Math.random() * 1000
+          await new Promise((r) => setTimeout(r, waitMs))
+          continue
+        }
+        cache.set(key, { ts: Date.now(), series: null })
+        return null
+      }
+
+      if (!res.ok) {
+        if (attempt < maxRetries && res.status >= 500) {
+          await new Promise((r) => setTimeout(r, 800 * (attempt + 1)))
+          continue
+        }
+        // 404 (ticker not found on Yahoo) is permanent — no retry
+        cache.set(key, { ts: Date.now(), series: null })
+        return null
+      }
+
+      const json: YahooResponse = await res.json()
+      const result = json.chart?.result?.[0]
+      if (!result || !result.timestamp || !result.indicators?.quote?.[0]) {
+        cache.set(key, { ts: Date.now(), series: null })
+        return null
+      }
+      const ts = result.timestamp
+      const q = result.indicators.quote[0]
+      const adj = result.indicators.adjclose?.[0]?.adjclose
+      const candles: Candle[] = []
+      for (let i = 0; i < ts.length; i++) {
+        const o = q.open?.[i]
+        const h = q.high?.[i]
+        const l = q.low?.[i]
+        const c = q.close?.[i]
+        const v = q.volume?.[i]
+        if (o == null || h == null || l == null || c == null) continue
+        const d = new Date(ts[i] * 1000)
+        candles.push({
+          date: d.toISOString().slice(0, 10),
+          open: +o.toFixed(2),
+          high: +h.toFixed(2),
+          low: +l.toFixed(2),
+          close: +c.toFixed(2),
+          volume: v ?? 0,
+          adjClose: adj?.[i] != null ? +adj[i]!.toFixed(2) : +c.toFixed(2),
+        })
+      }
+      if (candles.length < 30) {
+        cache.set(key, { ts: Date.now(), series: null })
+        return null
+      }
+      const series: StockSeries = {
+        symbol: meta.symbol,
+        name: result.meta?.longName || result.meta?.shortName || meta.name,
+        sector: meta.sector,
+        candles,
+        lastIdx: candles.length - 1,
+      }
+      cache.set(key, { ts: Date.now(), series })
+      return series
+    } catch (e) {
+      if (attempt < maxRetries) {
+        await new Promise((r) => setTimeout(r, 800 * (attempt + 1)))
+        continue
+      }
+      cache.set(key, { ts: Date.now(), series: null })
+      return null
+    }
+  }
+  return null
+}
+
+// Run async tasks with a concurrency cap. Preserves input order in output.
+async function mapWithConcurrency<T, R>(
+  items: T[],
+  limit: number,
+  fn: (item: T, idx: number) => Promise<R>,
+): Promise<R[]> {
+  const results: R[] = new Array(items.length)
+  let cursor = 0
+  const workers = new Array(Math.min(limit, items.length)).fill(0).map(async () => {
+    while (cursor < items.length) {
+      const idx = cursor++
+      results[idx] = await fn(items[idx], idx)
+    }
+  })
+  await Promise.all(workers)
+  return results
+}
+
+// Fetch the full universe, falling back to synthetic data per-stock when Yahoo
+// is unavailable. Returns the array of series plus a per-symbol data-source map.
+export interface UniverseResult {
+  series: StockSeries[]
+  sources: Record<string, 'LIVE' | 'DEMO'>
+  liveCount: number
+  demoCount: number
+  fetchedAt: string
+}
+
+// Defer the synthetic import to avoid a circular dep at module load time.
+async function synthFor(meta: StockMeta, asOf: Date): Promise<StockSeries> {
+  const { generateOHLCSeries } = await import('./engine')
+  return generateOHLCSeries(meta, asOf, 250)
+}
+
+export async function fetchLiveUniverse(asOf: Date): Promise<UniverseResult> {
+  const series: StockSeries[] = new Array(NSE_UNIVERSE.length)
+  const sources: Record<string, 'LIVE' | 'DEMO'> = {}
+  let liveCount = 0
+  let demoCount = 0
+
+  // Phase 1: probe Yahoo with the first 5 stocks, 0 retries (fail fast in ~10s).
+  // If ≥4 fail, Yahoo is rate-limiting us hard — skip the rest of the universe
+  // fetch and use synthetic data for everything. This prevents 3+ minute API calls.
+  const probeSize = 5
+  const probe = NSE_UNIVERSE.slice(0, probeSize)
+  const probeResults = await mapWithConcurrency(probe, 2, async (meta) => fetchOne(meta, '6mo', '1d', 0))
+  const probeHits = probeResults.filter((s) => s !== null).length
+  if (probeHits < 2) {
+    // Yahoo is unavailable — use synthetic for the entire universe
+    const allSynth = await mapWithConcurrency(NSE_UNIVERSE, 8, async (meta, idx) => {
+      const s = await synthFor(meta, asOf)
+      return { idx, s }
+    })
+    for (const r of allSynth) {
+      series[r.idx] = r.s
+      sources[NSE_UNIVERSE[r.idx].symbol] = 'DEMO'
+      demoCount++
+    }
+    return { series, sources, liveCount, demoCount, fetchedAt: new Date().toISOString() }
+  }
+
+  // Phase 2: Yahoo is responsive — fetch the rest, using the probe results.
+  // Insert probe results into the final array.
+  for (let i = 0; i < probeSize; i++) {
+    if (probeResults[i]) {
+      series[i] = probeResults[i]!
+      sources[NSE_UNIVERSE[i].symbol] = 'LIVE'
+      liveCount++
+    }
+  }
+  // Fetch the remaining stocks (excluding the probe set)
+  const remaining = NSE_UNIVERSE.slice(probeSize).map((meta, j) => ({ meta, idx: j + probeSize }))
+  const fetchedRest = await mapWithConcurrency(remaining, 2, async (item) => {
+    const s = await fetchOne(item.meta, '6mo', '1d')
+    return { idx: item.idx, meta: item.meta, s }
+  })
+
+  // For any stock where Yahoo returned null, generate synthetic data in parallel
+  const fallbacks = fetchedRest.filter((f) => !f.s)
+  // Also include probe misses
+  for (let i = 0; i < probeSize; i++) {
+    if (!probeResults[i]) fallbacks.push({ idx: i, meta: NSE_UNIVERSE[i], s: null as unknown as StockSeries })
+  }
+  const synthResults = await mapWithConcurrency(fallbacks, 8, async (f) => ({
+    idx: f.idx,
+    s: await synthFor(f.meta, asOf),
+  }))
+
+  const synthMap = new Map<number, StockSeries>()
+  for (const r of synthResults) synthMap.set(r.idx, r.s)
+
+  for (const f of fetchedRest) {
+    if (f.s) {
+      series[f.idx] = f.s
+      sources[f.meta.symbol] = 'LIVE'
+      liveCount++
+    } else {
+      const s = synthMap.get(f.idx)!
+      series[f.idx] = s
+      sources[f.meta.symbol] = 'DEMO'
+      demoCount++
+    }
+  }
+  // Fill probe misses with synth
+  for (let i = 0; i < probeSize; i++) {
+    if (!probeResults[i]) {
+      series[i] = synthMap.get(i)!
+      sources[NSE_UNIVERSE[i].symbol] = 'DEMO'
+      demoCount++
+    }
+  }
+
+  return {
+    series,
+    sources,
+    liveCount,
+    demoCount,
+    fetchedAt: new Date().toISOString(),
+  }
+}
+
+export interface LiveStockResult {
+  series: StockSeries
+  source: 'LIVE' | 'DEMO'
+}
+
+export async function fetchLiveStock(symbol: string, asOf: Date): Promise<LiveStockResult | null> {
+  const meta = NSE_UNIVERSE.find((m) => m.symbol === symbol.toUpperCase())
+  if (!meta) return null
+  const s = await fetchOne(meta, '6mo', '1d')
+  if (s) return { series: s, source: 'LIVE' }
+  // Fallback to synthetic
+  return { series: await synthFor(meta, asOf), source: 'DEMO' }
+}
+
+// Test helper — fetch a single symbol and print a summary
+export async function testFetchOne(symbol: string) {
+  const meta = NSE_UNIVERSE.find((m) => m.symbol === symbol.toUpperCase())
+  if (!meta) {
+    console.log(`Unknown symbol: ${symbol}`)
+    return
+  }
+  const s = await fetchOne(meta, '1y', '1d')
+  if (!s) {
+    console.log(`Failed to fetch ${symbol}`)
+    return
+  }
+  console.log(`${s.symbol} (${s.name}) — ${s.candles.length} candles`)
+  const last = s.candles[s.candles.length - 1]
+  console.log(`Last: ${last.date} O=${last.open} H=${last.high} L=${last.low} C=${last.close} V=${last.volume}`)
+}

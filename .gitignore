@@ -1,0 +1,64 @@
+# ============================================================
+#  NSE Predictor — Git Ignore Rules
+# ============================================================
+
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Next.js build output
+.next/
+out/
+build/
+dist/
+
+# Production (standalone build)
+.vercel
+
+# Database files (local SQLite — keep schema, ignore data)
+db/*.db
+db/*.db-journal
+db/*.db-wal
+db/*.db-shm
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+dev.log
+server.log
+
+# Environment variables (NEVER commit .env — only .env.example)
+.env
+.env.local
+.env.*.local
+
+# Runtime data
+data/bhavcopy/*.csv
+data/bhavcopy/*.zip
+!data/bhavcopy/.gitkeep
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Cache
+.cache/
+.turbo/
+*.tsbuildinfo
+
+# Vercel
+.vercel
+
+# Misc
+*.pem

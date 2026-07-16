@@ -1,0 +1,65 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  title     String
+  content   String?
+  published Boolean  @default(false)
+  authorId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Paper trade tracking — when user clicks "Track this trade" on a signal,
+// the trade is saved here. Each night the update endpoint checks current
+// price against entry, T1, T2, T3, and SL to mark the trade's status.
+model PaperTrade {
+  id            String   @id @default(cuid())
+  symbol        String
+  name          String
+  sector        String
+  timeframe     String   // BTST | SHORT_TERM | MIDTERM | LONG_TERM
+  // Original trade plan (frozen at track time)
+  entryPrice    Float
+  stopLoss      Float
+  target1       Float
+  target2       Float
+  target3       Float
+  riskReward    Float
+  holdingPeriod String
+  confidence    Int
+  // Live state
+  status        String   @default("ACTIVE") // ACTIVE | HIT_T1 | HIT_T2 | HIT_T3 | STOPPED_OUT | TIME_EXIT | CLOSED
+  currentPrice  Float?
+  maxPrice      Float    @default(0) // highest since entry (for trailing)
+  minPrice      Float    @default(0) // lowest since entry
+  pnlPct        Float    @default(0) // (currentPrice - entryPrice) / entryPrice * 100
+  hitTargets    String   @default("[]") // JSON array of targets hit, e.g. ["T1","T2"]
+  // Metadata
+  trackedAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  closedAt      DateTime?
+  notes         String?
+
+  @@index([symbol])
+  @@index([status])
+  @@index([timeframe])
+}
