@@ -178,6 +178,16 @@ export interface IntradayAnalysis {
   action: 'BUY_NOW' | 'WAIT_BREAKOUT' | 'AVOID' | 'SELL_WATCH'
   confidence: number // 0-100
   reason: string
+  // Intraday risk management levels (NEW — P1-4 fix)
+  // For BUY_NOW: SL below dayLow or recent swing, targets above dayHigh
+  // For SELL_WATCH: SL above dayHigh, targets below dayLow
+  // For WAIT_BREAKOUT: SL below ORB low, target = breakout level + 1×ATR
+  intradayStopLoss: number | null
+  intradayTarget1: number | null
+  intradayTarget2: number | null
+  intradayTarget3: number | null
+  // 5-min ATR (average true range) — used for SL/target calc and display
+  atr5m: number
   // All candles for charting
   candles: IntradayCandle[]
   // Today's candles only (for the live chart strip)
@@ -320,6 +330,51 @@ function analyzeIntraday(meta: StockMeta, candles: IntradayCandle[]): IntradayAn
     reason = 'Mixed signals — no clear intraday edge'
   }
 
+  // --- Compute 5-min ATR (last 14 candles) for risk management ---
+  const last14 = candles.slice(-14)
+  let atrSum = 0
+  let atrCount = 0
+  for (let i = 1; i < last14.length; i++) {
+    const c = last14[i]
+    const p = last14[i - 1]
+    const tr = Math.max(c.high - c.low, Math.abs(c.high - p.close), Math.abs(c.low - p.close))
+    atrSum += tr
+    atrCount++
+  }
+  const atr5m = atrCount > 0 ? atrSum / atrCount : ltp * 0.005 // fallback: 0.5% of price
+
+  // --- Intraday SL & targets (P1-4 fix) ---
+  // BUY_NOW: SL = max(dayLow, ltp - 1.5×ATR), Targets = ltp + 1×, 2×, 3× ATR (intraday scalps)
+  // SELL_WATCH: SL = min(dayHigh, ltp + 1.5×ATR), Targets = ltp - 1×, 2×, 3× ATR
+  // WAIT_BREAKOUT: SL = orLow, Targets = dayHigh + 1×, 2×, 3× ATR (post-breakout)
+  // AVOID: all null
+  let intradayStopLoss: number | null = null
+  let intradayTarget1: number | null = null
+  let intradayTarget2: number | null = null
+  let intradayTarget3: number | null = null
+
+  if (action === 'BUY_NOW') {
+    const slByATR = ltp - 1.5 * atr5m
+    intradayStopLoss = +Math.min(dayLow, slByATR).toFixed(2) // tighter of dayLow or ATR-based
+    // Ensure SL is below LTP by at least 0.3%
+    if (intradayStopLoss >= ltp * 0.997) intradayStopLoss = +(ltp * 0.997).toFixed(2)
+    intradayTarget1 = +(ltp + 1.0 * atr5m).toFixed(2)
+    intradayTarget2 = +(ltp + 2.0 * atr5m).toFixed(2)
+    intradayTarget3 = +(ltp + 3.0 * atr5m).toFixed(2)
+  } else if (action === 'SELL_WATCH') {
+    const slByATR = ltp + 1.5 * atr5m
+    intradayStopLoss = +Math.max(dayHigh, slByATR).toFixed(2)
+    if (intradayStopLoss <= ltp * 1.003) intradayStopLoss = +(ltp * 1.003).toFixed(2)
+    intradayTarget1 = +(ltp - 1.0 * atr5m).toFixed(2)
+    intradayTarget2 = +(ltp - 2.0 * atr5m).toFixed(2)
+    intradayTarget3 = +(ltp - 3.0 * atr5m).toFixed(2)
+  } else if (action === 'WAIT_BREAKOUT') {
+    intradayStopLoss = +orLow.toFixed(2)
+    intradayTarget1 = +(dayHigh + 0.5 * atr5m).toFixed(2)
+    intradayTarget2 = +(dayHigh + 1.5 * atr5m).toFixed(2)
+    intradayTarget3 = +(dayHigh + 3.0 * atr5m).toFixed(2)
+  }
+
   return {
     symbol: meta.symbol,
     name: meta.name,
@@ -344,6 +399,11 @@ function analyzeIntraday(meta: StockMeta, candles: IntradayCandle[]): IntradayAn
     action,
     confidence,
     reason,
+    intradayStopLoss,
+    intradayTarget1,
+    intradayTarget2,
+    intradayTarget3,
+    atr5m,
     candles,
     todayCandles,
     asOf: new Date().toISOString(),

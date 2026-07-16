@@ -13,8 +13,10 @@ out/
 build/
 dist/
 
-# Production (standalone build)
-.vercel
+# Prisma generated client (regenerated on every `prisma generate`)
+# NOTE: We DO NOT ignore prisma/ itself — only the generated client.
+# The schema.prisma file MUST be committed so Vercel can run migrations.
+prisma/migrations/dev.db*
 
 # Database files (local SQLite — keep schema, ignore data)
 db/*.db

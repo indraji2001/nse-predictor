@@ -136,6 +136,18 @@ export function StockDetailDialog({ symbol, onClose }: Props) {
 
                 {(['BTST', 'SHORT_TERM', 'MIDTERM', 'LONG_TERM'] as Timeframe[]).map((tf) => {
                   const sig = data.signals[tf]
+                  // P3-13: Generate a plain-English "Why this signal?" summary
+                  const bullFactors = sig.factors.filter((f) => f.hit && f.direction === 'bullish')
+                  const bearFactors = sig.factors.filter((f) => f.direction === 'bearish')
+                  const totalWeight = sig.factors.reduce((s, f) => s + (f.weight || 0), 0)
+                  const bullWeight = bullFactors.reduce((s, f) => s + (f.weight || 0), 0)
+                  const strengthPct = totalWeight > 0 ? Math.round((bullWeight / totalWeight) * 100) : 0
+                  const whySummary = sig.action === 'BUY'
+                    ? `${bullFactors.length} of ${sig.factors.length} factors triggered (${strengthPct}% weight). Key drivers: ${bullFactors.slice(0, 3).map((f) => f.name.split('(')[0].split('(')[0].trim().toLowerCase()).join(', ')}.`
+                    : sig.action === 'SELL'
+                    ? `${bearFactors.length} bearish factors detected. Weakness in: ${bearFactors.slice(0, 3).map((f) => f.name.split('(')[0].trim().toLowerCase()).join(', ')}.`
+                    : `Only ${bullFactors.length} of ${sig.factors.length} factors triggered (${strengthPct}% weight) — not enough conviction for a BUY. Needs ${Math.max(0, 5 - bullFactors.length)} more bullish confirmations.`
+
                   return (
                     <TabsContent key={tf} value={tf} className="space-y-3 mt-2">
                       <div className="grid grid-cols-2 md:grid-cols-5 gap-2 text-xs">
@@ -165,15 +177,34 @@ export function StockDetailDialog({ symbol, onClose }: Props) {
                         </div>
                       </div>
 
+                      {/* P3-13: "Why this signal?" plain-English summary */}
+                      <div className={`text-xs rounded p-2.5 border ${
+                        sig.action === 'BUY'
+                          ? 'bg-emerald-50/60 dark:bg-emerald-950/20 border-emerald-300/50 text-emerald-900 dark:text-emerald-200'
+                          : sig.action === 'SELL'
+                          ? 'bg-red-50/60 dark:bg-red-950/20 border-red-300/50 text-red-900 dark:text-red-200'
+                          : 'bg-muted/40 border-border/60 text-muted-foreground'
+                      }`}>
+                        <div className="font-semibold mb-1 flex items-center gap-1.5">
+                          <Activity className="h-3 w-3" /> Why this signal?
+                        </div>
+                        <div className="leading-relaxed">{whySummary}</div>
+                      </div>
+
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
                         <Clock className="h-3 w-3" /> {sig.holdingPeriod}
                         <Separator orientation="vertical" className="h-3" />
                         <span>RR 1:{(sig.riskReward ?? 0).toFixed(1)}</span>
+                        <Separator orientation="vertical" className="h-3" />
+                        <span>{bullFactors.length} bull / {bearFactors.length} bear</span>
                       </div>
 
                       <div className="space-y-1">
-                        <div className="text-[10px] uppercase tracking-wide text-muted-foreground flex items-center gap-1">
-                          <Activity className="h-3 w-3" /> Factor breakdown
+                        <div className="text-[10px] uppercase tracking-wide text-muted-foreground flex items-center justify-between gap-1">
+                          <span className="flex items-center gap-1">
+                            <Activity className="h-3 w-3" /> Factor breakdown
+                          </span>
+                          <span className="text-[9px]">weight × hit/miss</span>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5">
                           {sig.factors.map((f, i) => (
@@ -181,9 +212,9 @@ export function StockDetailDialog({ symbol, onClose }: Props) {
                               key={i}
                               className={`flex items-start gap-2 p-2 rounded border text-xs ${
                                 f.direction === 'bullish' && f.hit
-                                  ? 'border-emerald-300/50 bg-emerald-50/50 dark:bg-emerald-950/20'
+                                  ? 'border-emerald-300/60 bg-emerald-50/60 dark:bg-emerald-950/25'
                                   : f.direction === 'bearish'
-                                  ? 'border-red-300/50 bg-red-50/50 dark:bg-red-950/20'
+                                  ? 'border-red-300/60 bg-red-50/60 dark:bg-red-950/25'
                                   : 'border-border/60 bg-muted/30'
                               }`}
                             >
@@ -194,14 +225,26 @@ export function StockDetailDialog({ symbol, onClose }: Props) {
                               ) : (
                                 <Minus className="h-3.5 w-3.5 text-muted-foreground shrink-0 mt-0.5" />
                               )}
-                              <div className="min-w-0">
+                              <div className="min-w-0 flex-1">
                                 <div className="flex items-center justify-between gap-2">
                                   <span className="font-medium">{f.name}</span>
-                                  <span className="text-[10px] text-muted-foreground tabular-nums">
-                                    ×{(f.weight ?? 0).toFixed(2)}
-                                  </span>
+                                  {/* P2-7: Make weight + hit/miss status more prominent */}
+                                  <div className="flex items-center gap-1 shrink-0">
+                                    <span className={`text-[9px] px-1 py-0.5 rounded tabular-nums font-mono ${
+                                      f.hit && f.direction === 'bullish'
+                                        ? 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300'
+                                        : f.direction === 'bearish'
+                                        ? 'bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300'
+                                        : 'bg-muted text-muted-foreground'
+                                    }`}>
+                                      {f.hit ? '✓ HIT' : '✗ MISS'}
+                                    </span>
+                                    <span className="text-[10px] text-muted-foreground tabular-nums font-mono">
+                                      ×{(f.weight ?? 0).toFixed(2)}
+                                    </span>
+                                  </div>
                                 </div>
-                                <div className="text-[11px] text-muted-foreground">{f.detail}</div>
+                                <div className="text-[11px] text-muted-foreground mt-0.5">{f.detail}</div>
                               </div>
                             </div>
                           ))}

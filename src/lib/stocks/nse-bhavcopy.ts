@@ -19,12 +19,38 @@
 // designed to fail gracefully — when NSE blocks us, we return null and the
 // caller falls back to Yahoo. The user can also manually upload bhavcopy CSV
 // files via the /api/bhavcopy/upload endpoint to build the local archive.
+//
+// ------------------------------------------------------------------
+//  IMPORTANT — Vercel / serverless compatibility
+// ------------------------------------------------------------------
+//  Vercel's filesystem is READ-ONLY except for /tmp. We can't write to
+//  data/bhavcopy/*.csv in production. So:
+//
+//  - On Vercel (process.env.VERCEL === '1'), all file-writing operations
+//    are silently skipped. listArchive() returns an empty array.
+//  - This means: on the cloud deployment, the NSE bhavcopy feature is
+//    effectively disabled and the app falls back to Yahoo Finance.
+//  - This is intentional. The bhavcopy archive is a local-only power-user
+//    feature. Cloud deployments use Yahoo + (optional) Upstox for live data.
+// ------------------------------------------------------------------
 
 import { promises as fs } from 'fs'
 import path from 'path'
 import { Candle } from './engine'
 
-const ARCHIVE_DIR = path.join(process.cwd(), 'data', 'bhavcopy')
+// Detect Vercel serverless environment — its filesystem is read-only.
+const IS_VERCEL = process.env.VERCEL === '1'
+
+// In Vercel, write to /tmp if we really need to (e.g. for caching during a
+// single request lifecycle). For persistent storage we use the DB instead.
+const ARCHIVE_DIR = IS_VERCEL
+  ? path.join('/tmp', 'bhavcopy')
+  : path.join(process.cwd(), 'data', 'bhavcopy')
+
+// On Vercel, the archive is always considered empty — we can't persist files.
+// This makes hasBhavcopyArchive() return false fast and prevents the predict
+// route from wasting time probing the filesystem on every request.
+const ARCHIVE_DISABLED = IS_VERCEL
 const NSE_HOME = 'https://www.nseindia.com'
 const NSE_BHAVCOPY_URL = 'https://archives.nseindia.com/products/content/sec_bhavdata_full_DDMMMYYYY.csv'
 
@@ -92,6 +118,7 @@ function isTradingDay(d: Date): boolean {
 
 // --- Archive helpers ------------------------------------------------------
 async function ensureArchiveDir(): Promise<void> {
+  if (ARCHIVE_DISABLED) return
   await fs.mkdir(ARCHIVE_DIR, { recursive: true })
 }
 
@@ -104,6 +131,7 @@ export interface ArchivedFile {
 }
 
 export async function listArchive(): Promise<ArchivedFile[]> {
+  if (ARCHIVE_DISABLED) return [] // Vercel — no persistent filesystem
   await ensureArchiveDir()
   const files = await fs.readdir(ARCHIVE_DIR)
   const out: ArchivedFile[] = []
@@ -138,6 +166,7 @@ export async function listArchive(): Promise<ArchivedFile[]> {
 }
 
 export async function deleteArchivedFile(date: string): Promise<void> {
+  if (ARCHIVE_DISABLED) return
   // Delete both the NSE-fetched and uploaded versions if they exist
   for (const name of [`${date}.csv`, `${date}-upload.csv`]) {
     const filePath = path.join(ARCHIVE_DIR, name)
@@ -150,6 +179,7 @@ export async function deleteArchivedFile(date: string): Promise<void> {
 }
 
 export async function getArchivedFile(date: string): Promise<string | null> {
+  if (ARCHIVE_DISABLED) return null
   // Prefer the NSE-fetched version; fall back to the uploaded version
   for (const name of [`${date}.csv`, `${date}-upload.csv`]) {
     const filePath = path.join(ARCHIVE_DIR, name)
@@ -164,6 +194,7 @@ export async function getArchivedFile(date: string): Promise<string | null> {
 
 // Save raw CSV content to the archive with the given date.
 export async function saveArchivedFile(date: string, csvContent: string, source: 'NSE' | 'UPLOAD' = 'NSE'): Promise<void> {
+  if (ARCHIVE_DISABLED) return // Vercel — would silently lose the file anyway
   await ensureArchiveDir()
   const suffix = source === 'UPLOAD' ? '-upload' : ''
   const filePath = path.join(ARCHIVE_DIR, `${date}${suffix}.csv`)
@@ -180,6 +211,9 @@ export interface FetchResult {
 }
 
 export async function fetchBhavcopyFromNSE(targetDate: Date): Promise<FetchResult> {
+  if (ARCHIVE_DISABLED) {
+    return { ok: false, date: formatISODate(targetDate), error: 'Bhavcopy archive disabled on Vercel (read-only filesystem). Run locally to use this feature.' }
+  }
   if (!isTradingDay(targetDate)) {
     return { ok: false, date: formatISODate(targetDate), error: 'Not a trading day (weekend)' }
   }
@@ -223,6 +257,9 @@ export async function fetchBhavcopyFromNSE(targetDate: Date): Promise<FetchResul
 // Fetch the most recent N trading days' bhavcopies. Useful for backfilling.
 // Skips weekends and holidays (404 = holiday, treated as skip).
 export async function backfillBhavcopy(days: number): Promise<{ fetched: number; skipped: number; errors: string[] }> {
+  if (ARCHIVE_DISABLED) {
+    return { fetched: 0, skipped: 0, errors: ['Bhavcopy archive disabled on Vercel (read-only filesystem).'] }
+  }
   const errors: string[] = []
   let fetched = 0
   let skipped = 0

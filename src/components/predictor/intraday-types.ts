@@ -36,6 +36,12 @@ export interface IntradayAnalysis {
   action: 'BUY_NOW' | 'WAIT_BREAKOUT' | 'AVOID' | 'SELL_WATCH'
   confidence: number
   reason: string
+  // Intraday risk management levels (P1-4 fix)
+  intradayStopLoss: number | null
+  intradayTarget1: number | null
+  intradayTarget2: number | null
+  intradayTarget3: number | null
+  atr5m: number
   candles: IntradayCandle[]
   todayCandles: IntradayCandle[]
   asOf: string

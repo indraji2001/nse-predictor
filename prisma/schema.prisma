@@ -1,10 +1,18 @@
 // This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// learn more about it at the docs: https://pris.ly/d/prisma-schema
 
 generator client {
   provider = "prisma-client-js"
 }
 
+// ------------------------------------------------------------------
+//  Database — Turso (libSQL) for cloud / SQLite for local dev
+// ------------------------------------------------------------------
+//  We use the `sqlite` dialect because Turso is wire-compatible with
+//  SQLite. The actual driver adapter (see src/lib/db.ts) decides at
+//  runtime whether to use a local SQLite file or a remote Turso DB
+//  based on which environment variables are set.
+// ------------------------------------------------------------------
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
@@ -62,4 +70,34 @@ model PaperTrade {
   @@index([symbol])
   @@index([status])
   @@index([timeframe])
+}
+
+// ------------------------------------------------------------------
+//  Upstox integration — single-row config table + instrument cache
+// ------------------------------------------------------------------
+model UpstoxConfig {
+  id              Int       @id @default(1) // singleton row, always id=1
+  apiKey          String
+  apiSecret       String
+  redirectUri     String
+  accessToken     String?
+  refreshToken    String?
+  tokenExpiresAt  DateTime?
+  lastUsedAt      DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+// Cached NSE equity instrument keys downloaded from Upstox's master file.
+// Refreshed on demand via /api/upstox/refresh-instruments.
+model UpstoxInstrument {
+  symbol        String   @id // NSE trading symbol (e.g. RELIANCE)
+  instrumentKey String   // Upstox's key (e.g. NSE_EQ|INE002A01018)
+  name          String?
+  exchange      String   @default("NSE_EQ")
+  isin          String?
+  lotSize       Int?
+  updatedAt     DateTime @updatedAt
+
+  @@index([exchange])
 }

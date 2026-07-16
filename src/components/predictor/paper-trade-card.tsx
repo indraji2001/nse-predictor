@@ -70,7 +70,16 @@ export function PaperTradeCard({ trade, onDelete, onClose }: Props) {
   const sb = statusBadge(trade.status)
   const hitTargets: string[] = JSON.parse(trade.hitTargets || '[]')
   const isActive = trade.status === 'ACTIVE'
-  const pnlPositive = (trade.pnlPct || 0) >= 0
+  // P&L color logic: strictly positive = green, strictly negative = red, exactly 0 = neutral
+  // (Previously used `>= 0`, which made 0.00% show as green even when current price = entry — misleading)
+  const pnlValue = trade.pnlPct || 0
+  const pnlPositive = pnlValue > 0
+  const pnlNegative = pnlValue < 0
+  const pnlColorClass = pnlPositive
+    ? 'text-emerald-600 dark:text-emerald-400'
+    : pnlNegative
+    ? 'text-red-600 dark:text-red-400'
+    : 'text-muted-foreground'
   const daysSinceTracked = Math.floor((Date.now() - new Date(trade.trackedAt).getTime()) / (1000 * 60 * 60 * 24))
 
   return (
@@ -94,7 +103,7 @@ export function PaperTradeCard({ trade, onDelete, onClose }: Props) {
             <p className="text-xs text-muted-foreground truncate">{trade.name}</p>
           </div>
           <div className="text-right shrink-0">
-            <div className={`text-xl font-bold tabular-nums ${pnlPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
+            <div className={`text-xl font-bold tabular-nums ${pnlColorClass}`}>
               {formatPct(trade.pnlPct || 0)}
             </div>
             <div className="text-[10px] uppercase tracking-wide text-muted-foreground">P&L</div>
@@ -157,7 +166,7 @@ export function PaperTradeCard({ trade, onDelete, onClose }: Props) {
         <div className="grid grid-cols-3 gap-2 text-xs">
           <div>
             <div className="text-[10px] uppercase text-muted-foreground">Current</div>
-            <div className={`font-semibold tabular-nums ${pnlPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
+            <div className={`font-semibold tabular-nums ${pnlColorClass}`}>
               {trade.currentPrice ? formatINR(trade.currentPrice) : '—'}
             </div>
           </div>

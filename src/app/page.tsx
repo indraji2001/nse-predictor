@@ -59,7 +59,7 @@ export default function Home() {
       setIntradayResult(data)
       if (showToast) {
         toast.success('Intraday scan complete', {
-          description: `${data.buyNowCount} BUY_NOW · ${data.waitCount} WAIT · ${data.sellWatchCount} SELL_WATCH · ${data.avoidCount} AVOID (of ${data.totalScanned} scanned)`,
+          description: `${data.buyNowCount} BUY · ${data.waitCount} WAIT · ${data.sellWatchCount} SHORT · ${data.avoidCount} AVOID (of ${data.totalScanned} scanned)`,
         })
       }
     } catch (e) {
@@ -219,6 +219,33 @@ export default function Home() {
       loadPaperTrades(false)
     }
   }, [activeTab, intradayResult, intradayLoading, loadIntraday, paperTrades.length, paperLoading, loadPaperTrades])
+
+  // P3-10: Auto-refresh intraday scan every 2 minutes while on the Intraday tab
+  // AND market is open (IST 9:15 AM - 3:30 PM, Mon-Fri). Stops refreshing when
+  // the user switches tabs or market closes.
+  useEffect(() => {
+    if (activeTab !== 'INTRADAY') return
+    // Check market status client-side using same logic as intraday-types
+    const ist = new Date(Date.now() + 5.5 * 60 * 60 * 1000)
+    const day = ist.getUTCDay()
+    const minutes = ist.getUTCHours() * 60 + ist.getUTCMinutes()
+    const isMarketOpen = day !== 0 && day !== 6 && minutes >= 9 * 60 + 15 && minutes <= 15 * 60 + 30
+    if (!isMarketOpen) return
+
+    const intervalMs = 2 * 60 * 1000 // 2 minutes
+    const interval = setInterval(() => {
+      // Re-check market status at fire time (in case market closed between mount and fire)
+      const nowIst = new Date(Date.now() + 5.5 * 60 * 60 * 1000)
+      const nowDay = nowIst.getUTCDay()
+      const nowMin = nowIst.getUTCHours() * 60 + nowIst.getUTCMinutes()
+      const stillOpen = nowDay !== 0 && nowDay !== 6 && nowMin >= 9 * 60 + 15 && nowMin <= 15 * 60 + 30
+      if (stillOpen && activeTab === 'INTRADAY') {
+        loadIntraday(false)
+      }
+    }, intervalMs)
+
+    return () => clearInterval(interval)
+  }, [activeTab, loadIntraday])
 
   const signalsForTab: Signal[] = useMemo(() => {
     if (!result) return []
@@ -391,45 +418,56 @@ export default function Home() {
                     </TabsList>
                     <p className="text-[11px] text-muted-foreground">
                       {activeTab === 'INTRADAY'
-                        ? 'Live intraday scan (15-min delayed) — BUY_NOW / WAIT_BREAKOUT / SELL_WATCH signals for today\'s session'
+                        ? 'Live intraday scan (15-min delayed) — BUY / WAIT / SHORT signals for today\'s session. 5-min candles with VWAP, ORB, EMA9/21.'
                         : activeTab === 'PAPER_TRADES'
                         ? 'Paper trades you\'re tracking — click "Track" on any signal to add it here. Update prices daily to see if T1/T2/T3 hit.'
                         : TIMEFRAME_DESCRIPTIONS[activeTab]}
                     </p>
                     {activeTab === 'INTRADAY' && (
-                      <div className="flex items-center gap-2 text-[10px]">
+                      <div className="flex items-center gap-2 flex-wrap">
                         {(() => {
                           const ms = marketStatus()
                           return (
                             <Badge
                               variant="outline"
-                              className={`text-[9px] font-mono ${
+                              className={`text-[11px] font-semibold px-2.5 py-1 gap-1.5 ${
                                 ms.open
-                                  ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800'
-                                  : 'bg-muted text-muted-foreground'
+                                  ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border-emerald-400 dark:border-emerald-700'
+                                  : 'bg-muted text-muted-foreground border-border'
                               }`}
+                              title={ms.nextEvent}
                             >
-                              {ms.open ? '● ' : '○ '}{ms.label}
+                              {ms.open ? (
+                                <span className="relative flex h-2 w-2">
+                                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
+                                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                                </span>
+                              ) : (
+                                <span className="inline-flex rounded-full h-2 w-2 bg-muted-foreground/60" />
+                              )}
+                              {ms.label}
+                              <span className="text-[9px] font-normal opacity-70">· {ms.nextEvent}</span>
                             </Badge>
                           )
                         })()}
                         {intradayResult && (
-                          <span className="text-muted-foreground">
-                            Scanned {intradayResult.totalScanned} stocks · {intradayResult.buyNowCount} BUY_NOW · {intradayResult.waitCount} WAIT · {intradayResult.sellWatchCount} SELL_WATCH
+                          <span className="text-[11px] text-muted-foreground">
+                            Scanned <span className="font-semibold text-foreground tabular-nums">{intradayResult.totalScanned}</span> stocks ·
+                            <span className="text-emerald-600 dark:text-emerald-400 font-medium"> {intradayResult.buyNowCount} BUY</span> ·
+                            <span className="text-amber-600 dark:text-amber-400 font-medium"> {intradayResult.waitCount} WAIT</span> ·
+                            <span className="text-red-600 dark:text-red-400 font-medium"> {intradayResult.sellWatchCount} SHORT</span>
                           </span>
                         )}
-                        {activeTab === 'INTRADAY' && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="h-6 text-[10px] gap-1"
-                            onClick={() => loadIntraday(true)}
-                            disabled={intradayLoading}
-                          >
-                            <RefreshCw className={`h-3 w-3 ${intradayLoading ? 'animate-spin' : ''}`} />
-                            {intradayLoading ? 'Scanning…' : 'Refresh intraday'}
-                          </Button>
-                        )}
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-7 text-[11px] gap-1"
+                          onClick={() => loadIntraday(true)}
+                          disabled={intradayLoading}
+                        >
+                          <RefreshCw className={`h-3 w-3 ${intradayLoading ? 'animate-spin' : ''}`} />
+                          {intradayLoading ? 'Scanning…' : 'Refresh intraday'}
+                        </Button>
                       </div>
                     )}
                   </div>
@@ -505,10 +543,13 @@ export default function Home() {
                   </Card>
                 ) : (
                   <>
-                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <div className="flex items-center justify-between text-xs text-muted-foreground flex-wrap gap-2">
                       <span>
                         Showing <span className="font-semibold text-foreground tabular-nums">{intradayFiltered.length}</span> of{' '}
                         <span className="tabular-nums">{intradayResult?.signals.length ?? 0}</span> intraday signals
+                      </span>
+                      <span className="text-[10px]">
+                        Sorted by: <span className="text-foreground font-medium">BUY → WAIT → SHORT → AVOID</span>, then confidence ↓
                       </span>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
