@@ -132,6 +132,8 @@ function resampleToWeekly(dailyCandles: Candle[]): Candle[] {
 function computeTradeLevels(p: HarmonicPattern) {
   const XA = Math.abs(p.A - p.X)
   const bullish = p.direction === 'Bullish'
+  // p.D is the PRZ midpoint (przMid in v1 terminology)
+  const przMid = p.D
 
   let slMultiplier = 1.0
   if (p.name === 'Butterfly' || p.name === 'Perfect Butterfly') slMultiplier = 1.41
@@ -142,15 +144,15 @@ function computeTradeLevels(p: HarmonicPattern) {
     : p.przHigh + slMultiplier * XA * 0.05
 
   const CD = Math.abs(p.D - p.C)
-  const target1 = bullish ? p.D + 0.382 * CD : p.D - 0.382 * CD
-  const target2 = bullish ? p.D + 0.618 * CD : p.D - 0.618 * CD
+  const target1 = bullish ? przMid + 0.382 * CD : przMid - 0.382 * CD
+  const target2 = bullish ? przMid + 0.618 * CD : przMid - 0.618 * CD
 
-  const risk = Math.abs(p.przMid - stopLoss)
-  const reward = Math.abs(target1 - p.przMid)
+  const risk = Math.abs(przMid - stopLoss)
+  const reward = Math.abs(target1 - przMid)
   const riskReward = risk > 0 ? +(reward / risk).toFixed(2) : 0
 
   return {
-    suggestedEntry: +p.przMid.toFixed(2),
+    suggestedEntry: +przMid.toFixed(2),
     stopLoss: +stopLoss.toFixed(2),
     target1: +target1.toFixed(2),
     target2: +target2.toFixed(2),

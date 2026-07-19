@@ -62,7 +62,8 @@ export interface HarmonicPattern {
   A: number
   B: number
   C: number
-  D: number           // PRZ midpoint
+  D: number           // PRZ midpoint (primary target price)
+  przMid: number      // alias for D (backward-compat)
   przLow: number
   przHigh: number
   ratioAB: number     // AB / XA
@@ -464,7 +465,9 @@ function makePattern(
   const rsiBullish = direction === 'Bullish' && rsi <= 40
   const rsiBearish = direction === 'Bearish' && rsi >= 60
   return {
-    name, direction, X, A, B, C, D: przMid,
+    name, direction, X, A, B, C,
+    D: przMid,
+    przMid,          // backward-compat alias
     przLow, przHigh,
     ratioAB: +ratioAB.toFixed(3),
     ratioBC: +ratioBC.toFixed(3),
@@ -578,6 +581,7 @@ export function detectHarmonicPatterns(
           results.push({
             name: 'Cypher', direction: 'Bullish',
             X, A, B, C, D: przMid,
+            przMid,
             przLow: przMid - przSpread, przHigh: przMid + przSpread,
             ratioAB: +cypherR.ratioAB.toFixed(3),
             ratioBC: +cypherR.ratioXC_XA.toFixed(3),
@@ -671,6 +675,7 @@ export function detectHarmonicPatterns(
           results.push({
             name: 'Cypher', direction: 'Bearish',
             X, A, B, C, D: przMid,
+            przMid,
             przLow: przMid - przSpread, przHigh: przMid + przSpread,
             ratioAB: +cypherR.ratioAB.toFixed(3),
             ratioBC: +cypherR.ratioXC_XA.toFixed(3),
@@ -694,6 +699,7 @@ export function detectHarmonicPatterns(
           results.push({
             name: 'Shark', direction: 'Bullish',
             X: P0.price, A: P1.price, B: P2.price, C: P3.price, D: przMid,
+            przMid,
             przLow: przMid - przSpread, przHigh: przMid + przSpread,
             ratioAB: +shR.ratioXA_OX.toFixed(3),
             ratioBC: +shR.ratioAB_XA.toFixed(3),
@@ -724,6 +730,7 @@ export function detectHarmonicPatterns(
           results.push({
             name: 'Shark', direction: 'Bearish',
             X: P0.price, A: P1.price, B: P2.price, C: P3.price, D: przMid,
+            przMid,
             przLow: przMid - przSpread, przHigh: przMid + przSpread,
             ratioAB: +shR.ratioXA_OX.toFixed(3),
             ratioBC: +shR.ratioAB_XA.toFixed(3),
