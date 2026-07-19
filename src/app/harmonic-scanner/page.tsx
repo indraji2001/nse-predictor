@@ -54,11 +54,11 @@ const CHART_PERIODS = [
     icon: <Calendar size={14} />,
     suitableFor: 'Short Term (5–15 days)',
     tradeTypes: ['SHORT_TERM', 'BTST'],
-    description: '~500 daily candles · 1.5% ZigZag pivot · 2 year history',
+    description: '~1260 daily candles · 5-bar high/low pivot · 5 year history',
     color: '#6366f1',
     bg: '#1e1b4b',
-    candles: '~500 daily',
-    deviation: '1.5%',
+    candles: '~1260 daily',
+    pivotN: '5-bar',
   },
   {
     id: 'WEEKLY',
@@ -66,11 +66,11 @@ const CHART_PERIODS = [
     icon: <BarChart2 size={14} />,
     suitableFor: 'Mid Term (15–60D) & Long Term (60D+)',
     tradeTypes: ['MIDTERM', 'LONG_TERM'],
-    description: '~156 weekly candles · 2.0% ZigZag pivot · 3 year history',
+    description: '~156 weekly candles · 3-bar high/low pivot · 3 year history',
     color: '#0ea5e9',
     bg: '#082f49',
     candles: '~156 weekly',
-    deviation: '2.0%',
+    pivotN: '3-bar',
   },
 ]
 
@@ -285,7 +285,15 @@ function StockRow({ entry, onPaperTrade }: { entry: HarmonicScanEntry; onPaperTr
         </td>
         <td className="px-4 py-3">
           <PatternBadge pattern={p} />
-          <div className="text-xs text-slate-500 mt-0.5">{p.status}</div>
+          <div className="flex items-center gap-1.5 mt-0.5">
+            <span className="text-xs text-slate-500">{p.status}</span>
+            {p.rsiBullish
+              ? <span className="text-xs font-bold px-1.5 py-0.5 rounded" style={{ background: '#05966920', color: '#34d399', border: '1px solid #05966940' }}>RSI {p.rsi}</span>
+              : p.rsiBearish
+              ? <span className="text-xs font-bold px-1.5 py-0.5 rounded" style={{ background: '#dc262620', color: '#f87171', border: '1px solid #dc262640' }}>RSI {p.rsi}</span>
+              : <span className="text-xs px-1.5 py-0.5 rounded" style={{ background: '#1e293b', color: '#64748b' }}>RSI {p.rsi}</span>
+            }
+          </div>
         </td>
         <td className="px-4 py-3">
           <div className="font-mono font-bold text-white">₹{entry.currentPrice.toFixed(2)}</div>
@@ -350,6 +358,8 @@ function StockRow({ entry, onPaperTrade }: { entry: HarmonicScanEntry; onPaperTr
                       { label: 'BC/AB', val: `${(p.ratioBC * 100).toFixed(1)}%` },
                       { label: 'CD/BC', val: `${(p.ratioCD * 100).toFixed(1)}%` },
                       { label: 'D retrace', val: `${(p.ratioXAD * 100).toFixed(1)}%` },
+                      { label: 'RSI(14)', val: `${p.rsi}`, special: p.rsiBullish ? '#34d399' : p.rsiBearish ? '#f87171' : '#94a3b8' },
+                      { label: 'RSI Confluence', val: p.rsiBullish ? '✅ Bullish' : p.rsiBearish ? '✅ Bearish' : '⚠️ None', special: (p.rsiBullish || p.rsiBearish) ? '#34d399' : '#f59e0b' },
                       { label: 'Status', val: p.status, special: p.status === 'FORMING' ? '#f59e0b' : '#6366f1' },
                     ].map(row => (
                       <div key={row.label} className="flex justify-between text-sm">
@@ -661,7 +671,7 @@ export default function HarmonicScannerPage() {
         </div>
 
         {/* Legend */}
-        <div className="flex items-center gap-4 mb-3 text-xs text-slate-400">
+        <div className="flex items-center flex-wrap gap-4 mb-3 text-xs text-slate-400">
           <div className="flex items-center gap-1.5">
             <span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" /><span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" /></span>
             Price IN PRZ (≤3%)
@@ -671,6 +681,10 @@ export default function HarmonicScannerPage() {
           </div>
           <div className="flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-slate-600" /> Approaching PRZ
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="px-1.5 py-0.5 rounded text-emerald-400 font-bold" style={{ background: '#05966920', border: '1px solid #05966940', fontSize: 10 }}>RSI 28</span>
+            RSI Confluence ✓
           </div>
           <div className="flex items-center gap-1.5 ml-auto">
             <Clock size={12} className="text-slate-500" />
@@ -686,9 +700,9 @@ export default function HarmonicScannerPage() {
               <Radar size={52} className="text-violet-400 animate-pulse" />
               <div className="absolute inset-0 rounded-full animate-ping opacity-20" style={{ background: '#7c3aed' }} />
             </div>
-            <div className="text-white font-bold text-lg">Scanning all NSE stocks…</div>
+            <div className="text-white font-bold text-lg">Scanning NSE stocks for Harmonic Patterns…</div>
             <div className="text-slate-400 text-sm">
-              {selectedPeriodCfg.label} · {selectedPeriodCfg.candles} · {selectedPeriodCfg.deviation} ZigZag
+              {selectedPeriodCfg.label} · {selectedPeriodCfg.candles} · {selectedPeriodCfg.pivotN} pivot lookback
             </div>
             <div className="text-xs text-slate-500">Detecting Gartley, Bat, Butterfly, Crab, Cypher, Shark + Perfect variants</div>
           </div>

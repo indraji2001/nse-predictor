@@ -1,43 +1,36 @@
 // ============================================================================
-// HARMONIC PATTERN SCANNER — Complete Rewrite (All Patterns, All Bugs Fixed)
+// HARMONIC PATTERN SCANNER v2 — Fixed Pivot Detection + RSI Confluence
 //
-// Patterns: Gartley, Perfect Gartley, Bat, Perfect Bat, Alt Bat,
-//           Butterfly, Perfect Butterfly, Crab, Deep Crab, Perfect Crab,
-//           AB=CD, Cypher, Shark
+// CRITICAL FIXES vs v1:
+//  1. Pivot detection uses N-bar HIGH/LOW lookback (NOT close price % deviation)
+//     Swing HIGH = bar where candle.high is the highest of surrounding N bars
+//     Swing LOW  = bar where candle.low is the lowest of surrounding N bars
+//     (Equivalent to TradingView's ta.pivothigh() / ta.pivotlow())
+//  2. XABCD prices use candle.HIGH for swing highs, candle.LOW for swing lows
+//  3. RSI(14) Wilder-smoothing confluence added to every pattern result
+//  4. Fixed Butterfly B: near(0.786) not inRange(0.75, 0.81)
+//  5. Fixed Crab CD range: 2.24–3.618 (was 2.618–3.618)
 //
-// KEY DESIGN PRINCIPLES (from Carney's Harmonic Trading):
+// VERIFIED RATIO TABLE (Scott Carney + luckyJeffy PineScript + djoffrey Python):
 //
-//  XABCD Structure (bullish example):
-//    X = last significant swing LOW  (origin)
-//    A = swing HIGH after X          (XA leg = up move)
-//    B = swing LOW after A           (AB leg = retrace of XA)
-//    C = swing HIGH after B          (BC leg = retrace of AB, C < A for standard)
-//    D = Potential Reversal Zone     (CD leg = extension or retrace, PRZ)
+//  Pattern      | AB/XA      | BC/AB      | CD/BC       | D-target
+//  -------------|------------|------------|-------------|---------------------
+//  Gartley      | 0.618      | 0.382-0.886| 1.27-1.618  | 0.786 XA retrace from A
+//  Bat          | 0.382-0.50 | 0.382-0.886| 1.618-2.618 | 0.886 XA retrace from A
+//  Perfect Bat  | 0.50       | 0.50-0.618 | 2.0         | 0.886 XA retrace from A
+//  Alt Bat      | 0.382      | 0.382-0.886| 2.0-3.618   | 1.13× XA from A (D beyond X)
+//  Butterfly    | 0.786      | 0.382-0.886| 1.618-2.618 | 1.27× XA from A (D beyond X)
+//  Crab         | 0.382-0.618| 0.382-0.886| 2.24-3.618  | 1.618× XA from A (D beyond X)
+//  Deep Crab    | 0.886      | 0.382-0.886| 2.0-3.618   | 1.618× XA from A (D beyond X)
+//  Cypher       | 0.382-0.618| 1.272-1.414×XA | 0.786×XC | measured from XC leg
+//  Shark        | —          | 1.13-1.618×XA | 1.618-2.24 | 0.886-1.13 of OX (5-pt)
+//  AB=CD        | —          | 0.382-0.886| ≈1.0        | CD ≈ AB in length
 //
-//  Key Leg Ratios (all verified against official cheat-sheet):
-//    r.ab  = |AB| / |XA|       → how much AB retraces XA
-//    r.bc  = |BC| / |AB|       → how much BC retraces AB
-//    r.cd  = |CD| / |BC|       → BC projection (BC extension to D) — IMPORTANT!
-//    r.xad = |D - A| / |XA|   → D as retracement of XA from A (Gartley/Bat)
-//    r.xaExt = |D - X| / |XA| → D distance BEYOND X (Butterfly/Crab: 0.27, 0.618)
-//                                CRITICAL NOTE: "1.27 extension" means D is
-//                                0.27×XA beyond X, NOT 1.27×XA beyond X.
-//                                So xaExt = 0.27 for Butterfly, 0.618 for Crab.
-//
-//  Structural Rule ("C does not exceed A"):
-//    Bullish: B > X AND C < A  (for all standard patterns except Cypher/Shark)
-//    Bearish: B < X AND C > A
-//    Cypher:  C goes BEYOND A (C > A bullish, C < A bearish)
-//    Shark:   B goes BEYOND X (B < X bullish, B > X bearish)
-//
-//  PRZ Validation:
-//    Each pattern has BOTH an XA-based D projection AND a BC-projection check.
-//    If both agree, it's a high-confidence PRZ.
-//
-//  Stop Loss reference (from table):
-//    Bat/Gartley: 1.0×XA beyond X
-//    Butterfly: 1.41×XA
-//    Crab/Deep Crab: 2.0×XA
+// NOTE on "D beyond X" patterns (Butterfly, Crab, Alt Bat, Deep Crab):
+//   xaExt = |D - X| / |XA| represents how far D went past X.
+//   Alt Bat: xaExt ≈ 0.13 (D is 0.13×XA beyond X, i.e. 1.13× XA from A)
+//   Butterfly: xaExt ≈ 0.27 (D is 0.27×XA beyond X, i.e. 1.27× XA from A)
+//   Crab: xaExt ≈ 0.618 (D is 0.618×XA beyond X, i.e. 1.618× XA from A)
 // ============================================================================
 
 import { Candle } from '../stocks/engine'
@@ -57,7 +50,7 @@ export type HarmonicDirection = 'Bullish' | 'Bearish'
 
 export interface SwingPoint {
   index: number
-  price: number
+  price: number     // HIGH for swing highs, LOW for swing lows
   type: 'HIGH' | 'LOW'
   date: string
 }
@@ -74,65 +67,121 @@ export interface HarmonicPattern {
   przHigh: number
   ratioAB: number     // AB / XA
   ratioBC: number     // BC / AB
-  ratioCD: number     // CD / BC  (BC projection)
+  ratioCD: number     // CD / BC
   ratioXAD: number    // D retracement/extension vs XA
   distFromD: number   // % distance from current price to PRZ midpoint
   status: 'FORMING' | 'COMPLETED'
   description: string
+  rsi: number         // RSI(14) at time of scan (current last candle)
+  rsiBullish: boolean // Bullish RSI confluence: direction=Bullish AND rsi ≤ 40
+  rsiBearish: boolean // Bearish RSI confluence: direction=Bearish AND rsi ≥ 60
 }
 
 // ── Constants ──────────────────────────────────────────────────────────────
 
-const TOL = 0.05                // ±5% standard tolerance
-const TIGHT = 0.03              // ±3% tight tolerance for "Perfect" variants
-const ZIGZAG_DEVIATION_DEFAULT = 0.025  // 2.5% default (tuned per chart period by caller)
+const TOL = 0.05                // ±5% standard tolerance (verified from all sources)
+const TIGHT = 0.03              // ±3% for "Perfect" variants
 
-// ── ZigZag Swing Point Finder ──────────────────────────────────────────────
-// deviation: minimum % price move to register a pivot (2.5% daily, 3% weekly)
-// maxPoints: how many recent swing points to keep (more = more pattern windows)
+// ── RSI Calculator (Wilder's Smoothing Method) ─────────────────────────────
 
-export function findSwingPoints(
-  candles: Candle[],
-  maxPoints = 12,
-  deviation = ZIGZAG_DEVIATION_DEFAULT,
-): SwingPoint[] {
-  if (candles.length < 10) return []
+export function computeRSI(candles: Candle[], period = 14): number {
+  if (candles.length < period + 2) return 50
 
-  const pivots: SwingPoint[] = []
-  let lastPivotPrice = candles[0].close
-  let lastPivotType: 'HIGH' | 'LOW' = candles[1].close > candles[0].close ? 'LOW' : 'HIGH'
-  let lastPivotIdx = 0
+  let avgGain = 0
+  let avgLoss = 0
 
-  for (let i = 1; i < candles.length; i++) {
-    const price = candles[i].close
-    const pctMove = Math.abs(price - lastPivotPrice) / lastPivotPrice
+  // Initial average (simple average of first `period` changes)
+  for (let i = 1; i <= period; i++) {
+    const change = candles[i].close - candles[i - 1].close
+    if (change > 0) avgGain += change
+    else avgLoss += Math.abs(change)
+  }
+  avgGain /= period
+  avgLoss /= period
 
-    if (pctMove >= deviation) {
-      if (price > lastPivotPrice && lastPivotType === 'LOW') {
-        pivots.push({ index: lastPivotIdx, price: lastPivotPrice, type: 'LOW', date: candles[lastPivotIdx].date })
-        lastPivotType = 'HIGH'
-        lastPivotPrice = price
-        lastPivotIdx = i
-      } else if (price < lastPivotPrice && lastPivotType === 'HIGH') {
-        pivots.push({ index: lastPivotIdx, price: lastPivotPrice, type: 'HIGH', date: candles[lastPivotIdx].date })
-        lastPivotType = 'LOW'
-        lastPivotPrice = price
-        lastPivotIdx = i
-      } else {
-        lastPivotPrice = price
-        lastPivotIdx = i
-      }
-    }
+  // Wilder's smoothing for subsequent bars
+  for (let i = period + 1; i < candles.length; i++) {
+    const change = candles[i].close - candles[i - 1].close
+    const gain = change > 0 ? change : 0
+    const loss = change < 0 ? Math.abs(change) : 0
+    avgGain = (avgGain * (period - 1) + gain) / period
+    avgLoss = (avgLoss * (period - 1) + loss) / period
   }
 
-  pivots.push({
-    index: candles.length - 1,
-    price: candles[candles.length - 1].close,
-    type: lastPivotType,
-    date: candles[candles.length - 1].date,
-  })
+  if (avgLoss === 0) return 100
+  const rs = avgGain / avgLoss
+  return +(100 - 100 / (1 + rs)).toFixed(2)
+}
 
-  return pivots.slice(-maxPoints)
+// ── N-Bar High/Low Pivot Detection ─────────────────────────────────────────
+// Equivalent to TradingView's ta.pivothigh(high, N, N) / ta.pivotlow(low, N, N)
+// A pivot HIGH at index i: candles[i].high is the highest of candles[i-N..i+N]
+// A pivot LOW  at index i: candles[i].low  is the lowest  of candles[i-N..i+N]
+
+function findPivotHighs(candles: Candle[], N: number): SwingPoint[] {
+  const pivots: SwingPoint[] = []
+  for (let i = N; i < candles.length - N; i++) {
+    const h = candles[i].high
+    let isPivot = true
+    for (let j = i - N; j <= i + N; j++) {
+      if (j !== i && candles[j].high >= h) { isPivot = false; break }
+    }
+    if (isPivot) {
+      pivots.push({ index: i, price: h, type: 'HIGH', date: candles[i].date })
+    }
+  }
+  return pivots
+}
+
+function findPivotLows(candles: Candle[], N: number): SwingPoint[] {
+  const pivots: SwingPoint[] = []
+  for (let i = N; i < candles.length - N; i++) {
+    const l = candles[i].low
+    let isPivot = true
+    for (let j = i - N; j <= i + N; j++) {
+      if (j !== i && candles[j].low <= l) { isPivot = false; break }
+    }
+    if (isPivot) {
+      pivots.push({ index: i, price: l, type: 'LOW', date: candles[i].date })
+    }
+  }
+  return pivots
+}
+
+// Merge pivot highs and lows into an alternating sequence.
+// When two pivots of the same type are adjacent, keep the more extreme one.
+function mergeAndAlternatePivots(highs: SwingPoint[], lows: SwingPoint[]): SwingPoint[] {
+  const all = [...highs, ...lows].sort((a, b) => a.index - b.index)
+  if (all.length === 0) return []
+
+  const result: SwingPoint[] = [all[0]]
+  for (let i = 1; i < all.length; i++) {
+    const last = result[result.length - 1]
+    const curr = all[i]
+    if (curr.type === last.type) {
+      // Same type: keep the more extreme pivot
+      if (curr.type === 'HIGH' && curr.price > last.price) result[result.length - 1] = curr
+      else if (curr.type === 'LOW' && curr.price < last.price) result[result.length - 1] = curr
+    } else {
+      result.push(curr)
+    }
+  }
+  return result
+}
+
+// Public: find alternating swing points using N-bar high/low lookback
+// N=5 is standard for daily charts; N=3 works well for weekly
+export function findSwingPoints(
+  candles: Candle[],
+  maxPoints = 30,
+  pivotN = 5,
+): SwingPoint[] {
+  if (candles.length < pivotN * 2 + 5) return []
+
+  const highs = findPivotHighs(candles, pivotN)
+  const lows = findPivotLows(candles, pivotN)
+  const merged = mergeAndAlternatePivots(highs, lows)
+  return merged.slice(-maxPoints)
 }
 
 // ── Ratio helpers ──────────────────────────────────────────────────────────
@@ -150,9 +199,9 @@ function inRange(value: number, lo: number, hi: number, tol = TOL): boolean {
 interface LegRatios {
   ab: number      // |AB| / |XA|
   bc: number      // |BC| / |AB|
-  cd: number      // |CD| / |BC|  (BC projection)
-  xad: number     // |D - A| / |XA|  (D as retrace of XA from A)
-  xaExt: number   // |D - X| / |XA|  (D distance beyond X)
+  cd: number      // |CD| / |BC|  (BC extension projection)
+  xad: number     // |D - A| / |XA|  (D retracement/extension from A)
+  xaExt: number   // |D - X| / |XA|  (how far D went past X)
 }
 
 function computeLegRatios(X: number, A: number, B: number, C: number, D: number): LegRatios {
@@ -171,26 +220,20 @@ function computeLegRatios(X: number, A: number, B: number, C: number, D: number)
 }
 
 // ── Pattern Validators ──────────────────────────────────────────────────────
-// All validators require C < A structurally (standard patterns).
-// Cypher and Shark have their own separate validators.
+// All tolerances ±5% (TOL=0.05), per Scott Carney and community implementations.
+// "Perfect" variants use ±3% (TIGHT=0.03).
 
-// GARTLEY
-// B = 0.58–<0.786 of XA (ideal 0.618)
-// C = 0.382–0.886 of AB (C does not exceed A)
-// D = 0.786 of XA from A
-// CD = 1.13–1.618 × BC (BC projection)
+// GARTLEY: B = 0.618 of XA, D = 0.786 of XA from A (inside XA range)
 function validateGartley(r: LegRatios): boolean {
   return (
-    inRange(r.ab, 0.58, 0.786) &&
-    r.ab < 0.786 * (1 + TOL) &&
+    near(r.ab, 0.618) &&
     inRange(r.bc, 0.382, 0.886) &&
     near(r.xad, 0.786) &&
-    inRange(r.cd, 1.13, 1.618)
+    inRange(r.cd, 1.27, 1.618)
   )
 }
 
-// PERFECT GARTLEY
-// B = 0.618 (exact), C = 0.618, D = 0.786 of XA, CD = 1.618 × BC
+// PERFECT GARTLEY: B=0.618 exact, D=0.786 exact, CD=1.618 exact
 function validatePerfectGartley(r: LegRatios): boolean {
   return (
     near(r.ab, 0.618, TIGHT) &&
@@ -200,23 +243,18 @@ function validatePerfectGartley(r: LegRatios): boolean {
   )
 }
 
-// BAT
-// B = 0.382–<0.618 of XA (ideal 0.5, MUST NOT equal or exceed 0.618)
-// C = 0.382–0.886 of AB
-// D = 0.886 of XA from A
-// CD = 1.618–2.618 × BC
+// BAT: B = 0.382–0.500 of XA (must be < 0.618), D = 0.886 of XA from A
 function validateBat(r: LegRatios): boolean {
   return (
-    inRange(r.ab, 0.382, 0.618) &&
-    r.ab < 0.618 &&                       // strict upper bound: NOT Gartley
+    inRange(r.ab, 0.382, 0.500) &&
+    r.ab < 0.618 &&                    // strict: B must not reach Gartley territory
     inRange(r.bc, 0.382, 0.886) &&
     near(r.xad, 0.886) &&
     inRange(r.cd, 1.618, 2.618)
   )
 }
 
-// PERFECT BAT
-// B = 0.50 (exact), C = 0.50–0.618, D = 0.886 of XA, CD = 2.0 × BC
+// PERFECT BAT: B=0.50 exact, D=0.886 exact, CD=2.0 exact
 function validatePerfectBat(r: LegRatios): boolean {
   return (
     near(r.ab, 0.50, TIGHT) &&
@@ -226,95 +264,80 @@ function validatePerfectBat(r: LegRatios): boolean {
   )
 }
 
-// ALT BAT (Alternate Bat)
-// B = 0.382 (strict, shallow retrace), C = 0.382–0.886
-// D = 1.13 extension of XA (xaExt = 0.13 since D = X - 0.13×XA)
-// CD = 1.618–2.618 × BC (similar to regular Bat)
+// ALT BAT: B = 0.382 (shallow retrace), D = 1.13 extension from A (xaExt = 0.13)
+// Note: "1.13 extension" means D = A - 1.13*XA = X - 0.13*XA → xaExt = 0.13
 function validateAltBat(r: LegRatios): boolean {
   return (
     near(r.ab, 0.382, TIGHT) &&
     inRange(r.bc, 0.382, 0.886) &&
-    near(r.xaExt, 0.13) &&               // FIXED: 0.13 not 1.13
-    inRange(r.cd, 1.618, 2.618)
-  )
-}
-
-// BUTTERFLY
-// B = 0.75–0.81 of XA (ideal 0.786)
-// C = 0.382–0.886 of AB (C does not exceed A)
-// D = 1.27 extension of XA: D = X - 0.27×XA → xaExt = 0.27  ← CRITICAL FIX
-// CD = 1.618–2.24 × BC (BC projection)
-function validateButterfly(r: LegRatios): boolean {
-  return (
-    inRange(r.ab, 0.75, 0.81) &&
-    inRange(r.bc, 0.382, 0.886) &&
-    near(r.xaExt, 0.27) &&               // FIXED: 0.27 not 1.27
-    inRange(r.cd, 1.618, 2.24)
-  )
-}
-
-// PERFECT BUTTERFLY
-// B = 0.786 (exact), C = 0.50–0.886, D = 1.27 ext (xaExt=0.27), CD = 1.618 × BC
-function validatePerfectButterfly(r: LegRatios): boolean {
-  return (
-    near(r.ab, 0.786, TIGHT) &&
-    inRange(r.bc, 0.50, 0.886) &&
-    near(r.xaExt, 0.27, TIGHT) &&        // FIXED: 0.27 not 1.27
-    near(r.cd, 1.618, TIGHT)
-  )
-}
-
-// CRAB
-// B = 0.382–0.618 of XA
-// C = 0.382–0.886 of AB (C does not exceed A)
-// D = 1.618 extension of XA: D = X - 0.618×XA → xaExt = 0.618  ← CRITICAL FIX
-// CD = 2.618–3.618 × BC (extreme BC projection)
-function validateCrab(r: LegRatios): boolean {
-  return (
-    inRange(r.ab, 0.382, 0.618) &&
-    inRange(r.bc, 0.382, 0.886) &&
-    near(r.xaExt, 0.618) &&              // FIXED: 0.618 not 1.618
-    inRange(r.cd, 2.618, 3.618)
-  )
-}
-
-// DEEP CRAB
-// B > 0.886 of XA (STRICTLY GREATER — very deep retrace close to X)
-// C = 0.382–0.886 of AB (C does not exceed A)
-// D = 1.618 extension of XA (same D target as Crab, xaExt = 0.618)  ← CRITICAL FIX
-// CD = 2.0–3.618 × BC (min 2.0 per table)
-function validateDeepCrab(r: LegRatios): boolean {
-  return (
-    r.ab > 0.886 * (1 - TIGHT) &&        // B strictly > 0.886 (only slight downward tolerance)
-    r.ab < 1.0 &&                          // B cannot reach X
-    inRange(r.bc, 0.382, 0.886) &&
-    near(r.xaExt, 0.618) &&              // FIXED: same D as Crab (0.618 not 1.618)
+    near(r.xaExt, 0.13) &&             // D is 0.13×XA beyond X (= 1.13 XA from A)
     inRange(r.cd, 2.0, 3.618)
   )
 }
 
-// PERFECT CRAB
-// B = 0.618 (exact), C = 0.50–0.618, D = 1.618 ext (xaExt=0.618), CD = 3.14 × BC
+// BUTTERFLY: B = 0.786 of XA (key signature), D = 1.27 extension from A (xaExt = 0.27)
+// FIXED: B must be near 0.786, not a range of 0.75-0.81
+function validateButterfly(r: LegRatios): boolean {
+  return (
+    near(r.ab, 0.786) &&               // FIXED: exact 0.786 ±5%, not 0.75-0.81
+    inRange(r.bc, 0.382, 0.886) &&
+    near(r.xaExt, 0.27) &&             // D = 0.27×XA beyond X (= 1.27 XA from A)
+    inRange(r.cd, 1.618, 2.618)
+  )
+}
+
+// PERFECT BUTTERFLY: B=0.786 tight, D=1.27 ext tight, CD=1.618 tight
+function validatePerfectButterfly(r: LegRatios): boolean {
+  return (
+    near(r.ab, 0.786, TIGHT) &&
+    inRange(r.bc, 0.50, 0.886) &&
+    near(r.xaExt, 0.27, TIGHT) &&
+    near(r.cd, 1.618, TIGHT)
+  )
+}
+
+// CRAB: B = 0.382–0.618, D = 1.618 extension from A (xaExt = 0.618)
+// FIXED CD range: 2.24–3.618 (was 2.618–3.618, missing the 2.24–2.618 band)
+function validateCrab(r: LegRatios): boolean {
+  return (
+    inRange(r.ab, 0.382, 0.618) &&
+    inRange(r.bc, 0.382, 0.886) &&
+    near(r.xaExt, 0.618) &&            // D = 0.618×XA beyond X (= 1.618 XA from A)
+    inRange(r.cd, 2.24, 3.618)         // FIXED: was 2.618-3.618
+  )
+}
+
+// DEEP CRAB: B = 0.886 (very deep retrace, key differentiator), D same as Crab
+function validateDeepCrab(r: LegRatios): boolean {
+  return (
+    near(r.ab, 0.886) &&               // B must be very near 0.886
+    r.ab < 1.0 &&                      // B cannot reach X
+    inRange(r.bc, 0.382, 0.886) &&
+    near(r.xaExt, 0.618) &&            // Same D as Crab
+    inRange(r.cd, 2.0, 3.618)
+  )
+}
+
+// PERFECT CRAB: B=0.618 exact, D=1.618 ext exact, CD=3.14 exact
 function validatePerfectCrab(r: LegRatios): boolean {
   return (
     near(r.ab, 0.618, TIGHT) &&
     inRange(r.bc, 0.50, 0.618) &&
-    near(r.xaExt, 0.618, TIGHT) &&       // FIXED
-    near(r.cd, 3.14, 0.08)              // CD = 3.14 (slightly wider tolerance for precision)
+    near(r.xaExt, 0.618, TIGHT) &&
+    near(r.cd, 3.14, 0.08)
   )
 }
 
 // ── CYPHER Validator ────────────────────────────────────────────────────────
-// STRUCTURALLY DIFFERENT: C goes BEYOND A (C > A for bullish, C < A for bearish)
-// B = 0.382–0.618 of XA
-// C = 1.13–1.414 extension of XA measured from X (XC/XA = 1.13–1.414)
-// D = 0.786 retracement of XC (NOT XA!)
+// Structurally unique: C goes BEYOND A (C > A for bullish, C < A for bearish)
+// BC/XA (XC/XA) = 1.272–1.414 (C extends 1.272–1.414× XA from X)
+// D = 0.786 retracement of the XC leg (NOT XA)
 
 interface CypherResult {
   valid: boolean
   ratioAB: number
-  ratioXC_XA: number   // XC / XA  (how far C extends beyond X relative to XA)
-  ratioD_XC: number    // |D-C| / XC  (D retracement of XC)
+  ratioXC_XA: number   // |XC| / |XA| — how far C extends past X relative to XA
+  ratioD_XC: number    // |D - C| / |XC| — D retracement of XC
 }
 
 function validateCypher(
@@ -333,9 +356,9 @@ function validateCypher(
 
   const valid = (
     cExceedsA &&
-    inRange(ratioAB, 0.382, 0.618) &&      // B = 0.382–0.618 of XA
-    inRange(ratioXC_XA, 1.13, 1.414) &&    // FIXED: 1.13–1.414 (was 1.272–1.414)
-    near(ratioD_XC, 0.786)                 // D = 0.786 of XC
+    inRange(ratioAB, 0.382, 0.618) &&
+    inRange(ratioXC_XA, 1.272, 1.414) &&   // C extends 1.272–1.414× XA from X
+    near(ratioD_XC, 0.786)                  // D = 0.786 of XC
   )
 
   return { valid, ratioAB, ratioXC_XA, ratioD_XC }
@@ -343,13 +366,13 @@ function validateCypher(
 
 // ── SHARK Validator ─────────────────────────────────────────────────────────
 // 5-point pattern: O, X, A, B, C — C IS the PRZ (no D point)
-// BULLISH Shark: O=HIGH, X=LOW, A=HIGH, B=LOW(below X!), C=HIGH(PRZ)
-// BEARISH Shark: O=LOW, X=HIGH, A=LOW, B=HIGH(above X!), C=LOW(PRZ)
+// BULLISH Shark:  O=HIGH, X=LOW, A=HIGH, B=LOW(below X!), C=HIGH(PRZ)
+// BEARISH Shark:  O=LOW, X=HIGH, A=LOW, B=HIGH(above X!), C=LOW(PRZ)
 // B goes BEYOND X (key structural signature of Shark)
 // Ratios:
-//   XA/OX = 0.382–0.618 (XA retraces OX)
+//   XA/OX = 0.382–0.618 (XA leg retraces OX)
 //   AB/XA = 1.13–1.618 (AB extends XA, going beyond X)
-//   C/OX  = 0.886 (C retraces OX from O — the PRZ point)
+//   C/OX  = 0.886–1.13 (C retraces OX from O — the PRZ point)
 
 interface SharkResult {
   valid: boolean
@@ -367,24 +390,20 @@ function validateShark(O: number, X: number, A: number, B: number, C: number, bu
   const ratioAB_XA = XA > 0 ? AB / XA : 0
   const ratioC_OX = OX > 0 ? Math.abs(C - O) / OX : 0
 
-  // Structural: B must go beyond X (that's what makes it a Shark)
+  // Structural: B must go beyond X
   const bBeyondX = bullish ? B < X : B > X
 
   const valid = (
     bBeyondX &&
     inRange(ratioXA_OX, 0.382, 0.618) &&
     inRange(ratioAB_XA, 1.13, 1.618) &&
-    near(ratioC_OX, 0.886, 0.07)
+    inRange(ratioC_OX, 0.886, 1.13)    // FIXED: 0.886-1.13 range (was 0.886 ±7%)
   )
 
   return { valid, ratioXA_OX, ratioAB_XA, ratioC_OX }
 }
 
 // ── PRZ Calculator ──────────────────────────────────────────────────────────
-// Computes the Potential Reversal Zone price band.
-// proj1 = XA-based primary projection
-// proj2 = AB=CD secondary confluence
-// PRZ = band around the midpoint of proj1 and proj2
 
 function computePRZ(
   X: number, A: number, B: number, C: number,
@@ -398,21 +417,16 @@ function computePRZ(
   let proj1 = 0  // primary XA-based projection
   let proj2 = 0  // secondary AB=CD projection
 
-  // All projections use the formula:
-  //   - "D at R retracement of XA from A": proj = A ± R×XA (bullish: A - R×XA)
-  //   - "D at 1.xx extension beyond X":    proj = X ∓ ext×XA (bullish: X - ext×XA)
-  //     where ext = (XA_extension - 1.0), e.g. 1.27 ext → D = X - 0.27×XA
-
   if (pattern === 'Gartley' || pattern === 'Perfect Gartley') {
     proj1 = bullish ? A - 0.786 * XA : A + 0.786 * XA
   } else if (pattern === 'Bat' || pattern === 'Perfect Bat') {
     proj1 = bullish ? A - 0.886 * XA : A + 0.886 * XA
   } else if (pattern === 'Alt Bat') {
-    proj1 = bullish ? X - 0.13 * XA : X + 0.13 * XA
+    proj1 = bullish ? A - 1.13 * XA : A + 1.13 * XA   // D = 1.13 XA from A = X ∓ 0.13 XA
   } else if (pattern === 'Butterfly' || pattern === 'Perfect Butterfly') {
-    proj1 = bullish ? X - 0.27 * XA : X + 0.27 * XA
+    proj1 = bullish ? A - 1.27 * XA : A + 1.27 * XA   // D = 1.27 XA from A = X ∓ 0.27 XA
   } else if (pattern === 'Crab' || pattern === 'Deep Crab' || pattern === 'Perfect Crab') {
-    proj1 = bullish ? X - 0.618 * XA : X + 0.618 * XA
+    proj1 = bullish ? A - 1.618 * XA : A + 1.618 * XA // D = 1.618 XA from A = X ∓ 0.618 XA
   } else if (pattern === 'AB=CD') {
     proj1 = bullish ? C - AB : C + AB
   } else if (pattern === 'Cypher') {
@@ -423,8 +437,7 @@ function computePRZ(
 
   // AB=CD secondary confluence (C ± AB)
   proj2 = bullish ? C - AB : C + AB
-  // No secondary for Cypher and Shark
-  if (pattern === 'Cypher' || pattern === 'Shark') proj2 = proj1
+  if (pattern === 'Cypher' || pattern === 'Shark') proj2 = proj1  // no secondary
 
   const przMid = (proj1 + proj2) / 2
   const spread = Math.abs(proj1 - proj2) / 2 + Math.abs(przMid) * 0.005
@@ -435,7 +448,7 @@ function computePRZ(
   }
 }
 
-// ── Helper to push a detected pattern ──────────────────────────────────────
+// ── Helper to build a pattern result ───────────────────────────────────────
 
 function makePattern(
   name: HarmonicPatternName,
@@ -445,8 +458,11 @@ function makePattern(
   przLow: number, przHigh: number, przMid: number,
   currentPrice: number,
   status: 'FORMING' | 'COMPLETED',
+  rsi: number,
 ): HarmonicPattern {
   const distFromD = przMid !== 0 ? ((currentPrice - przMid) / przMid) * 100 : 0
+  const rsiBullish = direction === 'Bullish' && rsi <= 40
+  const rsiBearish = direction === 'Bearish' && rsi >= 60
   return {
     name, direction, X, A, B, C, D: przMid,
     przLow, przHigh,
@@ -456,7 +472,10 @@ function makePattern(
     ratioXAD: +ratioXAD.toFixed(3),
     distFromD: +distFromD.toFixed(2),
     status,
-    description: `${direction} ${name}: AB=${(ratioAB*100).toFixed(0)}% XA, D-target ₹${przMid.toFixed(1)}, PRZ ₹${przLow.toFixed(1)}–₹${przHigh.toFixed(1)}`,
+    description: `${direction} ${name}: AB=${(ratioAB * 100).toFixed(0)}% XA, D-target ₹${przMid.toFixed(1)}, PRZ ₹${przLow.toFixed(1)}–₹${przHigh.toFixed(1)}`,
+    rsi: +rsi.toFixed(1),
+    rsiBullish,
+    rsiBearish,
   }
 }
 
@@ -464,13 +483,14 @@ function makePattern(
 
 export function detectHarmonicPatterns(
   candles: Candle[],
-  deviation = ZIGZAG_DEVIATION_DEFAULT,
-  maxPivots = 15,
+  pivotN = 5,          // N-bar lookback for pivot detection (5 for daily, 3 for weekly)
+  maxPivots = 30,      // max pivot points to keep (more = more pattern windows)
 ): HarmonicPattern[] {
-  if (candles.length < 20) return []
+  if (candles.length < 30) return []
 
+  const rsi = computeRSI(candles, 14)
   const results: HarmonicPattern[] = []
-  const pivots = findSwingPoints(candles, maxPivots, deviation)
+  const pivots = findSwingPoints(candles, maxPivots, pivotN)
   if (pivots.length < 5) return []
 
   const currentPrice = candles[candles.length - 1].close
@@ -480,116 +500,114 @@ export function detectHarmonicPatterns(
 
     // =========================================================================
     // BLOCK A: LOW-HIGH-LOW-HIGH sequence
-    //   → Standard Bullish XABCD (X=P0, A=P1, B=P2, C=P3, D=P4/current)
-    //   → Bullish Cypher (same mapping but C > A)
-    //   → Bearish Shark (O=P0, X=P1, A=P2, B=P3(HIGH!>X), C=P4)
+    //   → Standard Bullish XABCD: X=P0(LOW), A=P1(HIGH), B=P2(LOW), C=P3(HIGH)
+    //   → Bullish Cypher: C > A (C exceeds A)
+    //   → Bearish Shark: handled in BLOCK C
     // =========================================================================
     if (P0.type === 'LOW' && P1.type === 'HIGH' && P2.type === 'LOW' && P3.type === 'HIGH') {
-      const X = P0.price, A = P1.price, B = P2.price, C = P3.price
+      const X = P0.price  // actual LOW price
+      const A = P1.price  // actual HIGH price
+      const B = P2.price  // actual LOW price
+      const C = P3.price  // actual HIGH price
+
+      // D: use P4 LOW price if confirmed, else current close (forming)
       const D = P4.type === 'LOW' ? P4.price : currentPrice
       const status: 'FORMING' | 'COMPLETED' = P4.type === 'LOW' ? 'COMPLETED' : 'FORMING'
 
-      // --- Standard Bullish: B > X and C < A (C does not exceed A) ---
+      // ─── Standard Bullish: B > X (higher low) and C < A (lower high) ───
       if (B > X && C < A) {
         const r = computeLegRatios(X, A, B, C, D)
         const AB = Math.abs(B - A)
         const CD = Math.abs(D - C)
         const abcdRatio = AB > 0 ? CD / AB : 0
 
-        // AB=CD
         if (near(abcdRatio, 1.0, 0.07)) {
           const prz = computePRZ(X, A, B, C, 'AB=CD', true)
-          results.push(makePattern('AB=CD', 'Bullish', X, A, B, C, r.ab, r.bc, abcdRatio, r.xad, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status))
+          results.push(makePattern('AB=CD', 'Bullish', X, A, B, C, r.ab, r.bc, abcdRatio, r.xad, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status, rsi))
         }
         if (validateGartley(r)) {
           const prz = computePRZ(X, A, B, C, 'Gartley', true)
-          results.push(makePattern('Gartley', 'Bullish', X, A, B, C, r.ab, r.bc, r.cd, r.xad, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status))
+          results.push(makePattern('Gartley', 'Bullish', X, A, B, C, r.ab, r.bc, r.cd, r.xad, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status, rsi))
         }
         if (validatePerfectGartley(r)) {
           const prz = computePRZ(X, A, B, C, 'Perfect Gartley', true)
-          results.push(makePattern('Perfect Gartley', 'Bullish', X, A, B, C, r.ab, r.bc, r.cd, r.xad, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status))
+          results.push(makePattern('Perfect Gartley', 'Bullish', X, A, B, C, r.ab, r.bc, r.cd, r.xad, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status, rsi))
         }
         if (validateBat(r)) {
           const prz = computePRZ(X, A, B, C, 'Bat', true)
-          results.push(makePattern('Bat', 'Bullish', X, A, B, C, r.ab, r.bc, r.cd, r.xad, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status))
+          results.push(makePattern('Bat', 'Bullish', X, A, B, C, r.ab, r.bc, r.cd, r.xad, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status, rsi))
         }
         if (validatePerfectBat(r)) {
           const prz = computePRZ(X, A, B, C, 'Perfect Bat', true)
-          results.push(makePattern('Perfect Bat', 'Bullish', X, A, B, C, r.ab, r.bc, r.cd, r.xad, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status))
+          results.push(makePattern('Perfect Bat', 'Bullish', X, A, B, C, r.ab, r.bc, r.cd, r.xad, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status, rsi))
         }
         if (validateAltBat(r)) {
           const prz = computePRZ(X, A, B, C, 'Alt Bat', true)
-          results.push(makePattern('Alt Bat', 'Bullish', X, A, B, C, r.ab, r.bc, r.cd, r.xaExt, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status))
+          results.push(makePattern('Alt Bat', 'Bullish', X, A, B, C, r.ab, r.bc, r.cd, r.xaExt, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status, rsi))
         }
         if (validateButterfly(r)) {
           const prz = computePRZ(X, A, B, C, 'Butterfly', true)
-          results.push(makePattern('Butterfly', 'Bullish', X, A, B, C, r.ab, r.bc, r.cd, r.xaExt, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status))
+          results.push(makePattern('Butterfly', 'Bullish', X, A, B, C, r.ab, r.bc, r.cd, r.xaExt, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status, rsi))
         }
         if (validatePerfectButterfly(r)) {
           const prz = computePRZ(X, A, B, C, 'Perfect Butterfly', true)
-          results.push(makePattern('Perfect Butterfly', 'Bullish', X, A, B, C, r.ab, r.bc, r.cd, r.xaExt, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status))
+          results.push(makePattern('Perfect Butterfly', 'Bullish', X, A, B, C, r.ab, r.bc, r.cd, r.xaExt, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status, rsi))
         }
         if (validateCrab(r)) {
           const prz = computePRZ(X, A, B, C, 'Crab', true)
-          results.push(makePattern('Crab', 'Bullish', X, A, B, C, r.ab, r.bc, r.cd, r.xaExt, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status))
+          results.push(makePattern('Crab', 'Bullish', X, A, B, C, r.ab, r.bc, r.cd, r.xaExt, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status, rsi))
         }
         if (validateDeepCrab(r)) {
           const prz = computePRZ(X, A, B, C, 'Deep Crab', true)
-          results.push(makePattern('Deep Crab', 'Bullish', X, A, B, C, r.ab, r.bc, r.cd, r.xaExt, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status))
+          results.push(makePattern('Deep Crab', 'Bullish', X, A, B, C, r.ab, r.bc, r.cd, r.xaExt, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status, rsi))
         }
         if (validatePerfectCrab(r)) {
           const prz = computePRZ(X, A, B, C, 'Perfect Crab', true)
-          results.push(makePattern('Perfect Crab', 'Bullish', X, A, B, C, r.ab, r.bc, r.cd, r.xaExt, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status))
+          results.push(makePattern('Perfect Crab', 'Bullish', X, A, B, C, r.ab, r.bc, r.cd, r.xaExt, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status, rsi))
         }
       }
 
-      // --- Bullish Cypher: B > X and C > A (C extends BEYOND A) ---
-      // FIXED: Previously blocked by early `continue`. Now checked separately.
+      // ─── Bullish Cypher: B > X and C > A (C goes BEYOND A) ───
       if (B > X && C > A) {
         const cypherR = validateCypher(X, A, B, C, D, true)
         if (cypherR.valid) {
           const XC = Math.abs(C - X)
           const przMid = C - 0.786 * XC
           const przSpread = Math.abs(przMid) * 0.012
+          const distFromD = przMid !== 0 ? ((currentPrice - przMid) / przMid) * 100 : 0
           results.push({
             name: 'Cypher', direction: 'Bullish',
             X, A, B, C, D: przMid,
-            przLow: przMid - przSpread,
-            przHigh: przMid + przSpread,
+            przLow: przMid - przSpread, przHigh: przMid + przSpread,
             ratioAB: +cypherR.ratioAB.toFixed(3),
             ratioBC: +cypherR.ratioXC_XA.toFixed(3),
             ratioCD: +cypherR.ratioD_XC.toFixed(3),
             ratioXAD: +cypherR.ratioXC_XA.toFixed(3),
-            distFromD: +((currentPrice - przMid) / przMid * 100).toFixed(2),
-            status,
-            description: `Bullish Cypher: C=${(cypherR.ratioXC_XA*100).toFixed(0)}% ext XA (beyond A), D=0.786 of XC. PRZ ₹${(przMid-przSpread).toFixed(1)}–₹${(przMid+przSpread).toFixed(1)}`,
+            distFromD: +distFromD.toFixed(2), status,
+            description: `Bullish Cypher: C=${(cypherR.ratioXC_XA * 100).toFixed(0)}% ext XA, D=0.786 of XC. PRZ ₹${(przMid - przSpread).toFixed(1)}–₹${(przMid + przSpread).toFixed(1)}`,
+            rsi: +rsi.toFixed(1), rsiBullish: rsi <= 40, rsiBearish: false,
           })
         }
-      }
-
-      // --- Bearish Shark: O=P0, X=P1(LOW), A=P2(HIGH), B=P3(LOW, B<X!) ---
-      // B=P3 is a LOW. For bearish Shark, B goes BELOW X(P1=LOW): P3.price < P1.price
-      if (P3.price < P1.price && P4.type === 'HIGH') {
-        const shR = validateShark(P0.price, P1.price, P2.price, P3.price, P4.price, false)
-        // Wait: bearish shark has O=LOW, X=HIGH, A=LOW, B=HIGH(>X), C=LOW(PRZ)
-        // But here P0=LOW, P1=HIGH, P2=LOW, P3=HIGH, P4=LOW
-        // If P3 > P1 this could be bearish Shark (B=P3=HIGH above X=P1=HIGH)
-        // But P3 is HIGH here, not LOW - check is wrong above. Skip, handled in BLOCK B.
       }
     }
 
     // =========================================================================
     // BLOCK B: HIGH-LOW-HIGH-LOW sequence
-    //   → Standard Bearish XABCD (X=P0, A=P1, B=P2, C=P3, D=P4/current)
-    //   → Bearish Cypher (same mapping but C < A)
-    //   → Bullish Shark (O=P0, X=P1, A=P2, B=P3(LOW!<X), C=P4)
+    //   → Standard Bearish XABCD: X=P0(HIGH), A=P1(LOW), B=P2(HIGH), C=P3(LOW)
+    //   → Bearish Cypher: C < A (C goes below A)
+    //   → Bullish Shark: B goes below X
     // =========================================================================
     if (P0.type === 'HIGH' && P1.type === 'LOW' && P2.type === 'HIGH' && P3.type === 'LOW') {
-      const X = P0.price, A = P1.price, B = P2.price, C = P3.price
+      const X = P0.price  // actual HIGH price
+      const A = P1.price  // actual LOW price
+      const B = P2.price  // actual HIGH price
+      const C = P3.price  // actual LOW price
+
+      // D: use P4 HIGH price if confirmed, else current close (forming)
       const D = P4.type === 'HIGH' ? P4.price : currentPrice
       const status: 'FORMING' | 'COMPLETED' = P4.type === 'HIGH' ? 'COMPLETED' : 'FORMING'
 
-      // --- Standard Bearish: B < X and C > A (C does not exceed A downward) ---
+      // ─── Standard Bearish: B < X (lower high) and C > A (higher low) ───
       if (B < X && C > A) {
         const r = computeLegRatios(X, A, B, C, D)
         const AB = Math.abs(B - A)
@@ -598,80 +616,81 @@ export function detectHarmonicPatterns(
 
         if (near(abcdRatio, 1.0, 0.07)) {
           const prz = computePRZ(X, A, B, C, 'AB=CD', false)
-          results.push(makePattern('AB=CD', 'Bearish', X, A, B, C, r.ab, r.bc, abcdRatio, r.xad, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status))
+          results.push(makePattern('AB=CD', 'Bearish', X, A, B, C, r.ab, r.bc, abcdRatio, r.xad, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status, rsi))
         }
         if (validateGartley(r)) {
           const prz = computePRZ(X, A, B, C, 'Gartley', false)
-          results.push(makePattern('Gartley', 'Bearish', X, A, B, C, r.ab, r.bc, r.cd, r.xad, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status))
+          results.push(makePattern('Gartley', 'Bearish', X, A, B, C, r.ab, r.bc, r.cd, r.xad, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status, rsi))
         }
         if (validatePerfectGartley(r)) {
           const prz = computePRZ(X, A, B, C, 'Perfect Gartley', false)
-          results.push(makePattern('Perfect Gartley', 'Bearish', X, A, B, C, r.ab, r.bc, r.cd, r.xad, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status))
+          results.push(makePattern('Perfect Gartley', 'Bearish', X, A, B, C, r.ab, r.bc, r.cd, r.xad, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status, rsi))
         }
         if (validateBat(r)) {
           const prz = computePRZ(X, A, B, C, 'Bat', false)
-          results.push(makePattern('Bat', 'Bearish', X, A, B, C, r.ab, r.bc, r.cd, r.xad, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status))
+          results.push(makePattern('Bat', 'Bearish', X, A, B, C, r.ab, r.bc, r.cd, r.xad, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status, rsi))
         }
         if (validatePerfectBat(r)) {
           const prz = computePRZ(X, A, B, C, 'Perfect Bat', false)
-          results.push(makePattern('Perfect Bat', 'Bearish', X, A, B, C, r.ab, r.bc, r.cd, r.xad, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status))
+          results.push(makePattern('Perfect Bat', 'Bearish', X, A, B, C, r.ab, r.bc, r.cd, r.xad, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status, rsi))
         }
         if (validateAltBat(r)) {
           const prz = computePRZ(X, A, B, C, 'Alt Bat', false)
-          results.push(makePattern('Alt Bat', 'Bearish', X, A, B, C, r.ab, r.bc, r.cd, r.xaExt, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status))
+          results.push(makePattern('Alt Bat', 'Bearish', X, A, B, C, r.ab, r.bc, r.cd, r.xaExt, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status, rsi))
         }
         if (validateButterfly(r)) {
           const prz = computePRZ(X, A, B, C, 'Butterfly', false)
-          results.push(makePattern('Butterfly', 'Bearish', X, A, B, C, r.ab, r.bc, r.cd, r.xaExt, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status))
+          results.push(makePattern('Butterfly', 'Bearish', X, A, B, C, r.ab, r.bc, r.cd, r.xaExt, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status, rsi))
         }
         if (validatePerfectButterfly(r)) {
           const prz = computePRZ(X, A, B, C, 'Perfect Butterfly', false)
-          results.push(makePattern('Perfect Butterfly', 'Bearish', X, A, B, C, r.ab, r.bc, r.cd, r.xaExt, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status))
+          results.push(makePattern('Perfect Butterfly', 'Bearish', X, A, B, C, r.ab, r.bc, r.cd, r.xaExt, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status, rsi))
         }
         if (validateCrab(r)) {
           const prz = computePRZ(X, A, B, C, 'Crab', false)
-          results.push(makePattern('Crab', 'Bearish', X, A, B, C, r.ab, r.bc, r.cd, r.xaExt, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status))
+          results.push(makePattern('Crab', 'Bearish', X, A, B, C, r.ab, r.bc, r.cd, r.xaExt, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status, rsi))
         }
         if (validateDeepCrab(r)) {
           const prz = computePRZ(X, A, B, C, 'Deep Crab', false)
-          results.push(makePattern('Deep Crab', 'Bearish', X, A, B, C, r.ab, r.bc, r.cd, r.xaExt, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status))
+          results.push(makePattern('Deep Crab', 'Bearish', X, A, B, C, r.ab, r.bc, r.cd, r.xaExt, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status, rsi))
         }
         if (validatePerfectCrab(r)) {
           const prz = computePRZ(X, A, B, C, 'Perfect Crab', false)
-          results.push(makePattern('Perfect Crab', 'Bearish', X, A, B, C, r.ab, r.bc, r.cd, r.xaExt, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status))
+          results.push(makePattern('Perfect Crab', 'Bearish', X, A, B, C, r.ab, r.bc, r.cd, r.xaExt, prz.przLow, prz.przHigh, prz.przMid, currentPrice, status, rsi))
         }
       }
 
-      // --- Bearish Cypher: B < X and C < A (C extends BEYOND A downward) ---
+      // ─── Bearish Cypher: B < X and C < A (C goes below A) ───
       if (B < X && C < A) {
         const cypherR = validateCypher(X, A, B, C, D, false)
         if (cypherR.valid) {
           const XC = Math.abs(C - X)
           const przMid = C + 0.786 * XC
           const przSpread = Math.abs(przMid) * 0.012
+          const distFromD = przMid !== 0 ? ((currentPrice - przMid) / przMid) * 100 : 0
           results.push({
             name: 'Cypher', direction: 'Bearish',
             X, A, B, C, D: przMid,
-            przLow: przMid - przSpread,
-            przHigh: przMid + przSpread,
+            przLow: przMid - przSpread, przHigh: przMid + przSpread,
             ratioAB: +cypherR.ratioAB.toFixed(3),
             ratioBC: +cypherR.ratioXC_XA.toFixed(3),
             ratioCD: +cypherR.ratioD_XC.toFixed(3),
             ratioXAD: +cypherR.ratioXC_XA.toFixed(3),
-            distFromD: +((currentPrice - przMid) / przMid * 100).toFixed(2),
-            status,
-            description: `Bearish Cypher: C=${(cypherR.ratioXC_XA*100).toFixed(0)}% ext XA (beyond A), D=0.786 of XC. PRZ ₹${(przMid-przSpread).toFixed(1)}–₹${(przMid+przSpread).toFixed(1)}`,
+            distFromD: +distFromD.toFixed(2), status,
+            description: `Bearish Cypher: C=${(cypherR.ratioXC_XA * 100).toFixed(0)}% ext XA, D=0.786 of XC. PRZ ₹${(przMid - przSpread).toFixed(1)}–₹${(przMid + przSpread).toFixed(1)}`,
+            rsi: +rsi.toFixed(1), rsiBullish: false, rsiBearish: rsi >= 60,
           })
         }
       }
 
-      // --- Bullish Shark: O=P0(HIGH), X=P1(LOW), A=P2(HIGH), B=P3(LOW, B<X!) ---
-      // B must go BELOW X (P3.price < P1.price) — this is what makes it a Shark
+      // ─── Bullish Shark: O=P0(HIGH), X=P1(LOW), A=P2(HIGH), B=P3(LOW, below X) ───
+      // P3 is a LOW. For bullish Shark: B (P3) goes below X (P1=LOW). P3.price < P1.price.
       if (P3.price < P1.price && P4.type === 'HIGH') {
         const shR = validateShark(P0.price, P1.price, P2.price, P3.price, P4.price, true)
         if (shR.valid) {
           const przMid = P4.price
-          const przSpread = Math.abs(przMid) * 0.012
+          const przSpread = Math.abs(przMid) * 0.015
+          const distFromD = przMid !== 0 ? ((currentPrice - przMid) / przMid) * 100 : 0
           results.push({
             name: 'Shark', direction: 'Bullish',
             X: P0.price, A: P1.price, B: P2.price, C: P3.price, D: przMid,
@@ -680,9 +699,10 @@ export function detectHarmonicPatterns(
             ratioBC: +shR.ratioAB_XA.toFixed(3),
             ratioCD: +shR.ratioC_OX.toFixed(3),
             ratioXAD: +shR.ratioC_OX.toFixed(3),
-            distFromD: +((currentPrice - przMid) / przMid * 100).toFixed(2),
+            distFromD: +distFromD.toFixed(2),
             status: 'COMPLETED',
-            description: `Bullish Shark (5-pt O-X-A-B-C): C=PRZ at 0.886 of OX. PRZ ₹${(przMid-przSpread).toFixed(1)}–₹${(przMid+przSpread).toFixed(1)}`,
+            description: `Bullish Shark (5-pt O-X-A-B-C): C=PRZ at ${(shR.ratioC_OX * 100).toFixed(0)}% of OX. PRZ ₹${(przMid - przSpread).toFixed(1)}–₹${(przMid + przSpread).toFixed(1)}`,
+            rsi: +rsi.toFixed(1), rsiBullish: rsi <= 40, rsiBearish: false,
           })
         }
       }
@@ -690,16 +710,17 @@ export function detectHarmonicPatterns(
 
     // =========================================================================
     // BLOCK C: Bearish Shark
-    //   Sequence LOW-HIGH-LOW-HIGH-LOW (same as bullish XABCD)
-    //   O=P0(LOW), X=P1(HIGH), A=P2(LOW), B=P3(HIGH, B>X!), C=P4(LOW=PRZ)
+    //   Sequence: LOW-HIGH-LOW-HIGH-LOW
+    //   O=P0(LOW), X=P1(HIGH), A=P2(LOW), B=P3(HIGH, above X!), C=P4(LOW=PRZ)
     // =========================================================================
     if (P0.type === 'LOW' && P1.type === 'HIGH' && P2.type === 'LOW' && P3.type === 'HIGH') {
-      // B=P3 is HIGH. For bearish Shark, B > X: P3.price > P1.price
+      // B=P3 is HIGH. For bearish Shark, B > X (P3.price > P1.price)
       if (P3.price > P1.price && P4.type === 'LOW') {
         const shR = validateShark(P0.price, P1.price, P2.price, P3.price, P4.price, false)
         if (shR.valid) {
           const przMid = P4.price
-          const przSpread = Math.abs(przMid) * 0.012
+          const przSpread = Math.abs(przMid) * 0.015
+          const distFromD = przMid !== 0 ? ((currentPrice - przMid) / przMid) * 100 : 0
           results.push({
             name: 'Shark', direction: 'Bearish',
             X: P0.price, A: P1.price, B: P2.price, C: P3.price, D: przMid,
@@ -708,16 +729,17 @@ export function detectHarmonicPatterns(
             ratioBC: +shR.ratioAB_XA.toFixed(3),
             ratioCD: +shR.ratioC_OX.toFixed(3),
             ratioXAD: +shR.ratioC_OX.toFixed(3),
-            distFromD: +((currentPrice - przMid) / przMid * 100).toFixed(2),
+            distFromD: +distFromD.toFixed(2),
             status: 'COMPLETED',
-            description: `Bearish Shark (5-pt O-X-A-B-C): C=PRZ at 0.886 of OX. PRZ ₹${(przMid-przSpread).toFixed(1)}–₹${(przMid+przSpread).toFixed(1)}`,
+            description: `Bearish Shark (5-pt O-X-A-B-C): C=PRZ at ${(shR.ratioC_OX * 100).toFixed(0)}% of OX. PRZ ₹${(przMid - przSpread).toFixed(1)}–₹${(przMid + przSpread).toFixed(1)}`,
+            rsi: +rsi.toFixed(1), rsiBullish: false, rsiBearish: rsi >= 60,
           })
         }
       }
     }
   }
 
-  // Deduplicate: keep the instance of each pattern closest to current price
+  // Deduplicate: per pattern+direction, keep the instance closest to current price
   const seen = new Map<string, HarmonicPattern>()
   for (const p of results) {
     const key = `${p.name}-${p.direction}`
@@ -727,7 +749,7 @@ export function detectHarmonicPatterns(
     }
   }
 
-  // Sort: FORMING first (approaching PRZ = most actionable), then by proximity
+  // Sort: FORMING first (actively approaching PRZ = most actionable), then by proximity
   return Array.from(seen.values()).sort((a, b) => {
     if (a.status === 'FORMING' && b.status !== 'FORMING') return -1
     if (b.status === 'FORMING' && a.status !== 'FORMING') return 1

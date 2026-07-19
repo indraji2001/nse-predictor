@@ -10,18 +10,18 @@ export const maxDuration = 60
 // Standard harmonic timeframe mapping:
 //   Daily  (1D chart) → Short Term trades (5–15 days) → fetch 1yr daily
 //   Weekly (1W chart) → Mid/Long Term trades (15–60D+) → fetch 2yr daily, resample→weekly
-const CHART_CONFIGS: Record<string, { yahooRange: string; interval: string; deviation: number; label: string; suitableFor: string }> = {
+const CHART_CONFIGS: Record<string, { yahooRange: string; interval: string; pivotN: number; label: string; suitableFor: string }> = {
   DAILY: {
-    yahooRange: '2y',          // 2 years of daily data for richer pivot history
+    yahooRange: '5y',    // 5 years = ~1260 daily candles — rich pivot history
     interval: '1d',
-    deviation: 0.015,          // 1.5% pivot threshold — captures more real swings on Indian stocks
+    pivotN: 5,           // 5-bar high/low lookback (equivalent to TradingView ta.pivothigh(5,5))
     label: 'Daily (1D)',
     suitableFor: 'Short Term (5–15 days)',
   },
   WEEKLY: {
-    yahooRange: '3y',          // 3 years of weekly data
+    yahooRange: '3y',    // 3 years = ~156 weekly bars
     interval: '1wk',
-    deviation: 0.020,          // 2.0% pivot threshold on weekly candles
+    pivotN: 3,           // 3-bar high/low lookback (suitable for weekly candles)
     label: 'Weekly (1W)',
     suitableFor: 'Mid Term (15–60 days) & Long Term (60+ days)',
   },
@@ -231,9 +231,9 @@ export async function GET(req: NextRequest) {
         return // skip — synthetic data won't have real harmonic patterns
       }
 
-      // Detect patterns with timeframe-appropriate deviation
-      // Use 20 pivot windows for better pattern detection coverage
-      const patterns = detectHarmonicPatterns(candles, cfg.deviation, 20)
+      // Detect patterns using N-bar high/low pivot detection
+      // Use 30 pivot windows for maximum pattern coverage
+      const patterns = detectHarmonicPatterns(candles, cfg.pivotN, 30)
       if (patterns.length === 0) return
 
       const currentPrice = candles[candles.length - 1].close
