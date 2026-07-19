@@ -14,23 +14,23 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "NSE Predictor — BTST · Short-term · Midterm",
+  title: "Indrajit's Smart NSE Predictor — BTST · Short-term · Midterm",
   description: "Professional multi-factor technical predictor for NSE stocks. Run daily at 8 PM to get BUY recommendations with entry, target, stop loss, and confidence score for the next trading day.",
   keywords: ["NSE", "BTST", "stock predictor", "technical analysis", "Indian stock market", "trading"],
-  authors: [{ name: "NSE Predictor" }],
+  authors: [{ name: "Indrajit's Smart NSE Predictor" }],
   icons: {
     icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
   },
   openGraph: {
-    title: "NSE Predictor",
+    title: "Indrajit's Smart NSE Predictor",
     description: "BTST, Short-term & Midterm predictions for NSE stocks",
     url: "https://chat.z.ai",
-    siteName: "NSE Predictor",
+    siteName: "Indrajit's Smart NSE Predictor",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "NSE Predictor",
+    title: "Indrajit's Smart NSE Predictor",
     description: "BTST, Short-term & Midterm predictions for NSE stocks",
   },
 };

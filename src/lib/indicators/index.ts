@@ -8,6 +8,7 @@
 //     be computed yet are filled with `NaN`.
 
 import { Candle } from '../stocks/engine'
+import { detectHarmonicPatterns, HarmonicPattern } from './harmonics'
 
 export function closes(candles: Candle[]): number[] {
   return candles.map((c) => c.close)
@@ -507,6 +508,165 @@ export interface IndicatorSnapshot {
   ema200Rising: boolean
   // Distance from 250-day high (how extended the stock is from its peak)
   pctFrom250High: number
+  fib?: {
+    high: number
+    low: number
+    fib236: number
+    fib382: number
+    fib500: number
+    fib618: number
+    fib786: number
+    closestLevel: string
+    distancePct: number
+  }
+  fibConfluence?: {
+    isActive: boolean
+    levels: string[]
+    priceZone: number
+    distancePct: number
+  }
+  harmonics?: HarmonicPattern[]
+}
+
+export interface FibonacciLevels {
+  high: number
+  low: number
+  fib236: number
+  fib382: number
+  fib500: number
+  fib618: number
+  fib786: number
+  closestLevel: string
+  distancePct: number
+}
+
+export function computeFibonacci(candles: Candle[], lookback = 100): FibonacciLevels {
+  const slice = candles.slice(-Math.min(lookback, candles.length))
+  let high = -Infinity
+  let low = Infinity
+  for (const c of slice) {
+    if (c.high > high) high = c.high
+    if (c.low < low) low = c.low
+  }
+  const diff = high - low
+  const fib236 = high - 0.236 * diff
+  const fib382 = high - 0.382 * diff
+  const fib500 = high - 0.500 * diff
+  const fib618 = high - 0.618 * diff
+  const fib786 = high - 0.786 * diff
+
+  const currentPrice = candles[candles.length - 1]?.close ?? 0
+  const levels = [
+    { name: '23.6%', val: fib236 },
+    { name: '38.2%', val: fib382 },
+    { name: '50.0%', val: fib500 },
+    { name: '61.8%', val: fib618 },
+    { name: '78.6%', val: fib786 }
+  ]
+  let closest = levels[0]
+  let minDistance = Math.abs(currentPrice - closest.val)
+  for (let i = 1; i < levels.length; i++) {
+    const dist = Math.abs(currentPrice - levels[i].val)
+    if (dist < minDistance) {
+      minDistance = dist
+      closest = levels[i]
+    }
+  }
+  const distancePct = currentPrice > 0 ? (minDistance / currentPrice) * 100 : 0
+  return {
+    high,
+    low,
+    fib236,
+    fib382,
+    fib500,
+    fib618,
+    fib786,
+    closestLevel: closest.name,
+    distancePct
+  }
+}
+
+export interface FibConfluence {
+  isActive: boolean
+  levels: string[]
+  priceZone: number
+  distancePct: number
+}
+
+export function detectFibConfluence(
+  candles: Candle[],
+  ema50: number,
+  ema200: number,
+  swings: SwingLevels
+): FibConfluence {
+  const currentPrice = candles[candles.length - 1]?.close ?? 0
+  if (currentPrice === 0) return { isActive: false, levels: [], priceZone: 0, distancePct: 0 }
+
+  const fib50 = computeFibonacci(candles, 50)
+  const fib150 = computeFibonacci(candles, 150)
+
+  // Aggregate all major support reference lines
+  const refLines = [
+    { name: '38.2% (50d)', val: fib50.fib382 },
+    { name: '50.0% (50d)', val: fib50.fib500 },
+    { name: '61.8% (50d)', val: fib50.fib618 },
+    { name: '38.2% (150d)', val: fib150.fib382 },
+    { name: '50.0% (150d)', val: fib150.fib500 },
+    { name: '61.8% (150d)', val: fib150.fib618 },
+    { name: '78.6% (150d)', val: fib150.fib786 },
+    { name: 'EMA50', val: ema50 },
+    { name: 'EMA200', val: ema200 }
+  ]
+
+  // Add the closest swing supports
+  swings.supports.forEach((s, idx) => {
+    refLines.push({ name: `Swing Support ${idx + 1}`, val: s })
+  })
+
+  // We look for overlaps: two reference lines that are within 1.2% of each other
+  // AND the current price is within 1.5% of this overlap zone.
+  let bestZone: { val1: number; val2: number; name1: string; name2: string; distanceToPrice: number } | null = null
+  let minPriceDist = Infinity
+
+  for (let i = 0; i < refLines.length; i++) {
+    for (let j = i + 1; j < refLines.length; j++) {
+      const line1 = refLines[i]
+      const line2 = refLines[j]
+      
+      if (isNaN(line1.val) || isNaN(line2.val)) continue
+
+      // Check if lines overlap within 1.2%
+      const overlapPct = (Math.abs(line1.val - line2.val) / ((line1.val + line2.val) / 2)) * 100
+      if (overlapPct <= 1.2) {
+        // Average price of the confluence zone
+        const zonePrice = (line1.val + line2.val) / 2
+        const priceDistPct = (Math.abs(currentPrice - zonePrice) / currentPrice) * 100
+        
+        // If price is within 1.5% of this confluence zone
+        if (priceDistPct <= 1.5 && priceDistPct < minPriceDist) {
+          minPriceDist = priceDistPct
+          bestZone = {
+            val1: line1.val,
+            val2: line2.val,
+            name1: line1.name,
+            name2: line2.name,
+            distanceToPrice: priceDistPct
+          }
+        }
+      }
+    }
+  }
+
+  if (bestZone) {
+    return {
+      isActive: true,
+      levels: [bestZone.name1, bestZone.name2],
+      priceZone: +((bestZone.val1 + bestZone.val2) / 2).toFixed(2),
+      distancePct: +bestZone.distanceToPrice.toFixed(2)
+    }
+  }
+
+  return { isActive: false, levels: [], priceZone: 0, distancePct: 0 }
 }
 
 export function computeIndicators(candles: Candle[]): IndicatorSnapshot {
@@ -619,5 +779,8 @@ export function computeIndicators(candles: Candle[]): IndicatorSnapshot {
     volumeAccumulation,
     ema200Rising,
     pctFrom250High,
+    fib: computeFibonacci(candles, 100),
+    fibConfluence: detectFibConfluence(candles, v(ema50), v(ema200), swings),
+    harmonics: detectHarmonicPatterns(candles),
   }
 }

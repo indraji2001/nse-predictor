@@ -1,0 +1,4612 @@
+{
+  "3IINFOLTD": {
+    "analystsCount": null,
+    "debtToEquity": 16.3,
+    "margin": -8.23,
+    "pe": 10.05,
+    "promoterHeld": 13.34,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "AARTIDRUGS": {
+    "analystsCount": 1,
+    "debtToEquity": 37.22,
+    "margin": 10.9,
+    "pe": 19.64,
+    "promoterHeld": 60.17,
+    "recommendation": "buy",
+    "recommendationMean": 2.0,
+    "targetPrice": 439.0
+  },
+  "AARTIIND": {
+    "analystsCount": 22,
+    "debtToEquity": 83.39,
+    "margin": 9.84,
+    "pe": 42.73,
+    "promoterHeld": 42.08,
+    "recommendation": "buy",
+    "recommendationMean": 2.18,
+    "targetPrice": 529.18
+  },
+  "AARTIPHARM": {
+    "analystsCount": 1,
+    "debtToEquity": 37.36,
+    "margin": 17.5,
+    "pe": 37.32,
+    "promoterHeld": 44.22,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": 740.0
+  },
+  "ABB": {
+    "analystsCount": 27,
+    "debtToEquity": 1.08,
+    "margin": 11.5,
+    "pe": 104.16,
+    "promoterHeld": 75.31,
+    "recommendation": "underperform",
+    "recommendationMean": 3.56,
+    "targetPrice": 6357.93
+  },
+  "ABBOTINDIA": {
+    "analystsCount": 8,
+    "debtToEquity": 3.6,
+    "margin": 27.01,
+    "pe": 38.17,
+    "promoterHeld": 75.55,
+    "recommendation": "buy",
+    "recommendationMean": 1.88,
+    "targetPrice": 32652.38
+  },
+  "ACC": {
+    "analystsCount": 29,
+    "debtToEquity": 2.08,
+    "margin": 4.95,
+    "pe": 12.09,
+    "promoterHeld": 57.51,
+    "recommendation": "buy",
+    "recommendationMean": 2.48,
+    "targetPrice": 1691.0
+  },
+  "ADANIENT": {
+    "analystsCount": 3,
+    "debtToEquity": 119.56,
+    "margin": 5.53,
+    "pe": 42.74,
+    "promoterHeld": 75.0,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.33,
+    "targetPrice": 3394.0
+  },
+  "ADANIGREEN": {
+    "analystsCount": 8,
+    "debtToEquity": 346.55,
+    "margin": 59.69,
+    "pe": 158.69,
+    "promoterHeld": 82.27,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.5,
+    "targetPrice": 1409.25
+  },
+  "ADANIPORTS": {
+    "analystsCount": 25,
+    "debtToEquity": 64.05,
+    "margin": 41.18,
+    "pe": 31.35,
+    "promoterHeld": 66.06,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.24,
+    "targetPrice": 1979.52
+  },
+  "ADANIPOWER": {
+    "analystsCount": 9,
+    "debtToEquity": 82.33,
+    "margin": 25.39,
+    "pe": 32.69,
+    "promoterHeld": 71.74,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.44,
+    "targetPrice": 247.67
+  },
+  "AHLADA": {
+    "analystsCount": null,
+    "debtToEquity": 27.95,
+    "margin": -2.92,
+    "pe": 21.09,
+    "promoterHeld": null,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "AJMERA": {
+    "analystsCount": 1,
+    "debtToEquity": 46.83,
+    "margin": 24.54,
+    "pe": 16.97,
+    "promoterHeld": 73.18,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": 175.0
+  },
+  "AKZOINDIA": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "ALCHEM": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "ALEMBICLTD": {
+    "analystsCount": null,
+    "debtToEquity": 0.43,
+    "margin": 27.45,
+    "pe": 7.15,
+    "promoterHeld": 72.21,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "ALLCARGO": {
+    "analystsCount": null,
+    "debtToEquity": 120.73,
+    "margin": 1.56,
+    "pe": 197.75,
+    "promoterHeld": 45.05,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "AMBUJACEM": {
+    "analystsCount": 40,
+    "debtToEquity": 1.21,
+    "margin": 6.45,
+    "pe": 23.03,
+    "promoterHeld": 69.35,
+    "recommendation": "buy",
+    "recommendationMean": 1.95,
+    "targetPrice": 508.6
+  },
+  "ANANTRAJ": {
+    "analystsCount": 3,
+    "debtToEquity": 11.7,
+    "margin": 23.28,
+    "pe": 36.37,
+    "promoterHeld": 62.29,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": 700.0
+  },
+  "ANUPAM": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "ANURAS": {
+    "analystsCount": 6,
+    "debtToEquity": 41.32,
+    "margin": 14.88,
+    "pe": 82.63,
+    "promoterHeld": 83.88,
+    "recommendation": "hold",
+    "recommendationMean": 3.14,
+    "targetPrice": 1143.0
+  },
+  "APLAPOLLO": {
+    "analystsCount": 20,
+    "debtToEquity": 9.4,
+    "margin": 7.21,
+    "pe": 41.32,
+    "promoterHeld": 35.87,
+    "recommendation": "buy",
+    "recommendationMean": 1.52,
+    "targetPrice": 2213.39
+  },
+  "APLHIND": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "APLSEAL": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "APOLLOHOSP": {
+    "analystsCount": 31,
+    "debtToEquity": 85.15,
+    "margin": 11.91,
+    "pe": 65.79,
+    "promoterHeld": 28.39,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.43,
+    "targetPrice": 9420.94
+  },
+  "APOLLOTYRE": {
+    "analystsCount": 23,
+    "debtToEquity": 21.99,
+    "margin": 9.16,
+    "pe": 19.96,
+    "promoterHeld": 49.67,
+    "recommendation": "buy",
+    "recommendationMean": 1.96,
+    "targetPrice": 476.91
+  },
+  "ARENKANTO": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "ARE_M": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "ARSSINFRA": {
+    "analystsCount": null,
+    "debtToEquity": 20.05,
+    "margin": -4.76,
+    "pe": null,
+    "promoterHeld": 7.14,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "ARVIND": {
+    "analystsCount": 8,
+    "debtToEquity": 40.07,
+    "margin": 8.96,
+    "pe": 33.92,
+    "promoterHeld": 42.05,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.0,
+    "targetPrice": 599.38
+  },
+  "ARVINDF-2": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "ARVINDFAB": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "ASALCBR": {
+    "analystsCount": 1,
+    "debtToEquity": 9.92,
+    "margin": 14.14,
+    "pe": 17.77,
+    "promoterHeld": 66.19,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.0,
+    "targetPrice": 1070.0
+  },
+  "ASHOKLEY": {
+    "analystsCount": 32,
+    "debtToEquity": 344.74,
+    "margin": 17.36,
+    "pe": 26.18,
+    "promoterHeld": 40.13,
+    "recommendation": "buy",
+    "recommendationMean": 1.97,
+    "targetPrice": 183.34
+  },
+  "ASIANPAINT": {
+    "analystsCount": 35,
+    "debtToEquity": 17.85,
+    "margin": 16.14,
+    "pe": 59.49,
+    "promoterHeld": 52.88,
+    "recommendation": "buy",
+    "recommendationMean": 2.49,
+    "targetPrice": 2898.17
+  },
+  "ASSOCETFA": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "ASTEC": {
+    "analystsCount": 2,
+    "debtToEquity": 114.84,
+    "margin": -1.65,
+    "pe": 39.25,
+    "promoterHeld": 73.33,
+    "recommendation": "hold",
+    "recommendationMean": 3.0,
+    "targetPrice": 622.5
+  },
+  "ASTRAL": {
+    "analystsCount": 29,
+    "debtToEquity": 6.17,
+    "margin": 14.79,
+    "pe": 68.96,
+    "promoterHeld": 54.27,
+    "recommendation": "buy",
+    "recommendationMean": 1.69,
+    "targetPrice": 1718.24
+  },
+  "ATALAUTO": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "AUBANK": {
+    "analystsCount": 28,
+    "debtToEquity": null,
+    "margin": 35.55,
+    "pe": 29.44,
+    "promoterHeld": 31.3,
+    "recommendation": "buy",
+    "recommendationMean": 2.41,
+    "targetPrice": 1101.04
+  },
+  "AUROPHARMA": {
+    "analystsCount": 29,
+    "debtToEquity": 21.31,
+    "margin": 14.94,
+    "pe": 25.64,
+    "promoterHeld": 54.83,
+    "recommendation": "buy",
+    "recommendationMean": 2.07,
+    "targetPrice": 1564.79
+  },
+  "AVANTIFEED": {
+    "analystsCount": 1,
+    "debtToEquity": 0.36,
+    "margin": 10.2,
+    "pe": 23.31,
+    "promoterHeld": 70.92,
+    "recommendation": "hold",
+    "recommendationMean": 3.0,
+    "targetPrice": 1166.0
+  },
+  "AVENTIS": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "AXISBANK": {
+    "analystsCount": 40,
+    "debtToEquity": null,
+    "margin": 39.29,
+    "pe": 15.48,
+    "promoterHeld": 2.83,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.26,
+    "targetPrice": 1594.75
+  },
+  "BAJAJ-AUTO": {
+    "analystsCount": 38,
+    "debtToEquity": 56.35,
+    "margin": 19.33,
+    "pe": 27.17,
+    "promoterHeld": 59.99,
+    "recommendation": "buy",
+    "recommendationMean": 2.33,
+    "targetPrice": 10897.34
+  },
+  "BAJAJELEC": {
+    "analystsCount": 14,
+    "debtToEquity": 84.78,
+    "margin": -2.1,
+    "pe": 21.8,
+    "promoterHeld": 63.04,
+    "recommendation": "hold",
+    "recommendationMean": 2.71,
+    "targetPrice": 391.43
+  },
+  "BAJAJHIND": {
+    "analystsCount": null,
+    "debtToEquity": 93.0,
+    "margin": 19.17,
+    "pe": 19.98,
+    "promoterHeld": 61.67,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "BAJAJHLDNG": {
+    "analystsCount": null,
+    "debtToEquity": 0.01,
+    "margin": 42.43,
+    "pe": 12.03,
+    "promoterHeld": 61.58,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "BAJFINANCE": {
+    "analystsCount": 36,
+    "debtToEquity": 314.83,
+    "margin": 60.31,
+    "pe": 34.01,
+    "promoterHeld": 56.49,
+    "recommendation": "buy",
+    "recommendationMean": 2.0,
+    "targetPrice": 1078.93
+  },
+  "BAJFINSV": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "BALKRISIND": {
+    "analystsCount": 18,
+    "debtToEquity": 35.27,
+    "margin": 16.36,
+    "pe": 32.09,
+    "promoterHeld": 58.56,
+    "recommendation": "hold",
+    "recommendationMean": 3.17,
+    "targetPrice": 2314.5
+  },
+  "BALRAMCHIN": {
+    "analystsCount": 6,
+    "debtToEquity": 76.61,
+    "margin": 14.97,
+    "pe": 32.15,
+    "promoterHeld": 43.28,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.0,
+    "targetPrice": 635.83
+  },
+  "BANDHANBNK": {
+    "analystsCount": 24,
+    "debtToEquity": null,
+    "margin": 26.45,
+    "pe": 28.25,
+    "promoterHeld": 42.67,
+    "recommendation": "buy",
+    "recommendationMean": 2.33,
+    "targetPrice": 197.46
+  },
+  "BANKBARODA": {
+    "analystsCount": 33,
+    "debtToEquity": null,
+    "margin": 38.45,
+    "pe": 6.47,
+    "promoterHeld": 66.46,
+    "recommendation": "buy",
+    "recommendationMean": 1.94,
+    "targetPrice": 310.15
+  },
+  "BANNARI": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "BDL": {
+    "analystsCount": 12,
+    "debtToEquity": 0.01,
+    "margin": 7.37,
+    "pe": 109.88,
+    "promoterHeld": 74.93,
+    "recommendation": "hold",
+    "recommendationMean": 2.67,
+    "targetPrice": 1311.08
+  },
+  "BECTORFOOD": {
+    "analystsCount": 11,
+    "debtToEquity": 15.01,
+    "margin": 8.15,
+    "pe": 41.82,
+    "promoterHeld": 50.29,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.18,
+    "targetPrice": 228.09
+  },
+  "BEL": {
+    "analystsCount": 28,
+    "debtToEquity": 0.27,
+    "margin": 27.47,
+    "pe": 49.04,
+    "promoterHeld": 53.25,
+    "recommendation": "buy",
+    "recommendationMean": 1.64,
+    "targetPrice": 490.18
+  },
+  "BENDURABEN": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "BERGEPAINT": {
+    "analystsCount": 22,
+    "debtToEquity": 9.16,
+    "margin": 13.27,
+    "pe": 51.0,
+    "promoterHeld": 75.62,
+    "recommendation": "hold",
+    "recommendationMean": 2.59,
+    "targetPrice": 544.14
+  },
+  "BHARTIARTL": {
+    "analystsCount": 33,
+    "debtToEquity": 99.72,
+    "margin": 32.77,
+    "pe": 43.29,
+    "promoterHeld": 53.13,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.48,
+    "targetPrice": 2294.88
+  },
+  "BHEL": {
+    "analystsCount": 20,
+    "debtToEquity": 31.31,
+    "margin": 5.48,
+    "pe": 62.15,
+    "promoterHeld": 59.74,
+    "recommendation": "hold",
+    "recommendationMean": 2.95,
+    "targetPrice": 346.0
+  },
+  "BILT": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "BIOCON": {
+    "analystsCount": 20,
+    "debtToEquity": 42.15,
+    "margin": 11.22,
+    "pe": 155.04,
+    "promoterHeld": 53.76,
+    "recommendation": "buy",
+    "recommendationMean": 2.35,
+    "targetPrice": 423.7
+  },
+  "BLUEBLENDS": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "BLUECOAST": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": 44.86,
+    "pe": null,
+    "promoterHeld": 93.36,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "BOMDYEING": {
+    "analystsCount": null,
+    "debtToEquity": 0.14,
+    "margin": -2.6,
+    "pe": 96.58,
+    "promoterHeld": 55.09,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "BOROLTK": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "BOSCHLTD": {
+    "analystsCount": 5,
+    "debtToEquity": 0.8,
+    "margin": 12.47,
+    "pe": 43.67,
+    "promoterHeld": 70.67,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.4,
+    "targetPrice": 44288.8
+  },
+  "BPCL": {
+    "analystsCount": 31,
+    "debtToEquity": 54.33,
+    "margin": 8.16,
+    "pe": 5.22,
+    "promoterHeld": 56.51,
+    "recommendation": "hold",
+    "recommendationMean": 2.61,
+    "targetPrice": 337.23
+  },
+  "BRIGADE": {
+    "analystsCount": 15,
+    "debtToEquity": 84.32,
+    "margin": 19.52,
+    "pe": 28.09,
+    "promoterHeld": 46.72,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.2,
+    "targetPrice": 755.37
+  },
+  "BRITANNIA": {
+    "analystsCount": 33,
+    "debtToEquity": 26.88,
+    "margin": 16.27,
+    "pe": 51.47,
+    "promoterHeld": 51.18,
+    "recommendation": "buy",
+    "recommendationMean": 1.97,
+    "targetPrice": 6228.67
+  },
+  "BSE": {
+    "analystsCount": 17,
+    "debtToEquity": 0.0,
+    "margin": 67.7,
+    "pe": 60.98,
+    "promoterHeld": 0.0,
+    "recommendation": "buy",
+    "recommendationMean": 2.19,
+    "targetPrice": 4148.06
+  },
+  "BSOFT": {
+    "analystsCount": 14,
+    "debtToEquity": 3.42,
+    "margin": 17.04,
+    "pe": 15.67,
+    "promoterHeld": 40.96,
+    "recommendation": "buy",
+    "recommendationMean": 2.5,
+    "targetPrice": 352.14
+  },
+  "CAMLINFINE": {
+    "analystsCount": 2,
+    "debtToEquity": 71.95,
+    "margin": 0.09,
+    "pe": 15.05,
+    "promoterHeld": 44.11,
+    "recommendation": "buy",
+    "recommendationMean": 2.0,
+    "targetPrice": 177.5
+  },
+  "CAMS": {
+    "analystsCount": 20,
+    "debtToEquity": 4.86,
+    "margin": 39.26,
+    "pe": 39.22,
+    "promoterHeld": 3.36,
+    "recommendation": "buy",
+    "recommendationMean": 1.55,
+    "targetPrice": 888.5
+  },
+  "CAMSSYSTEMS": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "CANBK": {
+    "analystsCount": 18,
+    "debtToEquity": null,
+    "margin": -32.21,
+    "pe": 5.75,
+    "promoterHeld": 64.36,
+    "recommendation": "buy",
+    "recommendationMean": 1.83,
+    "targetPrice": 151.78
+  },
+  "CARBORUNDUM": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "CAREERP": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "CCAVENUE": {
+    "analystsCount": 2,
+    "debtToEquity": 8.63,
+    "margin": 2.84,
+    "pe": 18.75,
+    "promoterHeld": 53.15,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.0,
+    "targetPrice": 24.5
+  },
+  "CCLPRODUCT": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "CDSL": {
+    "analystsCount": 15,
+    "debtToEquity": 0.11,
+    "margin": 38.09,
+    "pe": 64.52,
+    "promoterHeld": 0.0,
+    "recommendation": "hold",
+    "recommendationMean": 2.94,
+    "targetPrice": 1292.4
+  },
+  "CEATLTD": {
+    "analystsCount": 16,
+    "debtToEquity": 64.74,
+    "margin": 4.28,
+    "pe": 26.25,
+    "promoterHeld": 48.37,
+    "recommendation": "buy",
+    "recommendationMean": 2.44,
+    "targetPrice": 3881.0
+  },
+  "CELESTIAL": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": 1.09,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "CENTRALBK": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": -14.51,
+    "pe": 6.53,
+    "promoterHeld": 81.19,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "CESC": {
+    "analystsCount": 11,
+    "debtToEquity": 164.31,
+    "margin": 12.31,
+    "pe": 14.27,
+    "promoterHeld": 6.32,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.36,
+    "targetPrice": 213.82
+  },
+  "CGPOWER": {
+    "analystsCount": 19,
+    "debtToEquity": 1.45,
+    "margin": 12.12,
+    "pe": 117.69,
+    "promoterHeld": 60.04,
+    "recommendation": "buy",
+    "recommendationMean": 2.11,
+    "targetPrice": 889.68
+  },
+  "CHALET": {
+    "analystsCount": 21,
+    "debtToEquity": 64.04,
+    "margin": 36.84,
+    "pe": 29.58,
+    "promoterHeld": 67.41,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.19,
+    "targetPrice": 994.05
+  },
+  "CHAMBLFERT": {
+    "analystsCount": 2,
+    "debtToEquity": 10.27,
+    "margin": 5.92,
+    "pe": 9.36,
+    "promoterHeld": 62.96,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.0,
+    "targetPrice": 615.0
+  },
+  "CHEMPLAN": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "CHOLAFIN": {
+    "analystsCount": 33,
+    "debtToEquity": 695.28,
+    "margin": 55.32,
+    "pe": 29.16,
+    "promoterHeld": 49.2,
+    "recommendation": "buy",
+    "recommendationMean": 1.61,
+    "targetPrice": 1893.18
+  },
+  "CIGNITI": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": 168486736.0,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "CIPLA": {
+    "analystsCount": 37,
+    "debtToEquity": 1.78,
+    "margin": 11.26,
+    "pe": 29.76,
+    "promoterHeld": 31.12,
+    "recommendation": "buy",
+    "recommendationMean": 2.24,
+    "targetPrice": 1480.65
+  },
+  "COALINDIA": {
+    "analystsCount": 24,
+    "debtToEquity": 11.63,
+    "margin": 20.92,
+    "pe": 8.47,
+    "promoterHeld": 61.14,
+    "recommendation": "buy",
+    "recommendationMean": 2.42,
+    "targetPrice": 467.5
+  },
+  "COFORGE": {
+    "analystsCount": 35,
+    "debtToEquity": 7.52,
+    "margin": 16.56,
+    "pe": 34.97,
+    "promoterHeld": 21.82,
+    "recommendation": "buy",
+    "recommendationMean": 1.66,
+    "targetPrice": 1716.29
+  },
+  "COLPAL": {
+    "analystsCount": 26,
+    "debtToEquity": 2.99,
+    "margin": 29.99,
+    "pe": 40.99,
+    "promoterHeld": 51.42,
+    "recommendation": "hold",
+    "recommendationMean": 3.0,
+    "targetPrice": 2253.65
+  },
+  "CONCOR": {
+    "analystsCount": 16,
+    "debtToEquity": 7.39,
+    "margin": 12.12,
+    "pe": 29.94,
+    "promoterHeld": 57.88,
+    "recommendation": "hold",
+    "recommendationMean": 2.56,
+    "targetPrice": 525.25
+  },
+  "CONTAINER": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "COROMANDEL": {
+    "analystsCount": 8,
+    "debtToEquity": 11.47,
+    "margin": 8.23,
+    "pe": 30.67,
+    "promoterHeld": 59.55,
+    "recommendation": "buy",
+    "recommendationMean": 1.62,
+    "targetPrice": 2329.88
+  },
+  "CREDITACC": {
+    "analystsCount": 15,
+    "debtToEquity": 302.87,
+    "margin": 58.83,
+    "pe": 30.52,
+    "promoterHeld": 66.2,
+    "recommendation": "buy",
+    "recommendationMean": 1.56,
+    "targetPrice": 1694.0
+  },
+  "CROMPTON": {
+    "analystsCount": 34,
+    "debtToEquity": 5.8,
+    "margin": 9.9,
+    "pe": 22.27,
+    "promoterHeld": 0.0,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.29,
+    "targetPrice": 344.0
+  },
+  "CUB": {
+    "analystsCount": 23,
+    "debtToEquity": null,
+    "margin": 48.06,
+    "pe": 16.81,
+    "promoterHeld": 6.8,
+    "recommendation": "buy",
+    "recommendationMean": 1.57,
+    "targetPrice": 242.75
+  },
+  "CYBERTECH": {
+    "analystsCount": null,
+    "debtToEquity": 3.89,
+    "margin": 7.74,
+    "pe": 14.62,
+    "promoterHeld": 60.52,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "DABUR": {
+    "analystsCount": 37,
+    "debtToEquity": 10.91,
+    "margin": 12.24,
+    "pe": 40.34,
+    "promoterHeld": 67.67,
+    "recommendation": "buy",
+    "recommendationMean": 2.38,
+    "targetPrice": 523.57
+  },
+  "DATAPATTNS": {
+    "analystsCount": 10,
+    "debtToEquity": 0.3,
+    "margin": 54.21,
+    "pe": 84.3,
+    "promoterHeld": 53.35,
+    "recommendation": "buy",
+    "recommendationMean": 1.7,
+    "targetPrice": 4165.3
+  },
+  "DCBBANK": {
+    "analystsCount": 17,
+    "debtToEquity": null,
+    "margin": 34.23,
+    "pe": 8.33,
+    "promoterHeld": 18.48,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.18,
+    "targetPrice": 228.24
+  },
+  "DEEPAKFERT": {
+    "analystsCount": 2,
+    "debtToEquity": 75.97,
+    "margin": 8.25,
+    "pe": 27.28,
+    "promoterHeld": 47.1,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": 1850.0
+  },
+  "DELHIVERY": {
+    "analystsCount": 22,
+    "debtToEquity": 15.1,
+    "margin": 1.09,
+    "pe": 247.31,
+    "promoterHeld": 22.53,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.41,
+    "targetPrice": 560.05
+  },
+  "DENORA": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": -12.73,
+    "pe": 52.63,
+    "promoterHeld": 58.94,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "DEVYANI": {
+    "analystsCount": 23,
+    "debtToEquity": 203.33,
+    "margin": 3.27,
+    "pe": 105.6,
+    "promoterHeld": 64.24,
+    "recommendation": "buy",
+    "recommendationMean": 1.65,
+    "targetPrice": 148.61
+  },
+  "DHAMPURSUG": {
+    "analystsCount": null,
+    "debtToEquity": 75.02,
+    "margin": 13.58,
+    "pe": 14.12,
+    "promoterHeld": 50.29,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "DIVISLAB": {
+    "analystsCount": 30,
+    "debtToEquity": 0.04,
+    "margin": 28.75,
+    "pe": 75.05,
+    "promoterHeld": 52.0,
+    "recommendation": "hold",
+    "recommendationMean": 2.57,
+    "targetPrice": 7088.8
+  },
+  "DLF": {
+    "analystsCount": 23,
+    "debtToEquity": 0.67,
+    "margin": 20.59,
+    "pe": 36.37,
+    "promoterHeld": 74.14,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.17,
+    "targetPrice": 816.17
+  },
+  "DMART": {
+    "analystsCount": 31,
+    "debtToEquity": 9.91,
+    "margin": 6.45,
+    "pe": 84.03,
+    "promoterHeld": 78.95,
+    "recommendation": "hold",
+    "recommendationMean": 2.9,
+    "targetPrice": 4345.81
+  },
+  "DONEAR": {
+    "analystsCount": null,
+    "debtToEquity": 154.25,
+    "margin": 1.81,
+    "pe": 9.98,
+    "promoterHeld": 76.77,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "DRREDDY": {
+    "analystsCount": 40,
+    "debtToEquity": 20.33,
+    "margin": 1.54,
+    "pe": 23.81,
+    "promoterHeld": 29.77,
+    "recommendation": "hold",
+    "recommendationMean": 2.73,
+    "targetPrice": 1336.3
+  },
+  "DWARKESH": {
+    "analystsCount": null,
+    "debtToEquity": 40.6,
+    "margin": 20.05,
+    "pe": 26.55,
+    "promoterHeld": 42.14,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "EASEMYTRIP": {
+    "analystsCount": null,
+    "debtToEquity": 4.35,
+    "margin": -9.02,
+    "pe": null,
+    "promoterHeld": 54.06,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "ECLERX": {
+    "analystsCount": 10,
+    "debtToEquity": 15.01,
+    "margin": 21.13,
+    "pe": 23.64,
+    "promoterHeld": 57.99,
+    "recommendation": "buy",
+    "recommendationMean": 1.9,
+    "targetPrice": 1791.0
+  },
+  "ECLOTS": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "EDSERV": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "EDUCOMP": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": -220.28,
+    "pe": null,
+    "promoterHeld": 46.28,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "EICHERMOT": {
+    "analystsCount": 36,
+    "debtToEquity": 2.05,
+    "margin": 21.09,
+    "pe": 36.9,
+    "promoterHeld": 49.8,
+    "recommendation": "buy",
+    "recommendationMean": 2.08,
+    "targetPrice": 7916.69
+  },
+  "EIDPARRY": {
+    "analystsCount": 1,
+    "debtToEquity": 23.65,
+    "margin": 4.9,
+    "pe": 24.16,
+    "promoterHeld": 48.15,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.0,
+    "targetPrice": 1166.0
+  },
+  "EIHOTEL": {
+    "analystsCount": 1,
+    "debtToEquity": 4.67,
+    "margin": 38.54,
+    "pe": 33.74,
+    "promoterHeld": 70.45,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.0,
+    "targetPrice": 365.0
+  },
+  "ELECTHERM": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": 1.18,
+    "pe": null,
+    "promoterHeld": 69.95,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "ENERGYDEV": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": -55.8,
+    "pe": null,
+    "promoterHeld": 58.19,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "EPIGRAL": {
+    "analystsCount": 1,
+    "debtToEquity": 25.75,
+    "margin": 17.38,
+    "pe": 13.68,
+    "promoterHeld": 68.86,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": 2000.0
+  },
+  "EPL": {
+    "analystsCount": 6,
+    "debtToEquity": 33.58,
+    "margin": 12.4,
+    "pe": 19.35,
+    "promoterHeld": 56.32,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.43,
+    "targetPrice": 291.67
+  },
+  "EQUITASBNK": {
+    "analystsCount": 19,
+    "debtToEquity": 94.25,
+    "margin": 32.36,
+    "pe": 86.36,
+    "promoterHeld": 12.1,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.37,
+    "targetPrice": 84.0
+  },
+  "ESAFSFB": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": 5.37,
+    "pe": null,
+    "promoterHeld": 73.93,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "EVEREADY": {
+    "analystsCount": null,
+    "debtToEquity": 32.4,
+    "margin": 5.84,
+    "pe": 14.56,
+    "promoterHeld": 63.89,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "EXIDEIND": {
+    "analystsCount": 16,
+    "debtToEquity": 11.31,
+    "margin": 7.64,
+    "pe": 41.85,
+    "promoterHeld": 50.95,
+    "recommendation": "hold",
+    "recommendationMean": 2.88,
+    "targetPrice": 384.0
+  },
+  "FACT": {
+    "analystsCount": null,
+    "debtToEquity": 295.15,
+    "margin": 2.44,
+    "pe": null,
+    "promoterHeld": 0.0,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "FCSOFTWARE": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "FEDERALBNK": {
+    "analystsCount": 35,
+    "debtToEquity": null,
+    "margin": 43.17,
+    "pe": 18.69,
+    "promoterHeld": 9.66,
+    "recommendation": "buy",
+    "recommendationMean": 1.94,
+    "targetPrice": 320.03
+  },
+  "FELIX": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": 25.34,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "FINCABLES": {
+    "analystsCount": 6,
+    "debtToEquity": 0.31,
+    "margin": 8.39,
+    "pe": 22.47,
+    "promoterHeld": 58.66,
+    "recommendation": "buy",
+    "recommendationMean": 1.83,
+    "targetPrice": 1204.33
+  },
+  "FINEORG": {
+    "analystsCount": 11,
+    "debtToEquity": 2.56,
+    "margin": 17.88,
+    "pe": 37.15,
+    "promoterHeld": 75.0,
+    "recommendation": "buy",
+    "recommendationMean": 2.09,
+    "targetPrice": 5154.36
+  },
+  "FORTIS": {
+    "analystsCount": 20,
+    "debtToEquity": 34.15,
+    "margin": 17.35,
+    "pe": 69.93,
+    "promoterHeld": 35.19,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.45,
+    "targetPrice": 1118.15
+  },
+  "FREEMEXX": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "GAIL": {
+    "analystsCount": 31,
+    "debtToEquity": 27.81,
+    "margin": 2.75,
+    "pe": 14.86,
+    "promoterHeld": 63.73,
+    "recommendation": "buy",
+    "recommendationMean": 1.71,
+    "targetPrice": 185.35
+  },
+  "GICRE": {
+    "analystsCount": 5,
+    "debtToEquity": null,
+    "margin": 20.74,
+    "pe": 6.62,
+    "promoterHeld": 82.4,
+    "recommendation": "buy",
+    "recommendationMean": 2.4,
+    "targetPrice": 463.8
+  },
+  "GILLETTE": {
+    "analystsCount": null,
+    "debtToEquity": 0.0,
+    "margin": 32.62,
+    "pe": 47.62,
+    "promoterHeld": 77.95,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "GLENMARK": {
+    "analystsCount": 11,
+    "debtToEquity": 5.65,
+    "margin": 16.3,
+    "pe": 46.33,
+    "promoterHeld": 48.97,
+    "recommendation": "buy",
+    "recommendationMean": 1.67,
+    "targetPrice": 2497.27
+  },
+  "GLOBALHOSP": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "GLOBALVECT": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": -30.35,
+    "pe": null,
+    "promoterHeld": 78.0,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "GLOBUSSPR": {
+    "analystsCount": 1,
+    "debtToEquity": 48.42,
+    "margin": 6.51,
+    "pe": 526.67,
+    "promoterHeld": 55.74,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.0,
+    "targetPrice": 1450.0
+  },
+  "GMBREW": {
+    "analystsCount": null,
+    "debtToEquity": 3.2,
+    "margin": 5.6,
+    "pe": 12.33,
+    "promoterHeld": 77.38,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "GMDC": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "GMMPFAUDLR": {
+    "analystsCount": 1,
+    "debtToEquity": 84.46,
+    "margin": 2.83,
+    "pe": 62.13,
+    "promoterHeld": 40.69,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.0,
+    "targetPrice": 1750.0
+  },
+  "GNFC": {
+    "analystsCount": null,
+    "debtToEquity": 0.07,
+    "margin": 18.25,
+    "pe": 9.33,
+    "promoterHeld": 43.47,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "GODREJAGRO": {
+    "analystsCount": 5,
+    "debtToEquity": 72.75,
+    "margin": 4.42,
+    "pe": 23.25,
+    "promoterHeld": 72.71,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.2,
+    "targetPrice": 771.0
+  },
+  "GODREJCP": {
+    "analystsCount": 35,
+    "debtToEquity": 34.9,
+    "margin": 19.62,
+    "pe": 58.13,
+    "promoterHeld": 65.22,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.49,
+    "targetPrice": 1265.71
+  },
+  "GODREJIND": {
+    "analystsCount": null,
+    "debtToEquity": 222.41,
+    "margin": 19.41,
+    "pe": 36.37,
+    "promoterHeld": 87.19,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "GODREJPROP": {
+    "analystsCount": 22,
+    "debtToEquity": 82.12,
+    "margin": 14.24,
+    "pe": 34.01,
+    "promoterHeld": 57.58,
+    "recommendation": "buy",
+    "recommendationMean": 1.91,
+    "targetPrice": 2242.0
+  },
+  "GOKALDAS": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "GOKALDAS-2": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "GPIL": {
+    "analystsCount": 1,
+    "debtToEquity": 7.58,
+    "margin": 24.26,
+    "pe": 19.56,
+    "promoterHeld": 63.37,
+    "recommendation": "buy",
+    "recommendationMean": 2.0,
+    "targetPrice": 300.0
+  },
+  "GPPL": {
+    "analystsCount": 8,
+    "debtToEquity": 1.54,
+    "margin": 60.8,
+    "pe": 14.17,
+    "promoterHeld": 44.04,
+    "recommendation": "hold",
+    "recommendationMean": 2.88,
+    "targetPrice": 172.62
+  },
+  "GPTINFRA": {
+    "analystsCount": null,
+    "debtToEquity": 49.76,
+    "margin": 12.48,
+    "pe": 15.08,
+    "promoterHeld": 69.37,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "GRASIM": {
+    "analystsCount": 10,
+    "debtToEquity": 134.14,
+    "margin": 17.29,
+    "pe": 42.02,
+    "promoterHeld": 48.71,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.3,
+    "targetPrice": 3589.5
+  },
+  "GSFC": {
+    "analystsCount": 1,
+    "debtToEquity": 0.22,
+    "margin": 1.13,
+    "pe": 9.42,
+    "promoterHeld": 42.86,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": 185.0
+  },
+  "GUJALKALI": {
+    "analystsCount": null,
+    "debtToEquity": 6.13,
+    "margin": 29.21,
+    "pe": 6.77,
+    "promoterHeld": 79.29,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "HAL": {
+    "analystsCount": 25,
+    "debtToEquity": 0.03,
+    "margin": 26.95,
+    "pe": 32.57,
+    "promoterHeld": 71.64,
+    "recommendation": "buy",
+    "recommendationMean": 1.84,
+    "targetPrice": 5165.96
+  },
+  "HARRMALAYA": {
+    "analystsCount": null,
+    "debtToEquity": 62.15,
+    "margin": 4.56,
+    "pe": 13.87,
+    "promoterHeld": 32.34,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "HATSUN": {
+    "analystsCount": 2,
+    "debtToEquity": 94.53,
+    "margin": 3.47,
+    "pe": 58.2,
+    "promoterHeld": 76.61,
+    "recommendation": "hold",
+    "recommendationMean": 3.5,
+    "targetPrice": 935.0
+  },
+  "HAVELLS": {
+    "analystsCount": 36,
+    "debtToEquity": 2.8,
+    "margin": 5.3,
+    "pe": 43.47,
+    "promoterHeld": 63.53,
+    "recommendation": "buy",
+    "recommendationMean": 1.97,
+    "targetPrice": 1442.56
+  },
+  "HBLPOWER": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "HCL-INSYS": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": -320.27,
+    "pe": null,
+    "promoterHeld": 63.15,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "HCLTECH": {
+    "analystsCount": 40,
+    "debtToEquity": 7.06,
+    "margin": 16.88,
+    "pe": 18.48,
+    "promoterHeld": 62.73,
+    "recommendation": "hold",
+    "recommendationMean": 2.85,
+    "targetPrice": 1265.7
+  },
+  "HDFCBANK": {
+    "analystsCount": 40,
+    "debtToEquity": null,
+    "margin": 40.54,
+    "pe": 18.05,
+    "promoterHeld": 0.15,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.15,
+    "targetPrice": 1040.62
+  },
+  "HDFCLIFE": {
+    "analystsCount": 35,
+    "debtToEquity": 15.84,
+    "margin": 1.99,
+    "pe": 61.67,
+    "promoterHeld": 55.57,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.29,
+    "targetPrice": 758.6
+  },
+  "HEG": {
+    "analystsCount": 2,
+    "debtToEquity": 16.73,
+    "margin": -1.13,
+    "pe": 33.52,
+    "promoterHeld": 59.33,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.0,
+    "targetPrice": 690.0
+  },
+  "HEROMOTOCO": {
+    "analystsCount": 34,
+    "debtToEquity": 3.57,
+    "margin": 13.22,
+    "pe": 17.09,
+    "promoterHeld": 37.43,
+    "recommendation": "buy",
+    "recommendationMean": 2.25,
+    "targetPrice": 5837.15
+  },
+  "HGICL": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "HINDALCO": {
+    "analystsCount": 29,
+    "debtToEquity": 72.6,
+    "margin": 11.06,
+    "pe": 15.67,
+    "promoterHeld": 37.36,
+    "recommendation": "hold",
+    "recommendationMean": 2.59,
+    "targetPrice": 1113.79
+  },
+  "HINDCOMPOS": {
+    "analystsCount": null,
+    "debtToEquity": 0.15,
+    "margin": 12.94,
+    "pe": 20.63,
+    "promoterHeld": 81.74,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "HINDMEDIA": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "HINDMOTORS": {
+    "analystsCount": null,
+    "debtToEquity": 57.4,
+    "margin": -22.42,
+    "pe": 36.95,
+    "promoterHeld": 32.34,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "HINDPETRO": {
+    "analystsCount": 31,
+    "debtToEquity": 85.37,
+    "margin": 8.08,
+    "pe": 4.71,
+    "promoterHeld": 55.0,
+    "recommendation": "hold",
+    "recommendationMean": 2.84,
+    "targetPrice": 405.84
+  },
+  "HINDUNILVR": {
+    "analystsCount": 37,
+    "debtToEquity": 3.02,
+    "margin": 21.14,
+    "pe": 46.29,
+    "promoterHeld": 62.27,
+    "recommendation": "buy",
+    "recommendationMean": 2.03,
+    "targetPrice": 2563.0
+  },
+  "HINDZINC": {
+    "analystsCount": 15,
+    "debtToEquity": 39.03,
+    "margin": 53.36,
+    "pe": 15.95,
+    "promoterHeld": 88.65,
+    "recommendation": "buy",
+    "recommendationMean": 2.4,
+    "targetPrice": 651.6
+  },
+  "HSIL": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "HYUNDAI": {
+    "analystsCount": 26,
+    "debtToEquity": 5.48,
+    "margin": 7.31,
+    "pe": 29.83,
+    "promoterHeld": 82.5,
+    "recommendation": "buy",
+    "recommendationMean": 1.62,
+    "targetPrice": 2223.88
+  },
+  "IBREALEST": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "ICICIBANK": {
+    "analystsCount": 40,
+    "debtToEquity": null,
+    "margin": 33.29,
+    "pe": 18.98,
+    "promoterHeld": 3.25,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.23,
+    "targetPrice": 1683.1
+  },
+  "ICICIGI": {
+    "analystsCount": 27,
+    "debtToEquity": null,
+    "margin": 7.44,
+    "pe": 33.32,
+    "promoterHeld": 2.36,
+    "recommendation": "buy",
+    "recommendationMean": 2.12,
+    "targetPrice": 1974.96
+  },
+  "ICICIPRULI": {
+    "analystsCount": 34,
+    "debtToEquity": 19.04,
+    "margin": 12.45,
+    "pe": 43.69,
+    "promoterHeld": 23.65,
+    "recommendation": "buy",
+    "recommendationMean": 1.62,
+    "targetPrice": 683.5
+  },
+  "ICISYSTEMS": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "IDBI": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": 15.58,
+    "pe": 9.98,
+    "promoterHeld": 45.56,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "IDEA": {
+    "analystsCount": 22,
+    "debtToEquity": null,
+    "margin": -5.82,
+    "pe": 4.32,
+    "promoterHeld": 74.64,
+    "recommendation": "hold",
+    "recommendationMean": 3.32,
+    "targetPrice": 11.71
+  },
+  "IDFCFIRSTB": {
+    "analystsCount": 19,
+    "debtToEquity": null,
+    "margin": 33.4,
+    "pe": 42.29,
+    "promoterHeld": 12.87,
+    "recommendation": "hold",
+    "recommendationMean": 2.6,
+    "targetPrice": 78.53
+  },
+  "IIFL": {
+    "analystsCount": 4,
+    "debtToEquity": 447.42,
+    "margin": 20.8,
+    "pe": 14.64,
+    "promoterHeld": 48.37,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.5,
+    "targetPrice": 625.0
+  },
+  "IIFLFIN": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "INAQPORT": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "INDHOTEL": {
+    "analystsCount": 29,
+    "debtToEquity": 18.99,
+    "margin": 30.92,
+    "pe": 49.99,
+    "promoterHeld": 39.35,
+    "recommendation": "buy",
+    "recommendationMean": 1.52,
+    "targetPrice": 801.76
+  },
+  "INDIGO": {
+    "analystsCount": 24,
+    "debtToEquity": 866.46,
+    "margin": 15.76,
+    "pe": 22.81,
+    "promoterHeld": 41.58,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.48,
+    "targetPrice": 5493.54
+  },
+  "INDIGRID": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": 30.58,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "INDUSIND-BK": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "INDUSINDBK": {
+    "analystsCount": 36,
+    "debtToEquity": null,
+    "margin": 17.66,
+    "pe": 88.48,
+    "promoterHeld": 16.58,
+    "recommendation": "hold",
+    "recommendationMean": 3.14,
+    "targetPrice": 882.89
+  },
+  "INDUSTOWER": {
+    "analystsCount": 25,
+    "debtToEquity": 53.29,
+    "margin": 32.42,
+    "pe": 14.97,
+    "promoterHeld": 51.31,
+    "recommendation": "hold",
+    "recommendationMean": 2.72,
+    "targetPrice": 448.8
+  },
+  "INFOMEDIA": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": 66.67,
+    "pe": null,
+    "promoterHeld": 61.0,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "INFY": {
+    "analystsCount": 40,
+    "debtToEquity": 9.83,
+    "margin": 20.93,
+    "pe": 14.35,
+    "promoterHeld": 16.35,
+    "recommendation": "buy",
+    "recommendationMean": 1.9,
+    "targetPrice": 1325.7
+  },
+  "INNOVATIVE": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": 0.29,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "INTELLECT": {
+    "analystsCount": 4,
+    "debtToEquity": 4.96,
+    "margin": 14.72,
+    "pe": 31.25,
+    "promoterHeld": 44.6,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.5,
+    "targetPrice": 1058.5
+  },
+  "IOB": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": 47.15,
+    "pe": 12.54,
+    "promoterHeld": 92.44,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "IOC": {
+    "analystsCount": 31,
+    "debtToEquity": 58.45,
+    "margin": 9.24,
+    "pe": 4.64,
+    "promoterHeld": 73.39,
+    "recommendation": "hold",
+    "recommendationMean": 2.58,
+    "targetPrice": 158.03
+  },
+  "IOTL": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "IPCALAB": {
+    "analystsCount": 18,
+    "debtToEquity": 8.49,
+    "margin": 18.48,
+    "pe": 42.24,
+    "promoterHeld": 45.08,
+    "recommendation": "buy",
+    "recommendationMean": 1.65,
+    "targetPrice": 1733.5
+  },
+  "IRCON": {
+    "analystsCount": 2,
+    "debtToEquity": 85.83,
+    "margin": 6.99,
+    "pe": 20.63,
+    "promoterHeld": 65.17,
+    "recommendation": "hold",
+    "recommendationMean": 3.0,
+    "targetPrice": 147.5
+  },
+  "IRCTC": {
+    "analystsCount": 8,
+    "debtToEquity": 1.87,
+    "margin": 26.36,
+    "pe": 28.74,
+    "promoterHeld": 62.4,
+    "recommendation": "buy",
+    "recommendationMean": 2.11,
+    "targetPrice": 674.12
+  },
+  "IRFC": {
+    "analystsCount": 1,
+    "debtToEquity": 773.35,
+    "margin": 96.28,
+    "pe": 16.49,
+    "promoterHeld": 82.9,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": 60.0
+  },
+  "ITC": {
+    "analystsCount": 33,
+    "debtToEquity": 3.29,
+    "margin": 36.41,
+    "pe": 16.92,
+    "promoterHeld": 27.18,
+    "recommendation": "hold",
+    "recommendationMean": 2.65,
+    "targetPrice": 343.52
+  },
+  "ITCOLD": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "JAGRAN": {
+    "analystsCount": 1,
+    "debtToEquity": 5.16,
+    "margin": 4.86,
+    "pe": 6.97,
+    "promoterHeld": 69.04,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": 73.0
+  },
+  "JAIBALAJI": {
+    "analystsCount": 1,
+    "debtToEquity": 18.45,
+    "margin": 3.45,
+    "pe": 45.35,
+    "promoterHeld": 79.65,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": 133.0
+  },
+  "JETAIRWAYS": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": -133.11,
+    "pe": null,
+    "promoterHeld": 74.99,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "JINDALSTEL": {
+    "analystsCount": 33,
+    "debtToEquity": 43.61,
+    "margin": 12.81,
+    "pe": 31.05,
+    "promoterHeld": 63.89,
+    "recommendation": "buy",
+    "recommendationMean": 2.09,
+    "targetPrice": 1274.94
+  },
+  "JIOFIN": {
+    "analystsCount": 3,
+    "debtToEquity": 16.29,
+    "margin": 63.31,
+    "pe": 74.08,
+    "promoterHeld": 50.2,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.0,
+    "targetPrice": 295.33
+  },
+  "JKIL": {
+    "analystsCount": 5,
+    "debtToEquity": 18.44,
+    "margin": 9.96,
+    "pe": 9.58,
+    "promoterHeld": 54.64,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.4,
+    "targetPrice": 722.4
+  },
+  "JKPAPER": {
+    "analystsCount": 2,
+    "debtToEquity": 44.54,
+    "margin": 8.99,
+    "pe": 25.17,
+    "promoterHeld": 57.61,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.0,
+    "targetPrice": 515.5
+  },
+  "JKTYRE": {
+    "analystsCount": 5,
+    "debtToEquity": 80.55,
+    "margin": 9.92,
+    "pe": 15.43,
+    "promoterHeld": 60.66,
+    "recommendation": "buy",
+    "recommendationMean": 1.8,
+    "targetPrice": 543.4
+  },
+  "JMFINANCIL": {
+    "analystsCount": 1,
+    "debtToEquity": 102.44,
+    "margin": 34.32,
+    "pe": 10.03,
+    "promoterHeld": 24.59,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": 160.0
+  },
+  "JSWENERGY": {
+    "analystsCount": 21,
+    "debtToEquity": 229.16,
+    "margin": 33.27,
+    "pe": 42.75,
+    "promoterHeld": 66.58,
+    "recommendation": "buy",
+    "recommendationMean": 2.26,
+    "targetPrice": 611.81
+  },
+  "JSWSTEEL": {
+    "analystsCount": 36,
+    "debtToEquity": 95.37,
+    "margin": 15.3,
+    "pe": 13.39,
+    "promoterHeld": 63.41,
+    "recommendation": "buy",
+    "recommendationMean": 2.34,
+    "targetPrice": 1367.14
+  },
+  "JUBLFOOD": {
+    "analystsCount": 29,
+    "debtToEquity": 2.65,
+    "margin": 8.03,
+    "pe": 74.62,
+    "promoterHeld": 40.74,
+    "recommendation": "buy",
+    "recommendationMean": 2.0,
+    "targetPrice": 538.48
+  },
+  "KALPATARA": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "KALYANKJIL": {
+    "analystsCount": 9,
+    "debtToEquity": 96.97,
+    "margin": 6.06,
+    "pe": 41.84,
+    "promoterHeld": 62.87,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.0,
+    "targetPrice": 666.22
+  },
+  "KARNATAKA": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "KARURVYSYA": {
+    "analystsCount": 18,
+    "debtToEquity": null,
+    "margin": 57.61,
+    "pe": 11.71,
+    "promoterHeld": 0.0,
+    "recommendation": "buy",
+    "recommendationMean": 1.56,
+    "targetPrice": 350.89
+  },
+  "KEI": {
+    "analystsCount": 24,
+    "debtToEquity": 3.8,
+    "margin": 10.16,
+    "pe": 52.91,
+    "promoterHeld": 36.01,
+    "recommendation": "buy",
+    "recommendationMean": 2.26,
+    "targetPrice": 5365.0
+  },
+  "KELLTONTEC": {
+    "analystsCount": null,
+    "debtToEquity": 28.59,
+    "margin": 6.71,
+    "pe": 8.27,
+    "promoterHeld": 37.67,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "KFINTECH": {
+    "analystsCount": 18,
+    "debtToEquity": 3.31,
+    "margin": 32.35,
+    "pe": 44.04,
+    "promoterHeld": 14.36,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.44,
+    "targetPrice": 1083.67
+  },
+  "KIMS": {
+    "analystsCount": 16,
+    "debtToEquity": 166.23,
+    "margin": 11.5,
+    "pe": 133.38,
+    "promoterHeld": 41.73,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.44,
+    "targetPrice": 835.0
+  },
+  "KIOCL": {
+    "analystsCount": null,
+    "debtToEquity": 11.05,
+    "margin": 10.12,
+    "pe": 1424.62,
+    "promoterHeld": 99.04,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "KITEXGAR": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "KNRCON": {
+    "analystsCount": 14,
+    "debtToEquity": 49.16,
+    "margin": 22.31,
+    "pe": 8.01,
+    "promoterHeld": 48.82,
+    "recommendation": "hold",
+    "recommendationMean": 3.0,
+    "targetPrice": 143.36
+  },
+  "KOKUYO": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "KOPRAN": {
+    "analystsCount": null,
+    "debtToEquity": 28.8,
+    "margin": 15.41,
+    "pe": 38.13,
+    "promoterHeld": 50.21,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "KOTAKBANK": {
+    "analystsCount": 37,
+    "debtToEquity": null,
+    "margin": 4.15,
+    "pe": 19.46,
+    "promoterHeld": 28.25,
+    "recommendation": "buy",
+    "recommendationMean": 1.7,
+    "targetPrice": 464.69
+  },
+  "KOTYARK": {
+    "analystsCount": null,
+    "debtToEquity": 35.58,
+    "margin": 25.02,
+    "pe": 20.81,
+    "promoterHeld": 5.49,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "KPIGREEN": {
+    "analystsCount": null,
+    "debtToEquity": 158.76,
+    "margin": 31.7,
+    "pe": 17.04,
+    "promoterHeld": 54.87,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "KPRMILL": {
+    "analystsCount": 10,
+    "debtToEquity": 10.46,
+    "margin": 17.69,
+    "pe": 44.98,
+    "promoterHeld": 67.54,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.5,
+    "targetPrice": 1157.1
+  },
+  "KRBL": {
+    "analystsCount": null,
+    "debtToEquity": 2.92,
+    "margin": 13.52,
+    "pe": 12.67,
+    "promoterHeld": 72.69,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "KSB": {
+    "analystsCount": 2,
+    "debtToEquity": 0.31,
+    "margin": 6.04,
+    "pe": 60.73,
+    "promoterHeld": 69.97,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.5,
+    "targetPrice": 936.0
+  },
+  "LAOPALA": {
+    "analystsCount": 2,
+    "debtToEquity": 1.08,
+    "margin": 28.52,
+    "pe": 22.77,
+    "promoterHeld": 66.73,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.0,
+    "targetPrice": 270.0
+  },
+  "LASA": {
+    "analystsCount": null,
+    "debtToEquity": 19.64,
+    "margin": 3728.41,
+    "pe": null,
+    "promoterHeld": 54.65,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "LAXMIORG": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "LICI": {
+    "analystsCount": 24,
+    "debtToEquity": null,
+    "margin": 5.5,
+    "pe": 9.65,
+    "promoterHeld": 96.5,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.5,
+    "targetPrice": 532.58
+  },
+  "LINDEINDIA": {
+    "analystsCount": 2,
+    "debtToEquity": null,
+    "margin": 20.44,
+    "pe": 111.11,
+    "promoterHeld": 78.0,
+    "recommendation": "underperform",
+    "recommendationMean": 4.0,
+    "targetPrice": 5992.0
+  },
+  "LLOYDSME": {
+    "analystsCount": 7,
+    "debtToEquity": 145.21,
+    "margin": 38.87,
+    "pe": 27.55,
+    "promoterHeld": 77.73,
+    "recommendation": "buy",
+    "recommendationMean": 1.71,
+    "targetPrice": 1947.86
+  },
+  "LOVABLE": {
+    "analystsCount": null,
+    "debtToEquity": 1.51,
+    "margin": -30.76,
+    "pe": 13.95,
+    "promoterHeld": 63.97,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "LT": {
+    "analystsCount": 31,
+    "debtToEquity": 97.64,
+    "margin": 10.71,
+    "pe": 32.59,
+    "promoterHeld": 18.09,
+    "recommendation": "buy",
+    "recommendationMean": 1.72,
+    "targetPrice": 4512.19
+  },
+  "LTF": {
+    "analystsCount": 20,
+    "debtToEquity": 393.44,
+    "margin": 45.95,
+    "pe": 24.45,
+    "promoterHeld": 65.97,
+    "recommendation": "buy",
+    "recommendationMean": 2.1,
+    "targetPrice": 341.0
+  },
+  "LTFOODS": {
+    "analystsCount": 2,
+    "debtToEquity": 28.49,
+    "margin": 10.86,
+    "pe": 21.23,
+    "promoterHeld": 61.61,
+    "recommendation": "buy",
+    "recommendationMean": 2.0,
+    "targetPrice": 509.0
+  },
+  "LTM": {
+    "analystsCount": 39,
+    "debtToEquity": 9.87,
+    "margin": 15.5,
+    "pe": 23.04,
+    "promoterHeld": 68.62,
+    "recommendation": "buy",
+    "recommendationMean": 2.44,
+    "targetPrice": 4387.77
+  },
+  "LUPIN": {
+    "analystsCount": 37,
+    "debtToEquity": 29.39,
+    "margin": 24.22,
+    "pe": 21.46,
+    "promoterHeld": 47.02,
+    "recommendation": "buy",
+    "recommendationMean": 2.49,
+    "targetPrice": 2483.41
+  },
+  "MAGSONS": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "MAHABANK": {
+    "analystsCount": 3,
+    "debtToEquity": null,
+    "margin": 57.52,
+    "pe": 8.12,
+    "promoterHeld": 73.6,
+    "recommendation": "buy",
+    "recommendationMean": 1.67,
+    "targetPrice": 84.67
+  },
+  "MAHINDRAEST": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "MAHINDRATEL": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "MAHLIFE": {
+    "analystsCount": 7,
+    "debtToEquity": 18.26,
+    "margin": -7.22,
+    "pe": 25.85,
+    "promoterHeld": 52.71,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.0,
+    "targetPrice": 463.86
+  },
+  "MAHSCOOT": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "MAHSEAMLES": {
+    "analystsCount": null,
+    "debtToEquity": 0.19,
+    "margin": 16.13,
+    "pe": 11.09,
+    "promoterHeld": 72.13,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "MANAPPURAM": {
+    "analystsCount": 12,
+    "debtToEquity": 360.19,
+    "margin": 45.02,
+    "pe": 27.82,
+    "promoterHeld": 31.91,
+    "recommendation": "buy",
+    "recommendationMean": 2.23,
+    "targetPrice": 321.25
+  },
+  "MANGALAM": {
+    "analystsCount": null,
+    "debtToEquity": 109.41,
+    "margin": -15.14,
+    "pe": null,
+    "promoterHeld": 37.69,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "MARICO": {
+    "analystsCount": 38,
+    "debtToEquity": 12.39,
+    "margin": 13.98,
+    "pe": 62.06,
+    "promoterHeld": 59.04,
+    "recommendation": "buy",
+    "recommendationMean": 1.54,
+    "targetPrice": 912.18
+  },
+  "MARUTI": {
+    "analystsCount": 38,
+    "debtToEquity": 0.1,
+    "margin": 8.41,
+    "pe": 29.54,
+    "promoterHeld": 60.28,
+    "recommendation": "buy",
+    "recommendationMean": 1.53,
+    "targetPrice": 15994.6
+  },
+  "MAWANASUG": {
+    "analystsCount": null,
+    "debtToEquity": 80.14,
+    "margin": 21.35,
+    "pe": 11.95,
+    "promoterHeld": 63.49,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "MAXESTATES": {
+    "analystsCount": 5,
+    "debtToEquity": 76.3,
+    "margin": 14.2,
+    "pe": 435.85,
+    "promoterHeld": 70.14,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": 612.2
+  },
+  "MAXHEALTH": {
+    "analystsCount": 26,
+    "debtToEquity": 32.37,
+    "margin": 22.68,
+    "pe": 74.04,
+    "promoterHeld": 27.14,
+    "recommendation": "buy",
+    "recommendationMean": 2.0,
+    "targetPrice": 1170.69
+  },
+  "MAZDOCK": {
+    "analystsCount": 11,
+    "debtToEquity": 4.48,
+    "margin": 13.51,
+    "pe": 36.9,
+    "promoterHeld": 81.22,
+    "recommendation": "buy",
+    "recommendationMean": 2.45,
+    "targetPrice": 2751.18
+  },
+  "MCDOWELL": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "MCDOWELL-N": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "MCX": {
+    "analystsCount": 14,
+    "debtToEquity": 0.11,
+    "margin": 73.86,
+    "pe": 54.05,
+    "promoterHeld": 15.05,
+    "recommendation": "buy",
+    "recommendationMean": 1.93,
+    "targetPrice": 3413.71
+  },
+  "MIDHANI": {
+    "analystsCount": 2,
+    "debtToEquity": 26.56,
+    "margin": 17.97,
+    "pe": 58.2,
+    "promoterHeld": 74.0,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.0,
+    "targetPrice": 455.0
+  },
+  "MIDMORNING": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "MOLDTKPAC": {
+    "analystsCount": 9,
+    "debtToEquity": 31.85,
+    "margin": 13.59,
+    "pe": 31.73,
+    "promoterHeld": 39.18,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.22,
+    "targetPrice": 814.89
+  },
+  "MOTHERSON": {
+    "analystsCount": 21,
+    "debtToEquity": 43.91,
+    "margin": 7.39,
+    "pe": 39.18,
+    "promoterHeld": 58.33,
+    "recommendation": "buy",
+    "recommendationMean": 1.76,
+    "targetPrice": 155.14
+  },
+  "MPHASIS": {
+    "analystsCount": 37,
+    "debtToEquity": 24.38,
+    "margin": 15.38,
+    "pe": 24.53,
+    "promoterHeld": 31.27,
+    "recommendation": "buy",
+    "recommendationMean": 2.0,
+    "targetPrice": 2593.81
+  },
+  "MRF": {
+    "analystsCount": 9,
+    "debtToEquity": 15.29,
+    "margin": 11.53,
+    "pe": 22.86,
+    "promoterHeld": 49.01,
+    "recommendation": "hold",
+    "recommendationMean": 3.3,
+    "targetPrice": 136329.89
+  },
+  "MUTHOOTCAP": {
+    "analystsCount": null,
+    "debtToEquity": 482.1,
+    "margin": 22.72,
+    "pe": 32.9,
+    "promoterHeld": 68.52,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "MUTHOOTFIN": {
+    "analystsCount": 22,
+    "debtToEquity": 379.71,
+    "margin": 78.15,
+    "pe": 11.34,
+    "promoterHeld": 73.35,
+    "recommendation": "buy",
+    "recommendationMean": 2.5,
+    "targetPrice": 3681.36
+  },
+  "NALCO": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "NALWA": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "NATCOPERM": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "NATCOPHARM": {
+    "analystsCount": 9,
+    "debtToEquity": 7.74,
+    "margin": 10.44,
+    "pe": 12.2,
+    "promoterHeld": 50.98,
+    "recommendation": "hold",
+    "recommendationMean": 2.6,
+    "targetPrice": 1021.22
+  },
+  "NATIONALUM": {
+    "analystsCount": 12,
+    "debtToEquity": 0.28,
+    "margin": 42.76,
+    "pe": 10.61,
+    "promoterHeld": 51.28,
+    "recommendation": "hold",
+    "recommendationMean": 3.0,
+    "targetPrice": 403.67
+  },
+  "NAUKRI": {
+    "analystsCount": 22,
+    "debtToEquity": 0.64,
+    "margin": 34.9,
+    "pe": 54.06,
+    "promoterHeld": 47.45,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.45,
+    "targetPrice": 1346.55
+  },
+  "NAVINFLUOR": {
+    "analystsCount": 28,
+    "debtToEquity": 32.0,
+    "margin": 29.85,
+    "pe": 57.93,
+    "promoterHeld": 29.37,
+    "recommendation": "buy",
+    "recommendationMean": 2.11,
+    "targetPrice": 7443.61
+  },
+  "NAZARA": {
+    "analystsCount": 10,
+    "debtToEquity": 6.05,
+    "margin": 8.07,
+    "pe": 11.33,
+    "promoterHeld": 35.77,
+    "recommendation": "buy",
+    "recommendationMean": 2.5,
+    "targetPrice": 298.1
+  },
+  "NCC": {
+    "analystsCount": 12,
+    "debtToEquity": 43.06,
+    "margin": 7.8,
+    "pe": 12.97,
+    "promoterHeld": 35.66,
+    "recommendation": "buy",
+    "recommendationMean": 1.75,
+    "targetPrice": 207.0
+  },
+  "NESTLEIND": {
+    "analystsCount": 36,
+    "debtToEquity": 8.62,
+    "margin": 22.96,
+    "pe": 78.12,
+    "promoterHeld": 62.77,
+    "recommendation": "buy",
+    "recommendationMean": 2.42,
+    "targetPrice": 1482.28
+  },
+  "NETWORK18": {
+    "analystsCount": null,
+    "debtToEquity": 65.92,
+    "margin": -4.56,
+    "pe": null,
+    "promoterHeld": 61.52,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "NEULAND": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "NEWGEN": {
+    "analystsCount": 7,
+    "debtToEquity": 2.21,
+    "margin": 13.09,
+    "pe": 24.64,
+    "promoterHeld": 63.4,
+    "recommendation": "buy",
+    "recommendationMean": 1.57,
+    "targetPrice": 680.0
+  },
+  "NHPC": {
+    "analystsCount": 7,
+    "debtToEquity": 113.11,
+    "margin": 19.67,
+    "pe": 28.49,
+    "promoterHeld": 62.48,
+    "recommendation": "buy",
+    "recommendationMean": 2.43,
+    "targetPrice": 89.86
+  },
+  "NIFTY1": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": 21.65,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "NIITLTD": {
+    "analystsCount": 1,
+    "debtToEquity": 0.65,
+    "margin": -8.89,
+    "pe": 242.92,
+    "promoterHeld": 48.9,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.0,
+    "targetPrice": 80.0
+  },
+  "NMDC": {
+    "analystsCount": 21,
+    "debtToEquity": 18.8,
+    "margin": 21.97,
+    "pe": 9.93,
+    "promoterHeld": 60.79,
+    "recommendation": "hold",
+    "recommendationMean": 3.3,
+    "targetPrice": 88.95
+  },
+  "NRBHAND": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "NTPC": {
+    "analystsCount": 28,
+    "debtToEquity": 118.13,
+    "margin": 18.43,
+    "pe": 11.25,
+    "promoterHeld": 53.55,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.37,
+    "targetPrice": 437.11
+  },
+  "NXTDIGITAL": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "NYKAA": {
+    "analystsCount": 25,
+    "debtToEquity": 82.41,
+    "margin": 5.24,
+    "pe": 455.0,
+    "promoterHeld": 56.14,
+    "recommendation": "hold",
+    "recommendationMean": 2.56,
+    "targetPrice": 303.24
+  },
+  "OBEROIRLTY": {
+    "analystsCount": 26,
+    "debtToEquity": 15.77,
+    "margin": 53.07,
+    "pe": 26.95,
+    "promoterHeld": 67.7,
+    "recommendation": "buy",
+    "recommendationMean": 1.88,
+    "targetPrice": 1868.08
+  },
+  "OFSS": {
+    "analystsCount": 2,
+    "debtToEquity": 0.41,
+    "margin": 50.4,
+    "pe": 38.61,
+    "promoterHeld": 72.47,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.0,
+    "targetPrice": 10695.0
+  },
+  "OLAELEC": {
+    "analystsCount": 8,
+    "debtToEquity": 82.45,
+    "margin": -165.66,
+    "pe": -13.12,
+    "promoterHeld": 39.28,
+    "recommendation": "underperform",
+    "recommendationMean": 4.38,
+    "targetPrice": 31.54
+  },
+  "OLECTRA": {
+    "analystsCount": null,
+    "debtToEquity": 30.84,
+    "margin": 13.75,
+    "pe": 63.7,
+    "promoterHeld": 50.27,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "ONGC": {
+    "analystsCount": 30,
+    "debtToEquity": 42.55,
+    "margin": 9.21,
+    "pe": 7.49,
+    "promoterHeld": 69.21,
+    "recommendation": "buy",
+    "recommendationMean": 1.93,
+    "targetPrice": 305.67
+  },
+  "ONMOBILE": {
+    "analystsCount": null,
+    "debtToEquity": 12.3,
+    "margin": -40.07,
+    "pe": null,
+    "promoterHeld": 50.53,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "PAGEIND": {
+    "analystsCount": 26,
+    "debtToEquity": 18.42,
+    "margin": 18.56,
+    "pe": 58.35,
+    "promoterHeld": 46.68,
+    "recommendation": "buy",
+    "recommendationMean": 2.42,
+    "targetPrice": 42242.92
+  },
+  "PANACEABIO": {
+    "analystsCount": null,
+    "debtToEquity": 2.79,
+    "margin": 1.99,
+    "pe": null,
+    "promoterHeld": 72.65,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "PATINTLOG": {
+    "analystsCount": null,
+    "debtToEquity": 5.07,
+    "margin": 3.17,
+    "pe": 10.43,
+    "promoterHeld": 36.19,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "PATPRJ": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "PAYTM": {
+    "analystsCount": 20,
+    "debtToEquity": 1.07,
+    "margin": 0.0,
+    "pe": 158.78,
+    "promoterHeld": 27.96,
+    "recommendation": "buy",
+    "recommendationMean": 1.7,
+    "targetPrice": 1367.35
+  },
+  "PCJEWELLER": {
+    "analystsCount": null,
+    "debtToEquity": 14.27,
+    "margin": 8.43,
+    "pe": 12.44,
+    "promoterHeld": 56.51,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "PERSISTENT": {
+    "analystsCount": 34,
+    "debtToEquity": 6.09,
+    "margin": 16.25,
+    "pe": 42.55,
+    "promoterHeld": 33.02,
+    "recommendation": "hold",
+    "recommendationMean": 2.53,
+    "targetPrice": 5090.71
+  },
+  "PFC": {
+    "analystsCount": 14,
+    "debtToEquity": 586.02,
+    "margin": 93.32,
+    "pe": 5.16,
+    "promoterHeld": 56.0,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.14,
+    "targetPrice": 508.93
+  },
+  "PGHH": {
+    "analystsCount": 2,
+    "debtToEquity": 0.12,
+    "margin": 22.18,
+    "pe": 33.1,
+    "promoterHeld": 70.94,
+    "recommendation": "buy",
+    "recommendationMean": 2.0,
+    "targetPrice": 11084.0
+  },
+  "PGHL": {
+    "analystsCount": 1,
+    "debtToEquity": 1.77,
+    "margin": 34.94,
+    "pe": 34.56,
+    "promoterHeld": 52.19,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": 7535.0
+  },
+  "PHOENIXLTD": {
+    "analystsCount": 21,
+    "debtToEquity": 37.21,
+    "margin": 53.54,
+    "pe": 59.53,
+    "promoterHeld": 47.85,
+    "recommendation": "buy",
+    "recommendationMean": 1.55,
+    "targetPrice": 2024.05
+  },
+  "PIDILITIND": {
+    "analystsCount": 21,
+    "debtToEquity": 3.78,
+    "margin": 21.12,
+    "pe": 65.2,
+    "promoterHeld": 69.43,
+    "recommendation": "buy",
+    "recommendationMean": 2.1,
+    "targetPrice": 1652.9
+  },
+  "PIIND": {
+    "analystsCount": 25,
+    "debtToEquity": 3.05,
+    "margin": 14.71,
+    "pe": 30.21,
+    "promoterHeld": 46.51,
+    "recommendation": "hold",
+    "recommendationMean": 2.84,
+    "targetPrice": 3204.24
+  },
+  "PNB": {
+    "analystsCount": 16,
+    "debtToEquity": null,
+    "margin": 29.4,
+    "pe": 6.57,
+    "promoterHeld": 70.08,
+    "recommendation": "hold",
+    "recommendationMean": 2.69,
+    "targetPrice": 119.38
+  },
+  "PNC": {
+    "analystsCount": null,
+    "debtToEquity": 2.36,
+    "margin": -41.74,
+    "pe": null,
+    "promoterHeld": 67.67,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "PNCINFRA": {
+    "analystsCount": 15,
+    "debtToEquity": 75.88,
+    "margin": 14.96,
+    "pe": 7.57,
+    "promoterHeld": 56.07,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.2,
+    "targetPrice": 288.87
+  },
+  "POLICYBZR": {
+    "analystsCount": 25,
+    "debtToEquity": 4.92,
+    "margin": 8.9,
+    "pe": 108.4,
+    "promoterHeld": 25.0,
+    "recommendation": "buy",
+    "recommendationMean": 2.08,
+    "targetPrice": 1942.0
+  },
+  "POLYCAB": {
+    "analystsCount": 31,
+    "debtToEquity": 2.56,
+    "margin": 12.59,
+    "pe": 48.54,
+    "promoterHeld": 64.72,
+    "recommendation": "buy",
+    "recommendationMean": 1.9,
+    "targetPrice": 9755.13
+  },
+  "POWERGRID": {
+    "analystsCount": 25,
+    "debtToEquity": 150.99,
+    "margin": 49.47,
+    "pe": 14.11,
+    "promoterHeld": 52.8,
+    "recommendation": "buy",
+    "recommendationMean": 2.16,
+    "targetPrice": 329.48
+  },
+  "PRESTIGE": {
+    "analystsCount": 22,
+    "debtToEquity": 105.49,
+    "margin": 19.83,
+    "pe": 61.03,
+    "promoterHeld": 63.21,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.41,
+    "targetPrice": 1807.14
+  },
+  "PRITIKA": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": 28.45,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "PSB": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": 17.71,
+    "pe": 13.32,
+    "promoterHeld": 93.85,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "PVRINOX": {
+    "analystsCount": 16,
+    "debtToEquity": 91.87,
+    "margin": 7.84,
+    "pe": 55.51,
+    "promoterHeld": 27.57,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.47,
+    "targetPrice": 1377.25
+  },
+  "QUICKHEAL": {
+    "analystsCount": null,
+    "debtToEquity": 0.03,
+    "margin": -68.52,
+    "pe": null,
+    "promoterHeld": 74.12,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "RADICO": {
+    "analystsCount": 20,
+    "debtToEquity": 20.94,
+    "margin": 14.87,
+    "pe": 90.9,
+    "promoterHeld": 44.2,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.3,
+    "targetPrice": 3978.7
+  },
+  "RAINBOW": {
+    "analystsCount": 14,
+    "debtToEquity": 53.56,
+    "margin": 22.56,
+    "pe": 54.44,
+    "promoterHeld": 52.59,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.29,
+    "targetPrice": 1620.29
+  },
+  "RAMCOCEM": {
+    "analystsCount": 31,
+    "debtToEquity": 47.83,
+    "margin": 7.0,
+    "pe": 31.08,
+    "promoterHeld": 49.11,
+    "recommendation": "hold",
+    "recommendationMean": 3.19,
+    "targetPrice": 943.61
+  },
+  "RATNAMANI": {
+    "analystsCount": 5,
+    "debtToEquity": 7.49,
+    "margin": 10.96,
+    "pe": 37.52,
+    "promoterHeld": 67.24,
+    "recommendation": "buy",
+    "recommendationMean": 2.2,
+    "targetPrice": 2643.2
+  },
+  "RAYMOND": {
+    "analystsCount": 1,
+    "debtToEquity": 34.13,
+    "margin": 8.03,
+    "pe": 118.81,
+    "promoterHeld": 51.23,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": 655.0
+  },
+  "RBA": {
+    "analystsCount": 10,
+    "debtToEquity": 285.66,
+    "margin": -0.8,
+    "pe": -415.5,
+    "promoterHeld": 48.35,
+    "recommendation": "buy",
+    "recommendationMean": 1.8,
+    "targetPrice": 84.6
+  },
+  "RBLBANK": {
+    "analystsCount": 19,
+    "debtToEquity": null,
+    "margin": 13.97,
+    "pe": 26.14,
+    "promoterHeld": 2.71,
+    "recommendation": "buy",
+    "recommendationMean": 2.21,
+    "targetPrice": 363.11
+  },
+  "RCF": {
+    "analystsCount": null,
+    "debtToEquity": 80.61,
+    "margin": 4.37,
+    "pe": 16.58,
+    "promoterHeld": 75.0,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "RECLTD": {
+    "analystsCount": 13,
+    "debtToEquity": 607.46,
+    "margin": 90.23,
+    "pe": 5.66,
+    "promoterHeld": 52.65,
+    "recommendation": "buy",
+    "recommendationMean": 1.54,
+    "targetPrice": 439.08
+  },
+  "REDINGTON": {
+    "analystsCount": 4,
+    "debtToEquity": 27.26,
+    "margin": 2.13,
+    "pe": 14.44,
+    "promoterHeld": 26.0,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.0,
+    "targetPrice": 326.0
+  },
+  "RELIANCE": {
+    "analystsCount": 31,
+    "debtToEquity": 36.65,
+    "margin": 9.98,
+    "pe": 21.74,
+    "promoterHeld": 51.18,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.26,
+    "targetPrice": 1694.81
+  },
+  "RELIGARE": {
+    "analystsCount": null,
+    "debtToEquity": 12.72,
+    "margin": 5.54,
+    "pe": 99.34,
+    "promoterHeld": 48.13,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "REPCAPITAL": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "RITES": {
+    "analystsCount": 3,
+    "debtToEquity": 0.24,
+    "margin": 19.74,
+    "pe": 25.72,
+    "promoterHeld": 72.2,
+    "recommendation": "buy",
+    "recommendationMean": 2.0,
+    "targetPrice": 278.0
+  },
+  "RJEWELERS": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "ROSSARI": {
+    "analystsCount": 4,
+    "debtToEquity": 32.7,
+    "margin": 5.39,
+    "pe": 19.74,
+    "promoterHeld": 68.14,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.5,
+    "targetPrice": 601.75
+  },
+  "ROUTE": {
+    "analystsCount": 4,
+    "debtToEquity": 1.49,
+    "margin": 9.96,
+    "pe": 14.99,
+    "promoterHeld": 74.85,
+    "recommendation": "buy",
+    "recommendationMean": 2.0,
+    "targetPrice": 691.25
+  },
+  "RSSOFTWARE": {
+    "analystsCount": null,
+    "debtToEquity": 48.02,
+    "margin": -174.38,
+    "pe": null,
+    "promoterHeld": 45.93,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "RSYSTEMS": {
+    "analystsCount": 4,
+    "debtToEquity": 33.46,
+    "margin": 13.76,
+    "pe": 14.85,
+    "promoterHeld": 73.59,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.0,
+    "targetPrice": 411.5
+  },
+  "RVNL": {
+    "analystsCount": 2,
+    "debtToEquity": 49.08,
+    "margin": 3.87,
+    "pe": 53.8,
+    "promoterHeld": 72.84,
+    "recommendation": "sell",
+    "recommendationMean": 5.0,
+    "targetPrice": 184.5
+  },
+  "SAIL": {
+    "analystsCount": 29,
+    "debtToEquity": 52.9,
+    "margin": 9.19,
+    "pe": 20.03,
+    "promoterHeld": 65.1,
+    "recommendation": "hold",
+    "recommendationMean": 3.41,
+    "targetPrice": 179.66
+  },
+  "SANOFI": {
+    "analystsCount": 3,
+    "debtToEquity": 2.38,
+    "margin": 28.33,
+    "pe": 25.38,
+    "promoterHeld": 60.6,
+    "recommendation": "buy",
+    "recommendationMean": 2.0,
+    "targetPrice": 4519.0
+  },
+  "SAPPHIRE": {
+    "analystsCount": 20,
+    "debtToEquity": 102.06,
+    "margin": 2.96,
+    "pe": 81.75,
+    "promoterHeld": 26.12,
+    "recommendation": "buy",
+    "recommendationMean": 1.76,
+    "targetPrice": 246.1
+  },
+  "SAREGAMA": {
+    "analystsCount": 4,
+    "debtToEquity": 4.28,
+    "margin": 33.84,
+    "pe": 46.16,
+    "promoterHeld": 63.57,
+    "recommendation": "buy",
+    "recommendationMean": 1.75,
+    "targetPrice": 509.5
+  },
+  "SASKEN": {
+    "analystsCount": null,
+    "debtToEquity": 3.21,
+    "margin": 6.84,
+    "pe": 53.37,
+    "promoterHeld": 57.04,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "SBICARD": {
+    "analystsCount": 23,
+    "debtToEquity": 280.21,
+    "margin": 26.12,
+    "pe": 28.33,
+    "promoterHeld": 68.58,
+    "recommendation": "hold",
+    "recommendationMean": 3.13,
+    "targetPrice": 703.43
+  },
+  "SBILIFE": {
+    "analystsCount": 37,
+    "debtToEquity": null,
+    "margin": 21.17,
+    "pe": 74.37,
+    "promoterHeld": 58.7,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.14,
+    "targetPrice": 2334.03
+  },
+  "SBIN": {
+    "analystsCount": 38,
+    "debtToEquity": null,
+    "margin": 28.96,
+    "pe": 11.31,
+    "promoterHeld": 57.0,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.49,
+    "targetPrice": 1200.08
+  },
+  "SCHNEIDER": {
+    "analystsCount": 3,
+    "debtToEquity": 70.8,
+    "margin": 5.97,
+    "pe": 149.18,
+    "promoterHeld": 77.57,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.0,
+    "targetPrice": 1398.33
+  },
+  "SDBL": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": -44.39,
+    "pe": 132.96,
+    "promoterHeld": 55.64,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "SHILPA": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "SHIPCORP": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "SHREECEM": {
+    "analystsCount": 39,
+    "debtToEquity": 38.15,
+    "margin": 18.6,
+    "pe": 54.86,
+    "promoterHeld": 72.76,
+    "recommendation": "hold",
+    "recommendationMean": 2.51,
+    "targetPrice": 27448.9
+  },
+  "SHREERENUKA": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "SHRIRAMFIN": {
+    "analystsCount": 32,
+    "debtToEquity": 276.21,
+    "margin": 70.44,
+    "pe": 19.43,
+    "promoterHeld": 22.12,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.41,
+    "targetPrice": 1189.09
+  },
+  "SIEMENS": {
+    "analystsCount": 26,
+    "debtToEquity": 2.21,
+    "margin": 8.02,
+    "pe": 76.95,
+    "promoterHeld": 76.82,
+    "recommendation": "hold",
+    "recommendationMean": 2.58,
+    "targetPrice": 3789.38
+  },
+  "SILINV": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": 184.52,
+    "pe": 11.81,
+    "promoterHeld": 82.14,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "SIMPLEXINF": {
+    "analystsCount": null,
+    "debtToEquity": 167.84,
+    "margin": 4.91,
+    "pe": 49.3,
+    "promoterHeld": 63.84,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "SJVN": {
+    "analystsCount": 2,
+    "debtToEquity": 226.53,
+    "margin": 27.75,
+    "pe": 42.94,
+    "promoterHeld": 81.85,
+    "recommendation": "underperform",
+    "recommendationMean": 4.0,
+    "targetPrice": 70.0
+  },
+  "SKFINDIA": {
+    "analystsCount": 6,
+    "debtToEquity": 0.22,
+    "margin": 2.9,
+    "pe": 27.39,
+    "promoterHeld": 53.16,
+    "recommendation": "hold",
+    "recommendationMean": 3.0,
+    "targetPrice": 1746.0
+  },
+  "SNOWMAN": {
+    "analystsCount": null,
+    "debtToEquity": 77.68,
+    "margin": 4.57,
+    "pe": 187.55,
+    "promoterHeld": 54.17,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "SOBHA": {
+    "analystsCount": 18,
+    "debtToEquity": 24.62,
+    "margin": 6.22,
+    "pe": 80.91,
+    "promoterHeld": 58.47,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.33,
+    "targetPrice": 1723.72
+  },
+  "SOLARA": {
+    "analystsCount": null,
+    "debtToEquity": 54.68,
+    "margin": 8.16,
+    "pe": 18.18,
+    "promoterHeld": 53.3,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "SONATSOFTW": {
+    "analystsCount": 8,
+    "debtToEquity": 37.96,
+    "margin": 3.5,
+    "pe": 18.42,
+    "promoterHeld": 41.88,
+    "recommendation": "buy",
+    "recommendationMean": 2.25,
+    "targetPrice": 335.38
+  },
+  "SOUTHBANK": {
+    "analystsCount": 6,
+    "debtToEquity": null,
+    "margin": 43.14,
+    "pe": 7.88,
+    "promoterHeld": 4.91,
+    "recommendation": "buy",
+    "recommendationMean": 2.0,
+    "targetPrice": 46.17
+  },
+  "SPICEJET": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "SRF": {
+    "analystsCount": 30,
+    "debtToEquity": 36.2,
+    "margin": 20.63,
+    "pe": 46.73,
+    "promoterHeld": 52.41,
+    "recommendation": "buy",
+    "recommendationMean": 2.37,
+    "targetPrice": 2967.6
+  },
+  "STARHEALTH": {
+    "analystsCount": 24,
+    "debtToEquity": null,
+    "margin": 3.25,
+    "pe": 63.71,
+    "promoterHeld": 64.11,
+    "recommendation": "buy",
+    "recommendationMean": 1.74,
+    "targetPrice": 604.04
+  },
+  "STLTECH": {
+    "analystsCount": 2,
+    "debtToEquity": 85.63,
+    "margin": 9.37,
+    "pe": 477.43,
+    "promoterHeld": 52.39,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.5,
+    "targetPrice": 547.5
+  },
+  "SUNPHARMA": {
+    "analystsCount": 34,
+    "debtToEquity": 5.52,
+    "margin": 19.23,
+    "pe": 40.45,
+    "promoterHeld": 55.61,
+    "recommendation": "buy",
+    "recommendationMean": 1.65,
+    "targetPrice": 2055.0
+  },
+  "SUNTV": {
+    "analystsCount": 11,
+    "debtToEquity": 0.84,
+    "margin": 33.17,
+    "pe": 13.65,
+    "promoterHeld": 78.47,
+    "recommendation": "buy",
+    "recommendationMean": 1.82,
+    "targetPrice": 654.55
+  },
+  "SURYODAY": {
+    "analystsCount": 2,
+    "debtToEquity": null,
+    "margin": 17.96,
+    "pe": 12.59,
+    "promoterHeld": 35.7,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.0,
+    "targetPrice": 263.5
+  },
+  "SUZLON": {
+    "analystsCount": 13,
+    "debtToEquity": 5.87,
+    "margin": 16.42,
+    "pe": 22.51,
+    "promoterHeld": 18.66,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.38,
+    "targetPrice": 65.85
+  },
+  "SWIGGY": {
+    "analystsCount": 27,
+    "debtToEquity": 13.93,
+    "margin": -15.81,
+    "pe": -121.2,
+    "promoterHeld": 46.15,
+    "recommendation": "buy",
+    "recommendationMean": 1.89,
+    "targetPrice": 371.22
+  },
+  "SYMPHONY": {
+    "analystsCount": 7,
+    "debtToEquity": 31.64,
+    "margin": 5.97,
+    "pe": 20.51,
+    "promoterHeld": 75.85,
+    "recommendation": "buy",
+    "recommendationMean": 1.86,
+    "targetPrice": 949.57
+  },
+  "SYNGENE": {
+    "analystsCount": 8,
+    "debtToEquity": 9.47,
+    "margin": 20.82,
+    "pe": 52.98,
+    "promoterHeld": 52.8,
+    "recommendation": "buy",
+    "recommendationMean": 2.12,
+    "targetPrice": 559.38
+  },
+  "TANLA": {
+    "analystsCount": 2,
+    "debtToEquity": 2.12,
+    "margin": 14.26,
+    "pe": 15.38,
+    "promoterHeld": 55.58,
+    "recommendation": "hold",
+    "recommendationMean": 3.0,
+    "targetPrice": 581.5
+  },
+  "TATACHEM": {
+    "analystsCount": 9,
+    "debtToEquity": 36.08,
+    "margin": -0.96,
+    "pe": 20.7,
+    "promoterHeld": 38.72,
+    "recommendation": "underperform",
+    "recommendationMean": 4.0,
+    "targetPrice": 712.89
+  },
+  "TATACOFFEE": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "TATACOMM": {
+    "analystsCount": 11,
+    "debtToEquity": 335.85,
+    "margin": 8.44,
+    "pe": 50.25,
+    "promoterHeld": 60.48,
+    "recommendation": "buy",
+    "recommendationMean": 1.91,
+    "targetPrice": 2014.73
+  },
+  "TATACONSUM": {
+    "analystsCount": 28,
+    "debtToEquity": 12.16,
+    "margin": 11.15,
+    "pe": 69.92,
+    "promoterHeld": 34.37,
+    "recommendation": "buy",
+    "recommendationMean": 1.83,
+    "targetPrice": 1348.18
+  },
+  "TATAELXSI": {
+    "analystsCount": 15,
+    "debtToEquity": 5.34,
+    "margin": 18.97,
+    "pe": 33.67,
+    "promoterHeld": 44.88,
+    "recommendation": "underperform",
+    "recommendationMean": 3.53,
+    "targetPrice": 3642.73
+  },
+  "TATAINVEST": {
+    "analystsCount": null,
+    "debtToEquity": 0.01,
+    "margin": 73.11,
+    "pe": 77.55,
+    "promoterHeld": 73.82,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "TATAMOTORS": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "TATAPOWER": {
+    "analystsCount": 24,
+    "debtToEquity": 168.05,
+    "margin": 11.56,
+    "pe": 32.16,
+    "promoterHeld": 47.24,
+    "recommendation": "hold",
+    "recommendationMean": 2.58,
+    "targetPrice": 426.54
+  },
+  "TATASTEEL": {
+    "analystsCount": 36,
+    "debtToEquity": 89.02,
+    "margin": 9.7,
+    "pe": 21.47,
+    "promoterHeld": 35.54,
+    "recommendation": "hold",
+    "recommendationMean": 2.6,
+    "targetPrice": 222.64
+  },
+  "TATATELE": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "TATVA": {
+    "analystsCount": 4,
+    "debtToEquity": 15.4,
+    "margin": 13.7,
+    "pe": 79.29,
+    "promoterHeld": 74.16,
+    "recommendation": "hold",
+    "recommendationMean": 2.75,
+    "targetPrice": 1417.5
+  },
+  "TBZ": {
+    "analystsCount": null,
+    "debtToEquity": 105.73,
+    "margin": 12.57,
+    "pe": 8.45,
+    "promoterHeld": 75.16,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "TCI": {
+    "analystsCount": 6,
+    "debtToEquity": 11.99,
+    "margin": 9.42,
+    "pe": 15.67,
+    "promoterHeld": 71.3,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.0,
+    "targetPrice": 1181.83
+  },
+  "TCIEXP": {
+    "analystsCount": 10,
+    "debtToEquity": 7.74,
+    "margin": 6.78,
+    "pe": 27.42,
+    "promoterHeld": 72.09,
+    "recommendation": "hold",
+    "recommendationMean": 2.7,
+    "targetPrice": 569.2
+  },
+  "TCISUPPLY": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "TCS": {
+    "analystsCount": 42,
+    "debtToEquity": 10.21,
+    "margin": 23.96,
+    "pe": 16.0,
+    "promoterHeld": 71.8,
+    "recommendation": "buy",
+    "recommendationMean": 2.05,
+    "targetPrice": 2481.05
+  },
+  "TECHM": {
+    "analystsCount": 40,
+    "debtToEquity": 7.27,
+    "margin": 14.41,
+    "pe": 26.11,
+    "promoterHeld": 36.96,
+    "recommendation": "buy",
+    "recommendationMean": 2.35,
+    "targetPrice": 1556.1
+  },
+  "THERMAX": {
+    "analystsCount": 22,
+    "debtToEquity": 42.17,
+    "margin": 9.34,
+    "pe": 72.7,
+    "promoterHeld": 73.67,
+    "recommendation": "hold",
+    "recommendationMean": 3.0,
+    "targetPrice": 4438.91
+  },
+  "THOMASCOOK": {
+    "analystsCount": 2,
+    "debtToEquity": 21.37,
+    "margin": 2.1,
+    "pe": 22.23,
+    "promoterHeld": 65.94,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.0,
+    "targetPrice": 131.5
+  },
+  "TI": {
+    "analystsCount": 4,
+    "debtToEquity": 77.18,
+    "margin": 12.22,
+    "pe": 455.88,
+    "promoterHeld": 39.01,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.25,
+    "targetPrice": 548.0
+  },
+  "TIPSINDLTD": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "TIRUMALCHM": {
+    "analystsCount": null,
+    "debtToEquity": 139.08,
+    "margin": 0.33,
+    "pe": null,
+    "promoterHeld": 41.95,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "TITAN": {
+    "analystsCount": 37,
+    "debtToEquity": 195.0,
+    "margin": 6.36,
+    "pe": 80.65,
+    "promoterHeld": 58.73,
+    "recommendation": "buy",
+    "recommendationMean": 1.81,
+    "targetPrice": 5056.84
+  },
+  "TORNTPHARM": {
+    "analystsCount": 29,
+    "debtToEquity": 85.45,
+    "margin": 20.2,
+    "pe": 78.12,
+    "promoterHeld": 71.19,
+    "recommendation": "buy",
+    "recommendationMean": 1.72,
+    "targetPrice": 4912.38
+  },
+  "TRENT": {
+    "analystsCount": 25,
+    "debtToEquity": 36.03,
+    "margin": 11.12,
+    "pe": 88.49,
+    "promoterHeld": 43.42,
+    "recommendation": "buy",
+    "recommendationMean": 1.92,
+    "targetPrice": 3296.73
+  },
+  "TRENTLTD": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "TRIGYN": {
+    "analystsCount": null,
+    "debtToEquity": 1.29,
+    "margin": 1.14,
+    "pe": 74.04,
+    "promoterHeld": 48.38,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "TRITURBINE": {
+    "analystsCount": 9,
+    "debtToEquity": 2.48,
+    "margin": 17.51,
+    "pe": 55.88,
+    "promoterHeld": 59.8,
+    "recommendation": "buy",
+    "recommendationMean": 1.89,
+    "targetPrice": 687.33
+  },
+  "TRIVENI": {
+    "analystsCount": 3,
+    "debtToEquity": 64.65,
+    "margin": 15.97,
+    "pe": 38.61,
+    "promoterHeld": 67.82,
+    "recommendation": "buy",
+    "recommendationMean": 1.67,
+    "targetPrice": 476.0
+  },
+  "TTKPRESTIG": {
+    "analystsCount": 9,
+    "debtToEquity": 8.8,
+    "margin": 6.27,
+    "pe": 57.82,
+    "promoterHeld": 70.93,
+    "recommendation": "hold",
+    "recommendationMean": 2.56,
+    "targetPrice": 601.89
+  },
+  "TTL": {
+    "analystsCount": null,
+    "debtToEquity": 63.73,
+    "margin": 4.0,
+    "pe": 656.0,
+    "promoterHeld": 68.76,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "TV18BRDCST": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "TVSMOTOR": {
+    "analystsCount": 35,
+    "debtToEquity": 306.09,
+    "margin": 12.2,
+    "pe": 57.04,
+    "promoterHeld": 52.21,
+    "recommendation": "buy",
+    "recommendationMean": 2.14,
+    "targetPrice": 3950.54
+  },
+  "UBL": {
+    "analystsCount": 19,
+    "debtToEquity": 29.08,
+    "margin": 2.81,
+    "pe": 85.6,
+    "promoterHeld": 72.83,
+    "recommendation": "hold",
+    "recommendationMean": 3.11,
+    "targetPrice": 1523.05
+  },
+  "UCOBANK": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": 41.61,
+    "pe": 11.79,
+    "promoterHeld": 90.95,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "UJJIVANSFB": {
+    "analystsCount": 19,
+    "debtToEquity": null,
+    "margin": 29.53,
+    "pe": 18.48,
+    "promoterHeld": 0.04,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.11,
+    "targetPrice": 74.0
+  },
+  "ULTRACEMCO": {
+    "analystsCount": 39,
+    "debtToEquity": 29.43,
+    "margin": 17.02,
+    "pe": 42.37,
+    "promoterHeld": 61.73,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.44,
+    "targetPrice": 13716.82
+  },
+  "UNITY": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": -0.03,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "UPL": {
+    "analystsCount": 18,
+    "debtToEquity": 57.13,
+    "margin": 14.95,
+    "pe": 28.01,
+    "promoterHeld": 33.79,
+    "recommendation": "buy",
+    "recommendationMean": 1.89,
+    "targetPrice": 764.78
+  },
+  "UTTAMSUGAR": {
+    "analystsCount": null,
+    "debtToEquity": 81.15,
+    "margin": 18.32,
+    "pe": 8.99,
+    "promoterHeld": 80.57,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "VBL": {
+    "analystsCount": 26,
+    "debtToEquity": 12.71,
+    "margin": 18.49,
+    "pe": 49.5,
+    "promoterHeld": 60.56,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.5,
+    "targetPrice": 587.23
+  },
+  "VEDL": {
+    "analystsCount": 6,
+    "debtToEquity": 48.04,
+    "margin": 33.93,
+    "pe": 14.37,
+    "promoterHeld": 58.53,
+    "recommendation": "buy",
+    "recommendationMean": 1.86,
+    "targetPrice": 316.0
+  },
+  "VENKEYS": {
+    "analystsCount": null,
+    "debtToEquity": 10.43,
+    "margin": 10.94,
+    "pe": 14.97,
+    "promoterHeld": 61.21,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "VINATIORGA": {
+    "analystsCount": 14,
+    "debtToEquity": null,
+    "margin": 23.15,
+    "pe": 30.85,
+    "promoterHeld": 75.25,
+    "recommendation": "buy",
+    "recommendationMean": 1.86,
+    "targetPrice": 1665.93
+  },
+  "VOLTAS": {
+    "analystsCount": 35,
+    "debtToEquity": 15.51,
+    "margin": 5.69,
+    "pe": 120.5,
+    "promoterHeld": 36.66,
+    "recommendation": "hold",
+    "recommendationMean": 2.77,
+    "targetPrice": 1337.63
+  },
+  "VSTIND": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": 31.74,
+    "pe": 13.54,
+    "promoterHeld": 62.18,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "VTL": {
+    "analystsCount": 6,
+    "debtToEquity": 17.52,
+    "margin": 6.87,
+    "pe": 24.27,
+    "promoterHeld": 65.53,
+    "recommendation": "buy",
+    "recommendationMean": 2.5,
+    "targetPrice": 592.5
+  },
+  "WABAG": {
+    "analystsCount": 7,
+    "debtToEquity": 8.87,
+    "margin": 11.02,
+    "pe": 28.76,
+    "promoterHeld": 28.26,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.0,
+    "targetPrice": 1931.0
+  },
+  "WABCO": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "WABCOINDIA": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "WELCORP": {
+    "analystsCount": 6,
+    "debtToEquity": 25.04,
+    "margin": 11.62,
+    "pe": 27.55,
+    "promoterHeld": 49.85,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.0,
+    "targetPrice": 1608.33
+  },
+  "WELSILK": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "WELSIND": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "WELSPUNLIV": {
+    "analystsCount": 10,
+    "debtToEquity": 46.5,
+    "margin": 6.0,
+    "pe": 76.82,
+    "promoterHeld": 69.88,
+    "recommendation": "buy",
+    "recommendationMean": 1.58,
+    "targetPrice": 176.8
+  },
+  "WHIRLPOOL": {
+    "analystsCount": 11,
+    "debtToEquity": 8.62,
+    "margin": 3.14,
+    "pe": 33.32,
+    "promoterHeld": 39.79,
+    "recommendation": "hold",
+    "recommendationMean": 2.55,
+    "targetPrice": 980.36
+  },
+  "WIPRO": {
+    "analystsCount": 39,
+    "debtToEquity": 22.85,
+    "margin": 17.18,
+    "pe": 14.0,
+    "promoterHeld": 72.7,
+    "recommendation": "hold",
+    "recommendationMean": 3.33,
+    "targetPrice": 191.05
+  },
+  "WOCKPHARMA": {
+    "analystsCount": null,
+    "debtToEquity": 42.28,
+    "margin": 14.82,
+    "pe": 142.91,
+    "promoterHeld": 51.02,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "WONDERLA": {
+    "analystsCount": 4,
+    "debtToEquity": 0.35,
+    "margin": 9.05,
+    "pe": 36.58,
+    "promoterHeld": 64.14,
+    "recommendation": "none",
+    "recommendationMean": null,
+    "targetPrice": 660.25
+  },
+  "WWIL": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "YATRA": {
+    "analystsCount": 6,
+    "debtToEquity": 12.4,
+    "margin": -0.16,
+    "pe": 36.52,
+    "promoterHeld": 66.22,
+    "recommendation": "strong_buy",
+    "recommendationMean": 1.17,
+    "targetPrice": 170.0
+  },
+  "ZEEENT": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "ZEEL": {
+    "analystsCount": 13,
+    "debtToEquity": 2.26,
+    "margin": -15.6,
+    "pe": 37.55,
+    "promoterHeld": 4.93,
+    "recommendation": "hold",
+    "recommendationMean": 2.92,
+    "targetPrice": 99.46
+  },
+  "ZENOTECH": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "ZENSARTECH": {
+    "analystsCount": 12,
+    "debtToEquity": 1.68,
+    "margin": 15.67,
+    "pe": 15.77,
+    "promoterHeld": 50.16,
+    "recommendation": "buy",
+    "recommendationMean": 1.92,
+    "targetPrice": 572.08
+  },
+  "ZENTEC": {
+    "analystsCount": 6,
+    "debtToEquity": 0.95,
+    "margin": 25.35,
+    "pe": 84.03,
+    "promoterHeld": 49.91,
+    "recommendation": "buy",
+    "recommendationMean": 1.71,
+    "targetPrice": 1760.0
+  },
+  "ZOMATO": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "ZUARIGLOB": {
+    "analystsCount": null,
+    "debtToEquity": null,
+    "margin": null,
+    "pe": null,
+    "promoterHeld": null,
+    "recommendation": null,
+    "recommendationMean": null,
+    "targetPrice": null
+  },
+  "ZYDUSLIFE": {
+    "analystsCount": 31,
+    "debtToEquity": 42.3,
+    "margin": 18.97,
+    "pe": 23.04,
+    "promoterHeld": 75.18,
+    "recommendation": "hold",
+    "recommendationMean": 2.52,
+    "targetPrice": 1093.73
+  }
+}

@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Gauge, BarChart3, Activity } from 'lucide-react'
+import { Gauge, BarChart3, Activity, Target, Sparkles, Hexagon } from 'lucide-react'
 import { IndicatorSnapshot, formatINR } from './types'
 
 interface Props {
@@ -78,8 +78,8 @@ export function IndicatorPanel({ ind }: Props) {
           ))}
         </div>
 
-        {/* Patterns + Pivots + Swings */}
-        <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
+        {/* Patterns + Pivots + Swings + Fibonacci */}
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-4 gap-3">
           <div className="rounded border border-border/60 p-3 space-y-1">
             <div className="text-[10px] uppercase tracking-wide text-muted-foreground flex items-center gap-1">
               <Activity className="h-3 w-3" /> Candlestick patterns
@@ -129,7 +129,103 @@ export function IndicatorPanel({ ind }: Props) {
               )}
             </div>
           </div>
+
+          {ind.fib && (
+            <div className="rounded border border-border/60 p-3 space-y-1">
+              <div className="text-[10px] uppercase tracking-wide text-muted-foreground flex items-center gap-1">
+                <Target className="h-3 w-3 text-indigo-500" /> Fibonacci Retracement
+              </div>
+              <div className="text-xs space-y-0.5 tabular-nums">
+                <div className="flex justify-between"><span className="text-[10px] text-muted-foreground">High (100d)</span><span className="text-muted-foreground">{formatINR(ind.fib.high)}</span></div>
+                <div className="flex justify-between"><span className={`text-[10px] ${ind.fib.closestLevel === '23.6%' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-muted-foreground'}`}>23.6% Level</span><span>{formatINR(ind.fib.fib236)}</span></div>
+                <div className="flex justify-between"><span className={`text-[10px] ${ind.fib.closestLevel === '38.2%' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-muted-foreground'}`}>38.2% Level</span><span>{formatINR(ind.fib.fib382)}</span></div>
+                <div className="flex justify-between"><span className={`text-[10px] ${ind.fib.closestLevel === '50.0%' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-muted-foreground'}`}>50.0% Level</span><span>{formatINR(ind.fib.fib500)}</span></div>
+                <div className="flex justify-between"><span className={`text-[10px] ${ind.fib.closestLevel === '61.8%' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-muted-foreground'}`}>61.8% Level</span><span>{formatINR(ind.fib.fib618)}</span></div>
+                <div className="flex justify-between"><span className={`text-[10px] ${ind.fib.closestLevel === '78.6%' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-muted-foreground'}`}>78.6% Level</span><span>{formatINR(ind.fib.fib786)}</span></div>
+                <div className="flex justify-between"><span className="text-[10px] text-muted-foreground">Low (100d)</span><span className="text-muted-foreground">{formatINR(ind.fib.low)}</span></div>
+              </div>
+            </div>
+          )}
         </div>
+
+        {/* Fibonacci Confluence Alert Box */}
+        {ind.fibConfluence?.isActive && (
+          <div className="mt-4 p-3 bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/60 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-2 transition-all">
+            <div>
+              <h4 className="text-xs font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5">
+                <Sparkles className="h-4 w-4 text-emerald-500 fill-current" />
+                Active Fibonacci Confluence Zone Detected!
+              </h4>
+              <p className="text-[11px] text-muted-foreground mt-0.5">
+                Current price is reacting inside a strong confluence of: <strong className="text-slate-700 dark:text-slate-200">{ind.fibConfluence.levels.join(" + ")}</strong> near {formatINR(ind.fibConfluence.priceZone)}.
+              </p>
+            </div>
+            <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white font-mono text-[9px] w-fit">
+              ZONE DIST: {ind.fibConfluence.distancePct}%
+            </Badge>
+          </div>
+        )}
+
+        {/* Harmonic Patterns Panel */}
+        {ind.harmonics && ind.harmonics.length > 0 && (
+          <div className="mt-4">
+            <div className="text-[10px] uppercase tracking-wide text-muted-foreground flex items-center gap-1 mb-2">
+              <Hexagon className="h-3 w-3 text-violet-500" /> Harmonic Patterns Detected
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {ind.harmonics.map((p, idx) => {
+                const isBull = p.direction === 'Bullish'
+                const isNearPRZ = Math.abs(p.distFromD) <= 2.5
+                return (
+                  <div key={idx} className={`rounded border p-2 space-y-1 ${
+                    isBull
+                      ? 'border-emerald-200 dark:border-emerald-900/60 bg-emerald-50/30 dark:bg-emerald-950/10'
+                      : 'border-rose-200 dark:border-rose-900/60 bg-rose-50/30 dark:bg-rose-950/10'
+                  }`}>
+                    <div className="flex items-center justify-between gap-1">
+                      <div className="flex items-center gap-1.5">
+                        <span className={`text-[10px] font-bold ${isBull ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}`}>
+                          {isBull ? '▲' : '▼'} {p.direction} {p.name}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Badge className={`text-[9px] px-1 py-0 ${
+                          p.status === 'FORMING'
+                            ? 'bg-violet-500 text-white'
+                            : 'bg-slate-400 text-white'
+                        }`}>{p.status}</Badge>
+                        {isNearPRZ && (
+                          <Badge className="text-[9px] px-1 py-0 bg-amber-500 text-white">⚡ IN PRZ</Badge>
+                        )}
+                      </div>
+                    </div>
+                    {/* PRZ Zone */}
+                    <div className="text-[10px] space-y-0.5 tabular-nums">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">PRZ Zone</span>
+                        <span className="font-semibold">{formatINR(p.przLow)} – {formatINR(p.przHigh)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Dist from PRZ</span>
+                        <span className={isNearPRZ ? 'text-amber-600 dark:text-amber-400 font-bold' : ''}>
+                          {p.distFromD > 0 ? '+' : ''}{p.distFromD}%
+                        </span>
+                      </div>
+                    </div>
+                    {/* Fibonacci Ratios */}
+                    <div className="text-[9px] text-muted-foreground space-y-0.5 pt-1 border-t border-border/40">
+                      <div className="flex gap-2 flex-wrap">
+                        <span>AB/XA: <strong>{(p.ratioAB * 100).toFixed(0)}%</strong></span>
+                        <span>BC/AB: <strong>{(p.ratioBC * 100).toFixed(0)}%</strong></span>
+                        <span>D/XA: <strong>{(p.ratioXAD * 100).toFixed(0)}%</strong></span>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   )

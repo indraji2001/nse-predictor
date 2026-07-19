@@ -23,12 +23,15 @@ export function MarketSummary({ result }: Props) {
   const nseActive = ds?.nseActive ?? false
   const nseCount = ds?.nseCount ?? 0
   const yahooCount = ds?.yahooCount ?? ds?.liveCount ?? 0
+  const upstoxCount = (ds as any)?.upstoxCount ?? 0
   const demoCount = ds?.demoCount ?? 0
 
-  // Banner style: blue when NSE archive is active, green when only Yahoo all-live,
-  // amber when partial Yahoo, gray when all synthetic
+  // Banner style: blue when NSE archive is active, violet for Upstox,
+  // green when only Yahoo all-live, amber when partial Yahoo, gray when all synthetic
   const bannerClass = nseActive
     ? 'border-l-blue-500 bg-blue-50/30 dark:bg-blue-950/10'
+    : upstoxCount > 0
+    ? 'border-l-violet-500 bg-violet-50/30 dark:bg-violet-950/10'
     : yahooCount > 0 && demoCount === 0
     ? 'border-l-emerald-500 bg-emerald-50/30 dark:bg-emerald-950/10'
     : yahooCount > 0
@@ -42,7 +45,7 @@ export function MarketSummary({ result }: Props) {
         <Card className={`border-l-4 ${bannerClass}`}>
           <CardContent className="p-3 flex items-center justify-between gap-3 flex-wrap">
             <div className="flex items-center gap-2 text-xs">
-              {nseActive || yahooCount > 0 ? (
+              {nseActive || yahooCount > 0 || upstoxCount > 0 ? (
                 <Wifi className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
               ) : (
                 <WifiOff className="h-4 w-4 text-amber-600 dark:text-amber-400" />
@@ -50,12 +53,15 @@ export function MarketSummary({ result }: Props) {
               <span className="font-semibold">
                 {nseActive
                   ? `NSE bhavcopy archive (${nseCount} stocks)`
+                  : upstoxCount > 0
+                  ? 'Upstox EOD data feed'
                   : yahooCount > 0
                   ? 'Yahoo Finance EOD data'
                   : 'Synthetic data (no live provider available)'}
               </span>
               <Badge variant="outline" className="text-[10px] font-mono">
                 {nseActive && nseCount > 0 && <span className="text-blue-700 dark:text-blue-300">{nseCount} nse · </span>}
+                {upstoxCount > 0 && <span className="text-violet-700 dark:text-violet-300">{upstoxCount} upstox · </span>}
                 <span className="text-emerald-700 dark:text-emerald-300">{yahooCount} yahoo</span>
                 {demoCount > 0 && <span className="text-amber-700 dark:text-amber-300"> · {demoCount} demo</span>}
               </Badge>

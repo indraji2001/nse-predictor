@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { RefreshCw, Award, TrendingUp, TrendingDown, Target, Activity } from 'lucide-react'
 import { PaperTradeCard, type PaperTrade } from './paper-trade-card'
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts'
 
 interface Props {
   trades: PaperTrade[]
@@ -52,6 +53,22 @@ export function PaperTradesView({ trades, stats, loading, updating, onUpdate, on
     )
   }
 
+  // Generate cumulative P&L chart data
+  const chartData = (() => {
+    const sortedForChart = [...trades]
+      .sort((a, b) => new Date(a.trackedAt).getTime() - new Date(b.trackedAt).getTime())
+    
+    let cumulativePnl = 0
+    return sortedForChart.map((t) => {
+      cumulativePnl += t.pnlPct
+      return {
+        date: new Date(t.trackedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }),
+        pnl: +cumulativePnl.toFixed(2),
+        symbol: t.symbol,
+      }
+    })
+  })()
+
   // Group trades: Active first, then by status
   const statusOrder = { ACTIVE: 0, HIT_T1: 1, HIT_T2: 2, HIT_T3: 3, STOPPED_OUT: 4, CLOSED: 5 }
   const sorted = [...trades].sort((a, b) => {
@@ -84,6 +101,43 @@ export function PaperTradesView({ trades, stats, loading, updating, onUpdate, on
             color={stats.winRate >= 50 ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}
           />
         </div>
+      )}
+
+      {/* Performance Curve Chart */}
+      {trades.length >= 2 && chartData.length >= 2 && (
+        <Card className="border-border/60">
+          <CardContent className="p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="text-xs font-semibold text-slate-800 dark:text-slate-200">Paper Trading Cumulative Growth</h4>
+                <p className="text-[10px] text-muted-foreground">Historical aggregate sum of tracked P&L (%) over time</p>
+              </div>
+              <Badge variant="secondary" className="text-[10px] font-mono bg-indigo-50 text-indigo-700 dark:bg-indigo-950/20 dark:text-indigo-300">
+                Net P&L: {(stats?.avgPnl ?? 0) * (stats?.total ?? 0) >= 0 ? '+' : ''}{((stats?.avgPnl ?? 0) * (stats?.total ?? 0)).toFixed(2)}%
+              </Badge>
+            </div>
+            <div className="h-44 w-full pt-2">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={chartData}>
+                  <defs>
+                    <linearGradient id="colorPnl" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.2} />
+                      <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-slate-100 dark:stroke-slate-800" />
+                  <XAxis dataKey="date" className="text-[9px] text-muted-foreground" />
+                  <YAxis className="text-[9px] text-muted-foreground" tickFormatter={(v) => `${v}%`} />
+                  <Tooltip
+                    contentStyle={{ fontSize: 10, borderRadius: 4 }}
+                    formatter={(value: any, name: any, props: any) => [`${value}%`, `P&L (${props.payload.symbol})`]}
+                  />
+                  <Area type="monotone" dataKey="pnl" stroke="#10b981" strokeWidth={2} fillOpacity={1} fill="url(#colorPnl)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* Update prices button */}

@@ -6,7 +6,7 @@ import { Progress } from '@/components/ui/progress'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import {
-  TrendingUp, TrendingDown, Target, ShieldAlert, Clock, ChevronRight, Activity, Bookmark,
+  TrendingUp, TrendingDown, Target, ShieldAlert, Clock, ChevronRight, Activity, Bookmark, Sparkles,
 } from 'lucide-react'
 import {
   Signal, formatINR, formatPct, confidenceColor, confidenceBg, actionBadge, TIMEFRAME_LABELS, dataSourceBadge, dataQualityBadge,
@@ -38,6 +38,36 @@ export function SignalCard({ signal, rank, onOpen, onTrack, isTracked }: Props) 
                 {signal.action}
               </Badge>
               <Badge variant="secondary" className="text-[10px] font-medium">{signal.sector}</Badge>
+              {signal.mlProbability !== undefined && (
+                <Badge
+                  variant="outline"
+                  className="text-[10px] font-semibold bg-indigo-50/50 text-indigo-700 dark:bg-indigo-950/20 dark:text-indigo-300 border-indigo-200 dark:border-indigo-900 gap-1"
+                  title="Probability of >=5% gain in 10 days calculated by LightGBM machine learning model"
+                >
+                  <Sparkles className="h-2.5 w-2.5 fill-current" />
+                  ML Prob: {signal.mlProbability}%
+                </Badge>
+              )}
+              {signal.targetPrice && (
+                (() => {
+                  const targetUpside = ((signal.targetPrice - signal.entry) / signal.entry) * 100
+                  const isPositive = targetUpside >= 0
+                  return (
+                    <Badge
+                      variant="outline"
+                      className={`text-[10px] font-semibold gap-1 ${
+                        isPositive 
+                          ? 'bg-emerald-50/50 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-300 border-emerald-200 dark:border-emerald-900' 
+                          : 'bg-rose-50/50 text-rose-700 dark:bg-rose-950/20 dark:text-rose-300 border-rose-200 dark:border-rose-900'
+                      }`}
+                      title={`Average broker price target is ₹${signal.targetPrice.toFixed(2)} (${isPositive ? '+' : ''}${targetUpside.toFixed(1)}% vs entry)`}
+                    >
+                      <Target className="h-2.5 w-2.5 text-emerald-500 dark:text-emerald-400" />
+                      Broker Target: {isPositive ? '+' : ''}{targetUpside.toFixed(1)}%
+                    </Badge>
+                  )
+                })()
+              )}
               {signal.dataSource && (() => {
                 const ds = dataSourceBadge(signal.dataSource)
                 return (
@@ -196,6 +226,26 @@ export function SignalCard({ signal, rank, onOpen, onTrack, isTracked }: Props) 
                 </Tooltip>
               </TooltipProvider>
             )}
+            <TooltipProvider delayDuration={200}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-7 text-xs gap-1 text-emerald-600 dark:text-emerald-400"
+                    onClick={() => {
+                      window.location.href = `/backtest?symbol=${signal.symbol}&timeframe=${signal.timeframe}`
+                    }}
+                  >
+                    <Activity className="h-3 w-3" />
+                    Backtest
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  Run historical backtest for this signal
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <Button size="sm" variant="ghost" className="h-7 text-xs gap-1 group-hover:gap-2 transition-all" onClick={onOpen}>
               Analysis <ChevronRight className="h-3 w-3" />
             </Button>

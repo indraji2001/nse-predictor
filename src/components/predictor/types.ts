@@ -6,6 +6,35 @@
 export type Timeframe = 'BTST' | 'SHORT_TERM' | 'MIDTERM' | 'LONG_TERM'
 export type Action = 'BUY' | 'SELL' | 'AVOID'
 
+export type HarmonicPatternName =
+  | 'Gartley' | 'Perfect Gartley'
+  | 'Bat' | 'Perfect Bat' | 'Alt Bat'
+  | 'Butterfly' | 'Perfect Butterfly'
+  | 'Crab' | 'Deep Crab' | 'Perfect Crab'
+  | 'AB=CD'
+  | 'Cypher'
+  | 'Shark'
+export type HarmonicDirection = 'Bullish' | 'Bearish'
+
+export interface HarmonicPattern {
+  name: HarmonicPatternName
+  direction: HarmonicDirection
+  X: number
+  A: number
+  B: number
+  C: number
+  D: number
+  przLow: number
+  przHigh: number
+  ratioAB: number
+  ratioBC: number
+  ratioCD: number
+  ratioXAD: number
+  distFromD: number
+  status: 'FORMING' | 'COMPLETED'
+  description: string
+}
+
 export interface Candle {
   date: string
   open: number
@@ -60,6 +89,24 @@ export interface IndicatorSnapshot {
   ret20d: number
   ret50d: number
   distFrom200: number
+  fib?: {
+    high: number
+    low: number
+    fib236: number
+    fib382: number
+    fib500: number
+    fib618: number
+    fib786: number
+    closestLevel: string
+    distancePct: number
+  }
+  fibConfluence?: {
+    isActive: boolean
+    levels: string[]
+    priceZone: number
+    distancePct: number
+  }
+  harmonics?: HarmonicPattern[]
   // --- Long-term indicators (added for LONG_TERM engine) ---
   ret125d: number
   ret250d: number
@@ -94,6 +141,12 @@ export interface Signal {
   todayCandle: Candle
   dataSource?: DataSource
   dataQuality?: 'LIVE' | 'LIMITED' | 'SYNTHETIC'
+  mlProbability?: number
+  // Broker recommendation fields
+  targetPrice?: number | null
+  recommendation?: string | null
+  recommendationMean?: number | null
+  analystsCount?: number | null
 }
 
 export interface UniverseResult {
@@ -132,6 +185,22 @@ export interface StockDetail {
   indicators: IndicatorSnapshot
   signals: Record<Timeframe, Signal>
   dataSource?: DataSource
+  news?: Array<{
+    title: string
+    link: string
+    source: string
+    pubDate: string
+    sentiment: 'positive' | 'negative' | 'neutral'
+    score: number
+  }>
+  tradingViewConsensus?: {
+    summary: string
+    summaryScore: number
+    maRating: string
+    maScore: number
+    oscRating: string
+    oscScore: number
+  }
 }
 
 export const TIMEFRAME_LABELS: Record<Timeframe, string> = {
@@ -207,6 +276,12 @@ export function actionBadge(a: Action): string {
 // Style for the NSE/YAHOO/DEMO data-source badge.
 export function dataSourceBadge(s: DataSource): { label: string; className: string; title: string } {
   switch (s) {
+    case 'UPSTOX':
+      return {
+        label: '● UPSTOX',
+        className: 'bg-violet-50 text-violet-700 dark:bg-violet-950/40 dark:text-violet-300 border-violet-300 dark:border-violet-800',
+        title: 'Real-time & EOD data from Upstox API v2 (connected)',
+      }
     case 'NSE':
       return {
         label: '● NSE',

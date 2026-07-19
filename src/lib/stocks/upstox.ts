@@ -273,13 +273,28 @@ export async function getInstrumentKey(symbol: string): Promise<string | null> {
 // Returns candles oldest-first.
 export async function fetchHistorical(
   meta: StockMeta,
-  days = 130,
+  rangeOrDays: string | number = 130,
 ): Promise<StockSeries | null> {
   const token = await getAccessToken()
   if (!token) return null
 
   const instrumentKey = await getInstrumentKey(meta.symbol)
   if (!instrumentKey) return null
+
+  let days = 130
+  if (typeof rangeOrDays === 'number') {
+    days = rangeOrDays
+  } else {
+    switch (rangeOrDays) {
+      case '1y': days = 252; break
+      case '2y': days = 504; break
+      case '3y': days = 756; break
+      case '4y': days = 1008; break
+      case '5y': days = 1260; break
+      case '10y': days = 2520; break
+      default: days = 252; break
+    }
+  }
 
   // Encode the instrument key (it contains a pipe) for URL
   const encodedKey = encodeURIComponent(instrumentKey)

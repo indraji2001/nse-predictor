@@ -57,7 +57,9 @@ interface YahooResponse {
 }
 
 async function fetchOne(meta: StockMeta, range = '1y', interval = '1d', retries = 2): Promise<StockSeries | null> {
-  const key = `${meta.symbol}-${range}`
+  const isShortRange = range === '1mo' || range === '3mo' || range === '6mo'
+  const apiRange = isShortRange ? '1y' : ((range === '3y' || range === '4y') ? '5y' : range)
+  const key = `${meta.symbol}-${apiRange}`
   const cached = cache.get(key)
   if (cacheFresh(cached)) {
     return cached!.series
@@ -66,7 +68,7 @@ async function fetchOne(meta: StockMeta, range = '1y', interval = '1d', retries 
   const yahooSym = meta.yahooSymbol ?? `${meta.symbol}.NS`
   // Round-robin between query1 and query2 hosts to halve per-host request rate.
   const host = YAHOO_HOSTS[hostIdx++ % YAHOO_HOSTS.length]
-  const url = `https://${host}/v8/finance/chart/${encodeURIComponent(yahooSym)}?range=${range}&interval=${interval}&includeAdjustedClose=true`
+  const url = `https://${host}/v8/finance/chart/${encodeURIComponent(yahooSym)}?range=${apiRange}&interval=${interval}&includeAdjustedClose=true`
 
   // Retry with exponential backoff on 429 (rate limit) or transient network errors.
   // Yahoo typically allows ~2 req/sec per host; we use 2-concurrency cap upstream
@@ -195,7 +197,7 @@ async function synthFor(meta: StockMeta, asOf: Date): Promise<StockSeries> {
   return generateOHLCSeries(meta, asOf, 250)
 }
 
-export async function fetchLiveUniverse(asOf: Date): Promise<UniverseResult> {
+export async function fetchLiveUniverse(asOf: Date, range = '1y'): Promise<UniverseResult> {
   const series: StockSeries[] = new Array(NSE_UNIVERSE.length)
   const sources: Record<string, 'LIVE' | 'DEMO'> = {}
   let liveCount = 0
@@ -206,7 +208,7 @@ export async function fetchLiveUniverse(asOf: Date): Promise<UniverseResult> {
   // fetch and use synthetic data for everything. This prevents 3+ minute API calls.
   const probeSize = 5
   const probe = NSE_UNIVERSE.slice(0, probeSize)
-  const probeResults = await mapWithConcurrency(probe, 2, async (meta) => fetchOne(meta, '6mo', '1d', 0))
+  const probeResults = await mapWithConcurrency(probe, 2, async (meta) => fetchOne(meta, range, '1d', 0))
   const probeHits = probeResults.filter((s) => s !== null).length
   if (probeHits < 2) {
     // Yahoo is unavailable — use synthetic for the entire universe
@@ -234,7 +236,7 @@ export async function fetchLiveUniverse(asOf: Date): Promise<UniverseResult> {
   // Fetch the remaining stocks (excluding the probe set)
   const remaining = NSE_UNIVERSE.slice(probeSize).map((meta, j) => ({ meta, idx: j + probeSize }))
   const fetchedRest = await mapWithConcurrency(remaining, 2, async (item) => {
-    const s = await fetchOne(item.meta, '6mo', '1d')
+    const s = await fetchOne(item.meta, range, '1d')
     return { idx: item.idx, meta: item.meta, s }
   })
 
@@ -287,13 +289,25 @@ export interface LiveStockResult {
   source: 'LIVE' | 'DEMO'
 }
 
-export async function fetchLiveStock(symbol: string, asOf: Date): Promise<LiveStockResult | null> {
+export async function fetchLiveStock(symbol: string, asOf: Date, range = '1y'): Promise<LiveStockResult | null> {
   const meta = NSE_UNIVERSE.find((m) => m.symbol === symbol.toUpperCase())
   if (!meta) return null
-  const s = await fetchOne(meta, '6mo', '1d')
+  const s = await fetchOne(meta, range, '1d')
   if (s) return { series: s, source: 'LIVE' }
   // Fallback to synthetic
   return { series: await synthFor(meta, asOf), source: 'DEMO' }
+}
+
+export async function fetchNiftyIndex(): Promise<StockSeries | null> {
+  const meta: StockMeta = {
+    symbol: 'NIFTY50',
+    name: 'Nifty 50 Index',
+    sector: 'Financials',
+    basePrice: 24000,
+    volatility: 0.15,
+    drift: 0.05
+  }
+  return fetchOne({ ...meta, yahooSymbol: '^NSEI' }, '1y', '1d')
 }
 
 // Test helper — fetch a single symbol and print a summary

@@ -21,7 +21,9 @@
 //     momentum, and risk-control (max drawdown) — not just chart patterns.
 
 import { Candle, StockSeries } from '../stocks/engine'
+import { predictProbability } from './ml'
 import { IndicatorSnapshot, computeIndicators, BollingerBands, RSI, MACD, EMA, SMA, ATR } from '../indicators'
+import fundamentalsData from '../stocks/fundamentals.json'
 
 export type Timeframe = 'BTST' | 'SHORT_TERM' | 'MIDTERM' | 'LONG_TERM'
 export type Action = 'BUY' | 'SELL' | 'AVOID'
@@ -60,13 +62,19 @@ export interface Signal {
   // Data quality: based on candle count from the live source
   // LIVE = ≥120 candles (full indicator suite), LIMITED = 30-119, SYNTHETIC = <30
   dataQuality?: 'LIVE' | 'LIMITED' | 'SYNTHETIC'
+  mlProbability?: number
+  // Broker recommendation fields
+  targetPrice?: number | null
+  recommendation?: string | null
+  recommendationMean?: number | null
+  analystsCount?: number | null
 }
 
 // --- BTST Engine -----------------------------------------------------------
 // BTST = Buy Today Sell Tomorrow. The trade is entered at today's close and
 // exited at tomorrow's open/close. We want momentum continuation signals that
 // typically resolve overnight in the direction of the prior day's strength.
-function evaluateBTST(series: StockSeries, ind: IndicatorSnapshot): Signal {
+function evaluateBTST(series: StockSeries, ind: IndicatorSnapshot, isNiftyBullish = true): Signal {
   const c = series.candles
   const last = c[c.length - 1]
   const factors: SignalFactor[] = []
@@ -153,17 +161,43 @@ function evaluateBTST(series: StockSeries, ind: IndicatorSnapshot): Signal {
     direction: ind.ret5d > 0.5 ? 'bullish' : ind.ret5d < -0.5 ? 'bearish' : 'neutral',
   })
 
+  // 9. Fibonacci Retracement support or Confluence Zone check
+  if (ind.fibConfluence && ind.fibConfluence.isActive) {
+    factors.push({
+      name: 'Fibonacci confluence zone',
+      detail: `Bounce off overlap of: ${ind.fibConfluence.levels.join(" + ")} (dist: ${ind.fibConfluence.distancePct}%)`,
+      weight: 0.18,
+      hit: true,
+      direction: 'bullish',
+    })
+  } else if (ind.fib) {
+    const isFibSupport = ind.fib.closestLevel === '38.2%' || ind.fib.closestLevel === '50.0%' || ind.fib.closestLevel === '61.8%'
+    const isBouncing = last.close >= last.open || (c[c.length - 2] && last.close > c[c.length - 2].close)
+    const isClose = ind.fib.distancePct <= 1.5
+    factors.push({
+      name: 'Fibonacci support bounce',
+      detail: `Bounce off ${ind.fib.closestLevel} Fibonacci support level (dist: ${ind.fib.distancePct.toFixed(1)}%)`,
+      weight: 0.10,
+      hit: isFibSupport && isBouncing && isClose,
+      direction: isFibSupport && isBouncing && isClose ? 'bullish' : 'neutral',
+    })
+  }
+
+  // 10. Harmonic Pattern PRZ check
+  const harmonicFactor = buildHarmonicFactor(ind, ind.price)
+  if (harmonicFactor) factors.push(harmonicFactor)
+
   return finalizeSignal(series, ind, 'BTST', factors, {
     targetRr1: 0.8,
     targetRr2: 1.5,
     targetRr3: 2.5,
     stopAtrMult: 1.0,
     holdingPeriod: '1-2 sessions (exit by next trading day close)',
-  })
+  }, isNiftyBullish)
 }
 
 // --- Short-term Engine (5-15 days) -----------------------------------------
-function evaluateShortTerm(series: StockSeries, ind: IndicatorSnapshot): Signal {
+function evaluateShortTerm(series: StockSeries, ind: IndicatorSnapshot, isNiftyBullish = true): Signal {
   const c = series.candles
   const last = c[c.length - 1]
   const factors: SignalFactor[] = []
@@ -254,17 +288,43 @@ function evaluateShortTerm(series: StockSeries, ind: IndicatorSnapshot): Signal 
     direction: ind.ret20d > 2 ? 'bullish' : ind.ret20d < -2 ? 'bearish' : 'neutral',
   })
 
+  // 10. Fibonacci Retracement support or Confluence Zone check
+  if (ind.fibConfluence && ind.fibConfluence.isActive) {
+    factors.push({
+      name: 'Fibonacci confluence zone',
+      detail: `Bounce off overlap of: ${ind.fibConfluence.levels.join(" + ")} (dist: ${ind.fibConfluence.distancePct}%)`,
+      weight: 0.18,
+      hit: true,
+      direction: 'bullish',
+    })
+  } else if (ind.fib) {
+    const isFibSupport = ind.fib.closestLevel === '38.2%' || ind.fib.closestLevel === '50.0%' || ind.fib.closestLevel === '61.8%'
+    const isBouncing = last.close >= last.open || (c[c.length - 2] && last.close > c[c.length - 2].close)
+    const isClose = ind.fib.distancePct <= 1.5
+    factors.push({
+      name: 'Fibonacci support bounce',
+      detail: `Bounce off ${ind.fib.closestLevel} Fibonacci support level (dist: ${ind.fib.distancePct.toFixed(1)}%)`,
+      weight: 0.10,
+      hit: isFibSupport && isBouncing && isClose,
+      direction: isFibSupport && isBouncing && isClose ? 'bullish' : 'neutral',
+    })
+  }
+
+  // 11. Harmonic Pattern PRZ check
+  const harmonicFactorST = buildHarmonicFactor(ind, ind.price)
+  if (harmonicFactorST) factors.push(harmonicFactorST)
+
   return finalizeSignal(series, ind, 'SHORT_TERM', factors, {
     targetRr1: 1.5,
     targetRr2: 2.5,
     targetRr3: 4.0,
     stopAtrMult: 1.5,
     holdingPeriod: '5-15 trading days',
-  })
+  }, isNiftyBullish)
 }
 
 // --- Midterm Engine (1-3 months) -------------------------------------------
-function evaluateMidterm(series: StockSeries, ind: IndicatorSnapshot): Signal {
+function evaluateMidterm(series: StockSeries, ind: IndicatorSnapshot, isNiftyBullish = true): Signal {
   const c = series.candles
   const last = c[c.length - 1]
   const factors: SignalFactor[] = []
@@ -359,13 +419,77 @@ function evaluateMidterm(series: StockSeries, ind: IndicatorSnapshot): Signal {
     direction: ind.supertrendTrend === 1 ? 'bullish' : 'bearish',
   })
 
+  // 10. Fundamental Analysis Factors (Midterm)
+  const fundamentals = (fundamentalsData as any)[series.symbol]
+  if (fundamentals) {
+    if (fundamentals.debtToEquity !== null && fundamentals.debtToEquity !== undefined) {
+      const isLowDebt = fundamentals.debtToEquity <= 100
+      const isHighDebt = fundamentals.debtToEquity > 150
+      factors.push({
+        name: 'Fundamental: Low Debt',
+        detail: `D/E Ratio: ${fundamentals.debtToEquity}%`,
+        weight: 0.08,
+        hit: isLowDebt,
+        direction: isLowDebt ? 'bullish' : isHighDebt ? 'bearish' : 'neutral',
+      })
+    }
+    if (fundamentals.promoterHeld !== null && fundamentals.promoterHeld !== undefined) {
+      const isHighPromoter = fundamentals.promoterHeld >= 50
+      const isLowPromoter = fundamentals.promoterHeld < 30
+      factors.push({
+        name: 'Fundamental: Promoter Skin',
+        detail: `Promoter Held: ${fundamentals.promoterHeld}%`,
+        weight: 0.08,
+        hit: isHighPromoter,
+        direction: isHighPromoter ? 'bullish' : isLowPromoter ? 'bearish' : 'neutral',
+      })
+    }
+    if (fundamentals.pe !== null && fundamentals.pe !== undefined) {
+      const isReasonablePE = fundamentals.pe > 0 && fundamentals.pe <= 35
+      const isExpensivePE = fundamentals.pe > 75
+      factors.push({
+        name: 'Fundamental: P/E Valuation',
+        detail: `P/E Ratio: ${fundamentals.pe}`,
+        weight: 0.06,
+        hit: isReasonablePE,
+        direction: isReasonablePE ? 'bullish' : isExpensivePE ? 'bearish' : 'neutral',
+      })
+    }
+  }
+
+  // 11. Fibonacci Retracement support or Confluence Zone check
+  if (ind.fibConfluence && ind.fibConfluence.isActive) {
+    factors.push({
+      name: 'Fibonacci confluence zone',
+      detail: `Bounce off overlap of: ${ind.fibConfluence.levels.join(" + ")} (dist: ${ind.fibConfluence.distancePct}%)`,
+      weight: 0.18,
+      hit: true,
+      direction: 'bullish',
+    })
+  } else if (ind.fib) {
+    const isFibSupport = ind.fib.closestLevel === '38.2%' || ind.fib.closestLevel === '50.0%' || ind.fib.closestLevel === '61.8%'
+    const isBouncing = last.close >= last.open || (c[c.length - 2] && last.close > c[c.length - 2].close)
+    const isClose = ind.fib.distancePct <= 1.5
+    factors.push({
+      name: 'Fibonacci support bounce',
+      detail: `Bounce off ${ind.fib.closestLevel} Fibonacci support level (dist: ${ind.fib.distancePct.toFixed(1)}%)`,
+      weight: 0.10,
+      hit: isFibSupport && isBouncing && isClose,
+      direction: isFibSupport && isBouncing && isClose ? 'bullish' : 'neutral',
+    })
+  }
+
+  // 12. Harmonic Pattern PRZ check
+  const harmonicFactorMT = buildHarmonicFactor(ind, ind.price)
+  if (harmonicFactorMT) factors.push(harmonicFactorMT)
+
   return finalizeSignal(series, ind, 'MIDTERM', factors, {
     targetRr1: 2.0,
     targetRr2: 3.5,
     targetRr3: 6.0,
     stopAtrMult: 2.5,
     holdingPeriod: '1-3 months (30-60 trading days)',
-  })
+  }, isNiftyBullish)
 }
 
 // --- Finalize a signal -----------------------------------------------------
@@ -387,10 +511,12 @@ function finalizeSignal(
   timeframe: Timeframe,
   factors: SignalFactor[],
   opts: FinalizeOpts,
+  isNiftyBullish = true,
 ): Signal {
   const c = series.candles
   const last = c[c.length - 1]
   const price = ind.price
+  const fundamentals = (fundamentalsData as any)[series.symbol]
 
   // Confidence model:
   //   - Each factor has weight 0..1.
@@ -402,31 +528,32 @@ function finalizeSignal(
   const bearishHits = factors.filter((f) => f.direction === 'bearish' && isBearishActive(f))
   const bullishWeight = bullishHits.reduce((s, f) => s + f.weight, 0)
   const bearishPenalty = bearishHits.reduce((s, f) => s + f.weight * 0.8, 0)
-  const rawConfidence = Math.max(0, (bullishWeight - bearishPenalty) * 100)
+  const totalWeight = factors.reduce((s, f) => s + f.weight, 0) || 1.0
+  const rawConfidence = Math.max(0, ((bullishWeight - bearishPenalty) / totalWeight) * 100)
   const confidence = Math.min(100, Math.max(0, Math.round(rawConfidence)))
 
-  // --- Per-timeframe BUY thresholds (tightened for selectivity) ---
-  // Tuned so each timeframe produces 5-40 BUY signals from a 500-stock universe.
-  // BTST is most selective (5-15), Midterm most permissive (15-40).
-  // Note: On synthetic data these produce more BUYs than on real data because
-  // synthetic data has no bearish factors. With real Yahoo data, counts drop
-  // significantly due to bearish penalties for overbought RSI, MACD below
-  // signal, Supertrend DOWN, etc.
+  // --- Per-timeframe BUY thresholds (balanced for quality + quantity) ---
+  // These thresholds aim for 10-30 quality signals per timeframe out of ~500 stocks.
+  // Too strict (e.g. minConf:85 + minHits:7) produces 0 results on most days.
+  // Too loose produces noise. These values are calibrated for NSE market conditions.
   const thresholds: Record<Timeframe, { minConf: number; minWeight: number; minHits: number }> = {
-    BTST:       { minConf: 80, minWeight: 0.65, minHits: 6 }, // 5-15 BUY signals ✓ verified (10)
-    SHORT_TERM: { minConf: 75, minWeight: 0.60, minHits: 5 }, // 10-25 BUY signals ✓ verified (23)
-    MIDTERM:    { minConf: 85, minWeight: 0.70, minHits: 7 }, // 15-40 BUY signals ✓ verified (37)
-    LONG_TERM:  { minConf: 70, minWeight: 0.55, minHits: 5 }, // 10-30 BUY signals (loosened — long-term is naturally selective)
+    BTST:       { minConf: 65, minWeight: 0.45, minHits: 5 },
+    SHORT_TERM: { minConf: 60, minWeight: 0.40, minHits: 4 },
+    MIDTERM:    { minConf: 65, minWeight: 0.45, minHits: 5 },
+    LONG_TERM:  { minConf: 58, minWeight: 0.38, minHits: 4 },
   }
   const th = thresholds[timeframe]
-  const minConf = opts.minConfidence ?? th.minConf
-  const minWeight = opts.minBullishWeight ?? th.minWeight
+  let minConf = opts.minConfidence ?? th.minConf
+  let minWeight = opts.minBullishWeight ?? th.minWeight
   const minHits = opts.minBullHits ?? th.minHits
 
+  // Market Regime: Tighten rules in Bear Markets
+  if (!isNiftyBullish) {
+    minConf += 5      // 5% higher confidence threshold required
+    minWeight += 0.05 // 5% higher bullish weight required
+  }
+
   // Action decision:
-  //   - BUY  requires confidence ≥ threshold, bullishWeight ≥ threshold, AND ≥ N bullish hits
-  //   - SELL requires confidence ≤ 25 AND ≥ 2 bearish hits
-  //   - everything else = AVOID
   const bullHitCount = bullishHits.length
   const bearHitCount = bearishHits.length
   let action: Action
@@ -439,9 +566,6 @@ function finalizeSignal(
   }
 
   // --- Data quality: based on candle count from live source ---
-  // LIVE:    ≥120 candles (full indicator suite available, EMA 200 valid)
-  // LIMITED: 30-119 candles (basic indicators work, EMA 200 unreliable)
-  // SYNTHETIC: <30 candles OR data source is DEMO
   const candleCount = c.length
   let dataQuality: 'LIVE' | 'LIMITED' | 'SYNTHETIC'
   if (candleCount >= 120) dataQuality = 'LIVE'
@@ -450,7 +574,8 @@ function finalizeSignal(
 
   // Stop loss and targets
   const atr = ind.atr14 || price * 0.02
-  const stopLoss = +(price - atr * opts.stopAtrMult).toFixed(2)
+  const activeStopAtrMult = isNiftyBullish ? opts.stopAtrMult : opts.stopAtrMult + 0.5
+  const stopLoss = +(price - atr * activeStopAtrMult).toFixed(2)
   const risk = Math.max(0.01, price - stopLoss)
   const entry = +price.toFixed(2)
   const entryRangeLow = +(price - atr * 0.2).toFixed(2)
@@ -459,6 +584,23 @@ function finalizeSignal(
   const target2 = +(price + risk * opts.targetRr2).toFixed(2)
   const target3 = +(price + risk * opts.targetRr3).toFixed(2)
   const riskReward = +opts.targetRr2.toFixed(2)
+
+  // Compute LightGBM ML prediction probability
+  const features = [
+    ind.rsi14,          // 0
+    ind.macd,           // 1
+    ind.macdSignal,     // 2
+    ind.macdHist,       // 3
+    ind.adx,            // 4
+    ind.bbPercentB,     // 5
+    ind.bbBandwidth,    // 6
+    ind.volumeRatio,    // 7
+    ind.ret5d,          // 8
+    ind.ret20d,         // 9
+    ind.ret50d,         // 10
+    ind.distFrom200,    // 11
+  ]
+  const mlProbability = predictProbability(features)
 
   return {
     symbol: series.symbol,
@@ -480,14 +622,36 @@ function finalizeSignal(
     snapshot: ind,
     todayCandle: last,
     dataQuality,
+    mlProbability,
+    // Broker recommendation fields
+    targetPrice: fundamentals?.targetPrice ?? null,
+    recommendation: fundamentals?.recommendation ?? null,
+    recommendationMean: fundamentals?.recommendationMean ?? null,
+    analystsCount: fundamentals?.analystsCount ?? null,
   }
 }
 
-// A factor is "actively bearish" when its detail/current state shows a bearish
-// condition (regardless of the `hit` flag which tracks the bullish condition).
-// We treat any factor whose direction is 'bearish' as actively bearish —
-// direction is only set to 'bearish' when the indicator is in a clearly bearish
-// zone (e.g., RSI > 75 overbought, MACD below signal, Supertrend DOWN).
+// Harmonic Pattern PRZ Factor
+// Called before finalizeSignal in every timeframe engine.
+// If any harmonic pattern has its PRZ within 2% of current price, it fires
+// as a high-conviction confluency factor (bullish bounce or bearish reversal).
+function buildHarmonicFactor(ind: IndicatorSnapshot, price: number): SignalFactor | null {
+  if (!ind.harmonics || ind.harmonics.length === 0) return null
+  // Find the most relevant pattern: FORMING, closest PRZ to current price
+  const best = ind.harmonics
+    .filter((p) => Math.abs(p.distFromD) <= 2.5)
+    .sort((a, b) => Math.abs(a.distFromD) - Math.abs(b.distFromD))[0]
+  if (!best) return null
+  const isBullishHarmonic = best.direction === 'Bullish'
+  return {
+    name: `Harmonic ${best.direction} ${best.name} (PRZ)`,
+    detail: best.description,
+    weight: 0.20,
+    hit: isBullishHarmonic,
+    direction: isBullishHarmonic ? 'bullish' : 'bearish',
+  }
+}
+
 function isBearishActive(f: SignalFactor): boolean {
   return f.direction === 'bearish'
 }
@@ -500,7 +664,7 @@ function isBearishActive(f: SignalFactor): boolean {
 //
 // Factors are weighted to mirror how a long-only equity fund manager filters
 // the universe: trend persistence > momentum > risk control > entry timing.
-function evaluateLongTerm(series: StockSeries, ind: IndicatorSnapshot): Signal {
+function evaluateLongTerm(series: StockSeries, ind: IndicatorSnapshot, isNiftyBullish = true): Signal {
   const c = series.candles
   const last = c[c.length - 1]
   const factors: SignalFactor[] = []
@@ -597,30 +761,163 @@ function evaluateLongTerm(series: StockSeries, ind: IndicatorSnapshot): Signal {
     direction: ind.macd > 0 ? 'bullish' : 'bearish',
   })
 
+  // 11. Fundamental Analysis Factors (Longterm)
+  const fundamentals = (fundamentalsData as any)[series.symbol]
+  if (fundamentals) {
+    if (fundamentals.debtToEquity !== null && fundamentals.debtToEquity !== undefined) {
+      const isLowDebt = fundamentals.debtToEquity <= 100
+      const isHighDebt = fundamentals.debtToEquity > 150
+      factors.push({
+        name: 'Fundamental: Low Debt',
+        detail: `D/E Ratio: ${fundamentals.debtToEquity}%`,
+        weight: 0.08,
+        hit: isLowDebt,
+        direction: isLowDebt ? 'bullish' : isHighDebt ? 'bearish' : 'neutral',
+      })
+    }
+    if (fundamentals.promoterHeld !== null && fundamentals.promoterHeld !== undefined) {
+      const isHighPromoter = fundamentals.promoterHeld >= 50
+      const isLowPromoter = fundamentals.promoterHeld < 30
+      factors.push({
+        name: 'Fundamental: Promoter Skin',
+        detail: `Promoter Held: ${fundamentals.promoterHeld}%`,
+        weight: 0.08,
+        hit: isHighPromoter,
+        direction: isHighPromoter ? 'bullish' : isLowPromoter ? 'bearish' : 'neutral',
+      })
+    }
+    if (fundamentals.pe !== null && fundamentals.pe !== undefined) {
+      const isReasonablePE = fundamentals.pe > 0 && fundamentals.pe <= 35
+      const isExpensivePE = fundamentals.pe > 75
+      factors.push({
+        name: 'Fundamental: P/E Valuation',
+        detail: `P/E Ratio: ${fundamentals.pe}`,
+        weight: 0.06,
+        hit: isReasonablePE,
+        direction: isReasonablePE ? 'bullish' : isExpensivePE ? 'bearish' : 'neutral',
+      })
+    }
+    if (fundamentals.margin !== null && fundamentals.margin !== undefined) {
+      const isHealthyMargin = fundamentals.margin >= 15
+      const isLowMargin = fundamentals.margin < 5
+      factors.push({
+        name: 'Fundamental: Operating Margin',
+        detail: `Operating Margin: ${fundamentals.margin}%`,
+        weight: 0.06,
+        hit: isHealthyMargin,
+        direction: isHealthyMargin ? 'bullish' : isLowMargin ? 'bearish' : 'neutral',
+      })
+    }
+  }
+
+  // 12. Fibonacci Retracement support or Confluence Zone check
+  if (ind.fibConfluence && ind.fibConfluence.isActive) {
+    factors.push({
+      name: 'Fibonacci confluence zone',
+      detail: `Bounce off overlap of: ${ind.fibConfluence.levels.join(" + ")} (dist: ${ind.fibConfluence.distancePct}%)`,
+      weight: 0.18,
+      hit: true,
+      direction: 'bullish',
+    })
+  } else if (ind.fib) {
+    const isFibSupport = ind.fib.closestLevel === '38.2%' || ind.fib.closestLevel === '50.0%' || ind.fib.closestLevel === '61.8%'
+    const isBouncing = last.close >= last.open || (c[c.length - 2] && last.close > c[c.length - 2].close)
+    const isClose = ind.fib.distancePct <= 1.5
+    factors.push({
+      name: 'Fibonacci support bounce',
+      detail: `Bounce off ${ind.fib.closestLevel} Fibonacci support level (dist: ${ind.fib.distancePct.toFixed(1)}%)`,
+      weight: 0.10,
+      hit: isFibSupport && isBouncing && isClose,
+      direction: isFibSupport && isBouncing && isClose ? 'bullish' : 'neutral',
+    })
+  }
+
+  // 13. Harmonic Pattern PRZ check
+  const harmonicFactorLT = buildHarmonicFactor(ind, ind.price)
+  if (harmonicFactorLT) factors.push(harmonicFactorLT)
+
   return finalizeSignal(series, ind, 'LONG_TERM', factors, {
-    // Targets are RR (risk/reward) multiples: T = entry + risk × RR
-    // where risk = entry − stopLoss = ATR × 4 (stopAtrMult).
-    // So T1 = 2.5× risk, T2 = 5× risk, T3 = 10× risk.
-    // For typical stocks (ATR ≈ 5% of price), this gives roughly +25% / +50% / +100%.
-    // For low-volatility stocks the percentages are smaller; for high-vol, larger.
-    // This is intentional — it keeps risk-reward constant while adapting to each stock's volatility.
-    targetRr1: 2.5,   // T1: ~6-9 month target
-    targetRr2: 5.0,   // T2: ~12-15 month target
-    targetRr3: 10.0,  // T3: ~18-24 month target
-    stopAtrMult: 4.0, // wider stop for long-term volatility
+    targetRr1: 2.5,
+    targetRr2: 5.0,
+    targetRr3: 10.0,
+    stopAtrMult: 4.0,
     holdingPeriod: '6-24 months (180-720 trading days)',
-  })
+  }, isNiftyBullish)
+}
+
+// --- TradingView Technical Calibration / Guard Filter ----------------------
+function applyTradingViewCalibration(
+  sig: Signal,
+  tvConsensus: { summaryScore: number; maScore: number; oscScore: number }
+): void {
+  if (sig.action === 'BUY') {
+    // 1. Structural Trend Guard (Moving Averages check)
+    // Block BUY only when TradingView MA is strongly bearish (score <= -0.3).
+    // A score of -0.1 just means slightly mixed — do not block those.
+    if (tvConsensus.maScore <= -0.3) {
+      sig.action = 'AVOID'
+      sig.confidence = Math.max(40, sig.confidence - 20)
+      sig.factors.push({
+        name: 'TradingView Trend Divergence',
+        detail: `Blocked: TradingView MA rating is Strongly Bearish (${tvConsensus.maScore.toFixed(2)})`,
+        weight: 0.20,
+        hit: false,
+        direction: 'bearish'
+      })
+      return
+    }
+
+    // 2. Oscillator Support Check
+    // If oscillators are strongly bearish, apply confidence penalty
+    if (tvConsensus.oscScore <= -0.2) {
+      sig.confidence = Math.max(50, sig.confidence - 15)
+      sig.factors.push({
+        name: 'TradingView Oscillator Conflict',
+        detail: `Confidence Penalty: Oscillators are Bearish (${tvConsensus.oscScore.toFixed(2)})`,
+        weight: 0.10,
+        hit: false,
+        direction: 'bearish'
+      })
+    }
+
+    // 3. Consensus Confirmation Boost
+    // If TradingView summary is Bullish (>= 0.1), boost our confidence score
+    if (tvConsensus.summaryScore >= 0.1) {
+      const boost = tvConsensus.summaryScore >= 0.5 ? 10 : 5
+      sig.confidence = Math.min(100, sig.confidence + boost)
+      sig.factors.push({
+        name: 'TradingView Consensus Confirmation',
+        detail: `Confidence Boost (+${boost}%): TV Summary is ${tvConsensus.summaryScore >= 0.5 ? 'Strong Buy' : 'Buy'} (${tvConsensus.summaryScore.toFixed(2)})`,
+        weight: 0.15,
+        hit: true,
+        direction: 'bullish'
+      })
+    }
+  }
 }
 
 // --- Public API: evaluate all four timeframes for one stock ---------------
-export function evaluateStock(series: StockSeries): Record<Timeframe, Signal> {
+export function evaluateStock(
+  series: StockSeries,
+  isNiftyBullish = true,
+  tvConsensus?: { summaryScore: number; maScore: number; oscScore: number }
+): Record<Timeframe, Signal> {
   const ind = computeIndicators(series.candles)
-  return {
-    BTST: evaluateBTST(series, ind),
-    SHORT_TERM: evaluateShortTerm(series, ind),
-    MIDTERM: evaluateMidterm(series, ind),
-    LONG_TERM: evaluateLongTerm(series, ind),
+  const signals = {
+    BTST: evaluateBTST(series, ind, isNiftyBullish),
+    SHORT_TERM: evaluateShortTerm(series, ind, isNiftyBullish),
+    MIDTERM: evaluateMidterm(series, ind, isNiftyBullish),
+    LONG_TERM: evaluateLongTerm(series, ind, isNiftyBullish),
   }
+
+  if (tvConsensus) {
+    applyTradingViewCalibration(signals.BTST, tvConsensus)
+    applyTradingViewCalibration(signals.SHORT_TERM, tvConsensus)
+    applyTradingViewCalibration(signals.MIDTERM, tvConsensus)
+    applyTradingViewCalibration(signals.LONG_TERM, tvConsensus)
+  }
+
+  return signals
 }
 
 // --- Public API: evaluate the whole universe, filter BUY signals ----------
@@ -656,26 +953,34 @@ export function tagSignalSources(
   }
 }
 
-export function evaluateUniverse(allSeries: StockSeries[], asOf: Date): UniverseResult {
-  const signals = allSeries.map((s) => ({ series: s, sig: evaluateStock(s) }))
+export function evaluateUniverse(
+  allSeries: StockSeries[],
+  asOf: Date,
+  isNiftyBullish = true,
+  tvConsensusMap?: Record<string, { summaryScore: number; maScore: number; oscScore: number }>
+): UniverseResult {
+  const signals = allSeries.map((s) => ({
+    series: s,
+    sig: evaluateStock(s, isNiftyBullish, tvConsensusMap?.[s.symbol])
+  }))
 
-  // BUY signals for each timeframe, sorted by confidence desc
+  // BUY signals for each timeframe, sorted by ML Probability desc
   const btst = signals
     .map((x) => x.sig.BTST)
     .filter((s) => s.action === 'BUY')
-    .sort((a, b) => b.confidence - a.confidence)
+    .sort((a, b) => (b.mlProbability ?? 0) - (a.mlProbability ?? 0))
   const shortTerm = signals
     .map((x) => x.sig.SHORT_TERM)
     .filter((s) => s.action === 'BUY')
-    .sort((a, b) => b.confidence - a.confidence)
+    .sort((a, b) => (b.mlProbability ?? 0) - (a.mlProbability ?? 0))
   const midterm = signals
     .map((x) => x.sig.MIDTERM)
     .filter((s) => s.action === 'BUY')
-    .sort((a, b) => b.confidence - a.confidence)
+    .sort((a, b) => (b.mlProbability ?? 0) - (a.mlProbability ?? 0))
   const longTerm = signals
     .map((x) => x.sig.LONG_TERM)
     .filter((s) => s.action === 'BUY')
-    .sort((a, b) => b.confidence - a.confidence)
+    .sort((a, b) => (b.mlProbability ?? 0) - (a.mlProbability ?? 0))
 
   // Market breadth based on today's candle direction
   let advancing = 0

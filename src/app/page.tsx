@@ -23,6 +23,7 @@ import { MarketSummary } from '@/components/predictor/market-summary'
 import { SignalCard } from '@/components/predictor/signal-card'
 import { StockDetailDialog } from '@/components/predictor/stock-detail-dialog'
 import { DataArchiveDialog } from '@/components/predictor/data-archive-dialog'
+import { UpstoxSettingsDialog } from '@/components/predictor/upstox-settings-dialog'
 import { IntradayCard } from '@/components/predictor/intraday-card'
 import { IntradayDetailDialog } from '@/components/predictor/intraday-detail-dialog'
 import { PaperTradeCard, type PaperTrade } from '@/components/predictor/paper-trade-card'
@@ -39,6 +40,7 @@ export default function Home() {
   const [intradayLoading, setIntradayLoading] = useState(false)
   const [paperLoading, setPaperLoading] = useState(false)
   const [paperUpdating, setPaperUpdating] = useState(false)
+  const [retraining, setRetraining] = useState(false)
   const [trackedKeys, setTrackedKeys] = useState<Set<string>>(new Set())
   const [error, setError] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<TabKey>('BTST')
@@ -49,6 +51,10 @@ export default function Home() {
   const [detailSymbol, setDetailSymbol] = useState<string | null>(null)
   const [intradaySymbol, setIntradaySymbol] = useState<string | null>(null)
   const [archiveOpen, setArchiveOpen] = useState(false)
+  const [upstoxOpen, setUpstoxOpen] = useState(false)
+  const [selectedProvider, setSelectedProvider] = useState<string>('DEFAULT')
+  const [selectedRange, setSelectedRange] = useState<string>('1y')
+  const [upstoxConfigured, setUpstoxConfigured] = useState(false)
 
   const loadIntraday = useCallback(async (showToast = true) => {
     setIntradayLoading(true)
@@ -111,6 +117,27 @@ export default function Home() {
       setPaperUpdating(false)
     }
   }, [loadPaperTrades])
+
+  const handleRetrainML = useCallback(async () => {
+    setRetraining(true)
+    toast.info('Retraining ML Model...', {
+      description: 'Downloading 5-year candles and running LightGBM. Please wait ~10-15s.',
+    })
+    try {
+      const res = await fetch('/api/dev/retrain', { method: 'POST' })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error ?? 'Training failed')
+      toast.success('Retraining complete!', {
+        description: data.message,
+      })
+    } catch (e: any) {
+      toast.error('Retraining failed', {
+        description: e.message,
+      })
+    } finally {
+      setRetraining(false)
+    }
+  }, [])
 
   const trackSignal = useCallback(async (signal: Signal) => {
     const key = `${signal.symbol}-${signal.timeframe}`
@@ -178,7 +205,13 @@ export default function Home() {
     setLoading(true)
     setError(null)
     try {
-      const res = await fetch('/api/predict', { cache: 'no-store' })
+      const provider = typeof window !== 'undefined' ? localStorage.getItem('selectedProvider') || 'DEFAULT' : 'DEFAULT'
+      const range = typeof window !== 'undefined' ? localStorage.getItem('selectedRange') || '1y' : '1y'
+      const params = new URLSearchParams()
+      if (provider !== 'DEFAULT') params.set('provider', provider)
+      params.set('range', range)
+
+      const res = await fetch(`/api/predict?${params.toString()}`, { cache: 'no-store' })
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       const data: UniverseResult = await res.json()
       setResult(data)
@@ -205,10 +238,51 @@ export default function Home() {
     }
   }, [])
 
-  // Initial load
+  // Load default settings from localStorage and check Upstox configuration status
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const p = localStorage.getItem('selectedProvider') || 'DEFAULT'
+      const r = localStorage.getItem('selectedRange') || '1y'
+      setSelectedProvider(p)
+      setSelectedRange(r)
+    }
+
+    fetch('/api/upstox/status', { cache: 'no-store' })
+      .then(res => res.json())
+      .then((data: { configured: boolean; connected: boolean }) => {
+        setUpstoxConfigured(data.configured && data.connected)
+      })
+      .catch(() => {})
+  }, [])
+
+  // Initial and subsequent load of predictions
   useEffect(() => {
     load(false)
-  }, [load])
+  }, [load, selectedProvider, selectedRange])
+
+  const handleProviderChange = (p: string) => {
+    setSelectedProvider(p)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('selectedProvider', p)
+      let nextRange = selectedRange
+      if (p === 'UPSTOX') {
+        nextRange = 'MAX'
+      } else if (p === 'NSE') {
+        nextRange = 'LOCAL'
+      } else if (selectedRange === 'MAX' || selectedRange === 'LOCAL') {
+        nextRange = '1y'
+      }
+      setSelectedRange(nextRange)
+      localStorage.setItem('selectedRange', nextRange)
+    }
+  }
+
+  const handleRangeChange = (r: string) => {
+    setSelectedRange(r)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('selectedRange', r)
+    }
+  }
 
   // Load intraday scan when INTRADAY tab is first selected
   useEffect(() => {
@@ -312,7 +386,7 @@ export default function Home() {
               <TrendingUp className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h1 className="text-base font-bold tracking-tight leading-tight">NSE Predictor</h1>
+              <h1 className="text-base font-bold tracking-tight leading-tight">Indrajit's Smart NSE Predictor</h1>
               <p className="text-[11px] text-muted-foreground leading-tight">BTST · Short-term · Midterm technical screener</p>
             </div>
           </div>
@@ -326,6 +400,36 @@ export default function Home() {
               </div>
             )}
             <Button
+              onClick={() => window.location.href = '/backtest'}
+              size="sm"
+              variant="outline"
+              className="gap-1.5"
+              title="Run historical backtests"
+            >
+              <Activity className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Backtest</span>
+            </Button>
+            <Button
+              onClick={() => window.location.href = '/harmonic-scanner'}
+              size="sm"
+              variant="outline"
+              className="gap-1.5 border-violet-200 hover:border-violet-300 text-violet-700 dark:text-violet-300 bg-violet-50/30 hover:bg-violet-50/60 dark:bg-violet-950/20"
+              title="Harmonic Pattern PRZ Scanner"
+            >
+              <Zap className="h-3.5 w-3.5 text-violet-500" />
+              <span className="hidden sm:inline">Harmonics</span>
+            </Button>
+            <Button
+              onClick={() => window.location.href = '/portfolio-backtest'}
+              size="sm"
+              variant="outline"
+              className="gap-1.5 border-indigo-200 hover:border-indigo-300 text-indigo-700 dark:text-indigo-300 bg-indigo-50/30 hover:bg-indigo-50/60 dark:bg-indigo-950/20"
+              title="Run portfolio backtests for multiple stocks"
+            >
+              <Sparkles className="h-3.5 w-3.5 text-indigo-500" />
+              <span className="hidden sm:inline">Portfolio Backtest</span>
+            </Button>
+            <Button
               onClick={() => setArchiveOpen(true)}
               size="sm"
               variant="outline"
@@ -335,10 +439,33 @@ export default function Home() {
               <Database className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Archive</span>
             </Button>
+            <Button
+              onClick={() => setUpstoxOpen(true)}
+              size="sm"
+              variant="outline"
+              className="gap-1.5 border-violet-200 hover:border-violet-300 text-violet-700 dark:text-violet-300 bg-violet-50/30 hover:bg-violet-50/60 dark:bg-violet-950/20"
+              title="Configure Upstox API v2 connection"
+            >
+              <Zap className="h-3.5 w-3.5 text-violet-500 fill-violet-500" />
+              <span className="hidden sm:inline">Upstox</span>
+            </Button>
             <Button onClick={() => load(true)} disabled={loading} size="sm" className="gap-1.5">
               <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
               {loading ? 'Fetching live data…' : 'Refresh'}
             </Button>
+            {typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && (
+              <Button
+                onClick={handleRetrainML}
+                disabled={retraining}
+                variant="outline"
+                size="sm"
+                className="gap-1.5 border-indigo-200 hover:border-indigo-300 text-indigo-700 dark:text-indigo-300 bg-indigo-50/30"
+                title="Retrain LightGBM model on latest 5 years of daily market candles"
+              >
+                <RefreshCw className={`h-3.5 w-3.5 ${retraining ? 'animate-spin' : ''}`} />
+                {retraining ? 'Retraining ML...' : 'Retrain ML'}
+              </Button>
+            )}
           </div>
         </div>
       </header>
@@ -354,6 +481,73 @@ export default function Home() {
             Always confirm with your broker's research before placing trades. Capital is at risk.
           </AlertDescription>
         </Alert>
+
+        {/* Global Data Feed Settings Card */}
+        <Card className="border-violet-200/50 dark:border-violet-950/40 shadow-sm" style={{ background: 'rgba(15,23,42,0.3)' }}>
+          <CardContent className="p-4 flex items-center justify-between gap-4 flex-wrap">
+            <div className="flex items-center gap-2.5">
+              <Database className="h-5 w-5 text-violet-500 fill-violet-500/20" />
+              <div>
+                <h3 className="text-sm font-bold text-foreground">Global Data Provider Configuration</h3>
+                <p className="text-[11px] text-muted-foreground">Select the active data feed and EOD lookback period. Applied globally across predictions and charts.</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4 flex-wrap text-xs">
+              {/* Provider Select */}
+              <div className="flex items-center gap-2 bg-card border rounded-lg px-2.5 py-1.5" style={{ borderColor: 'var(--border)' }}>
+                <span className="text-muted-foreground font-medium">Source:</span>
+                <select
+                  value={selectedProvider}
+                  onChange={(e) => handleProviderChange(e.target.value)}
+                  className="bg-transparent font-bold text-foreground focus:outline-none cursor-pointer"
+                >
+                  <option value="DEFAULT">Auto (Priority Chain)</option>
+                  <option value="YAHOO">Yahoo Finance (Online)</option>
+                  {upstoxConfigured ? (
+                    <option value="UPSTOX">Upstox API v2 (Online)</option>
+                  ) : (
+                    <option value="UPSTOX" disabled>Upstox (Not Connected)</option>
+                  )}
+                  <option value="NSE">NSE Bhavcopy Archive (Local)</option>
+                </select>
+              </div>
+
+              {/* Range Select */}
+              <div className="flex items-center gap-2 bg-card border rounded-lg px-2.5 py-1.5" style={{ borderColor: 'var(--border)' }}>
+                <span className="text-muted-foreground font-medium">Lookback Range:</span>
+                {selectedProvider === 'NSE' ? (
+                  <span className="font-bold text-foreground px-1 font-mono">All Local Data</span>
+                ) : selectedProvider === 'UPSTOX' ? (
+                  <select
+                    value={selectedRange}
+                    onChange={(e) => handleRangeChange(e.target.value)}
+                    className="bg-transparent font-bold text-foreground focus:outline-none cursor-pointer font-mono"
+                  >
+                    <option value="MAX">Max / All (EOD + Intraday)</option>
+                    <option value="1y">1 Year (1Y)</option>
+                    <option value="2y">2 Years (2Y)</option>
+                    <option value="5y">5 Years (5Y)</option>
+                  </select>
+                ) : (
+                  <select
+                    value={selectedRange}
+                    onChange={(e) => handleRangeChange(e.target.value)}
+                    className="bg-transparent font-bold text-foreground focus:outline-none cursor-pointer font-mono"
+                  >
+                    <option value="1mo">1 Month (1M)</option>
+                    <option value="3mo">3 Months (3M)</option>
+                    <option value="6mo">6 Months (6M)</option>
+                    <option value="1y">1 Year (1Y)</option>
+                    <option value="2y">2 Years (2Y)</option>
+                    <option value="3y">3 Years (3Y)</option>
+                    <option value="5y">5 Years (5Y)</option>
+                    <option value="10y">10 Years (10Y)</option>
+                  </select>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Loading skeleton */}
         {loading && !result && (
@@ -628,6 +822,7 @@ export default function Home() {
       <StockDetailDialog symbol={detailSymbol} onClose={() => setDetailSymbol(null)} />
       <IntradayDetailDialog symbol={intradaySymbol} onClose={() => setIntradaySymbol(null)} />
       <DataArchiveDialog open={archiveOpen} onClose={() => setArchiveOpen(false)} />
+      <UpstoxSettingsDialog open={upstoxOpen} onClose={() => setUpstoxOpen(false)} />
     </div>
   )
 }

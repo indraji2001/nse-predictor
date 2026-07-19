@@ -64,3 +64,17 @@ desktop.ini
 
 # Misc
 *.pem
+
+.vercel
+.env*
+
+# Scratch & local temp database files
+auth*
+scratch/
+*report.json
+failed_*.json
+missing_*.json
+*mismatches.json
+truly_*.json
+turso_extracted/
+*.zip

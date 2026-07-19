@@ -41,7 +41,7 @@ export const NSE_UNIVERSE: StockMeta[] = [
   { symbol: 'WIPRO', name: 'Wipro', sector: 'IT', basePrice: 540, volatility: 0.26, drift: 0.08 },
   { symbol: 'HCLTECH', name: 'HCL Technologies', sector: 'IT', basePrice: 1740, volatility: 0.23, drift: 0.13 },
   { symbol: 'TECHM', name: 'Tech Mahindra', sector: 'IT', basePrice: 1620, volatility: 0.27, drift: 0.07 },
-  { symbol: 'LTIM', name: 'LTIMindtree', sector: 'IT', basePrice: 5420, volatility: 0.26, drift: 0.10 },
+  { symbol: 'LTM', name: 'LTIMindtree', sector: 'IT', basePrice: 5420, volatility: 0.26, drift: 0.10 },
   { symbol: 'PERSISTENT', name: 'Persistent Systems', sector: 'IT', basePrice: 4980, volatility: 0.30, drift: 0.22 },
   { symbol: 'COFORGE', name: 'Coforge', sector: 'IT', basePrice: 5740, volatility: 0.28, drift: 0.18 },
 
@@ -82,7 +82,7 @@ export const NSE_UNIVERSE: StockMeta[] = [
 
   // Auto
   { symbol: 'MARUTI', name: 'Maruti Suzuki India', sector: 'Auto', basePrice: 12840, volatility: 0.22, drift: 0.11 },
-  { symbol: 'TATAMOTORS', name: 'Tata Motors', sector: 'Auto', basePrice: 985, volatility: 0.30, drift: 0.12, yahooSymbol: 'TAMO.NS' },
+  { symbol: 'TMPV', name: 'Tata Motors', sector: 'Auto', basePrice: 985, volatility: 0.30, drift: 0.12 },
   { symbol: 'M&M', name: 'Mahindra & Mahindra', sector: 'Auto', basePrice: 2920, volatility: 0.25, drift: 0.20, yahooSymbol: 'M&M.NS' },
   { symbol: 'BAJAJ-AUTO', name: 'Bajaj Auto', sector: 'Auto', basePrice: 9420, volatility: 0.24, drift: 0.15 },
   { symbol: 'HEROMOTOCO', name: 'Hero MotoCorp', sector: 'Auto', basePrice: 5240, volatility: 0.24, drift: 0.09 },
