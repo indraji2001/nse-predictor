@@ -273,16 +273,33 @@ export async function GET(req: NextRequest) {
     }))
   }
 
-  // Sort: in-PRZ first, then near-PRZ, then by distance
+  // Sort: RSI-confluent in-PRZ first, then in-PRZ, then RSI-confluent near-PRZ, then near-PRZ, then by distance
   results.sort((a, b) => {
+    const aConfl = !!(a.bestPattern?.rsiBullish || a.bestPattern?.rsiBearish)
+    const bConfl = !!(b.bestPattern?.rsiBullish || b.bestPattern?.rsiBearish)
+    // Tier 1: in PRZ with RSI confluence
+    if (a.inPRZ && aConfl && !(b.inPRZ && bConfl)) return -1
+    if (b.inPRZ && bConfl && !(a.inPRZ && aConfl)) return 1
+    // Tier 2: in PRZ without RSI confluence
     if (a.inPRZ && !b.inPRZ) return -1
     if (b.inPRZ && !a.inPRZ) return 1
+    // Tier 3: near PRZ with RSI confluence
+    if (a.nearPRZ && aConfl && !(b.nearPRZ && bConfl)) return -1
+    if (b.nearPRZ && bConfl && !(a.nearPRZ && aConfl)) return 1
+    // Tier 4: near PRZ without RSI confluence
     if (a.nearPRZ && !b.nearPRZ) return -1
     if (b.nearPRZ && !a.nearPRZ) return 1
+    // Within same tier: sort by RSI confluence first, then by proximity
+    if (aConfl && !bConfl) return -1
+    if (bConfl && !aConfl) return 1
     return Math.abs(a.bestPattern!.distFromD) - Math.abs(b.bestPattern!.distFromD)
   })
 
   const sectors = [...new Set(NSE_UNIVERSE.map(s => s.sector))].sort()
+
+  const rsiConfluenceCount = results.filter(r =>
+    r.bestPattern?.rsiBullish || r.bestPattern?.rsiBearish
+  ).length
 
   return NextResponse.json({
     total: results.length,
@@ -291,6 +308,7 @@ export async function GET(req: NextRequest) {
     demoCount,
     inPRZ: results.filter(r => r.inPRZ).length,
     nearPRZ: results.filter(r => r.nearPRZ && !r.inPRZ).length,
+    rsiConfluenceCount,
     yahooAvailable,
     chartPeriod: cfg.label,
     suitableFor: cfg.suitableFor,

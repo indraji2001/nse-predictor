@@ -37,6 +37,7 @@ interface ScanResult {
   demoCount: number
   inPRZ: number
   nearPRZ: number
+  rsiConfluenceCount: number
   yahooAvailable: boolean
   chartPeriod: string
   suitableFor: string
@@ -469,6 +470,7 @@ export default function HarmonicScannerPage() {
   const [sectorFilter, setSectorFilter] = useState('ALL')
   const [dirFilter, setDirFilter] = useState('ALL')
   const [przOnly, setPrzOnly] = useState(false)
+  const [rsiConfluenceOnly, setRsiConfluenceOnly] = useState(false)
   const [search, setSearch] = useState('')
   const [patternFilter, setPatternFilter] = useState('ALL')
 
@@ -517,6 +519,9 @@ export default function HarmonicScannerPage() {
     }
     if (patternFilter !== 'ALL') {
       if (!r.patterns.some(p => p.name === patternFilter)) return false
+    }
+    if (rsiConfluenceOnly) {
+      if (!r.bestPattern?.rsiBullish && !r.bestPattern?.rsiBearish) return false
     }
     return true
   }) ?? []
@@ -599,10 +604,10 @@ export default function HarmonicScannerPage() {
             { icon: <Radar size={18} className="text-violet-400" />, label: 'Stocks with Patterns', value: data ? data.total : '—', color: '#818cf8' },
             { icon: <CheckCircle2 size={18} className="text-emerald-400" />, label: 'IN PRZ Now (≤3%)', value: data ? data.inPRZ : '—', color: '#34d399', pulse: true },
             { icon: <AlertCircle size={18} className="text-amber-400" />, label: 'Near PRZ (≤8%)', value: data ? data.nearPRZ : '—', color: '#fbbf24' },
-            { icon: <Activity size={18} className="text-sky-400" />, label: 'Visible Results', value: visibleResults.length, color: '#38bdf8' },
+            { icon: <Zap size={18} className="text-emerald-300" />, label: 'RSI Confluence ✓', value: data ? (data.rsiConfluenceCount ?? 0) : '—', color: '#6ee7b7', highlight: true },
           ].map((stat, i) => (
             <div key={i} className="rounded-2xl border p-4 flex items-center gap-3"
-              style={{ background: 'rgba(15,23,42,0.8)', borderColor: '#1e293b' }}>
+              style={{ background: stat.highlight && data && (data.rsiConfluenceCount ?? 0) > 0 ? 'rgba(5,150,105,0.08)' : 'rgba(15,23,42,0.8)', borderColor: stat.highlight && data && (data.rsiConfluenceCount ?? 0) > 0 ? '#059669' : '#1e293b' }}>
               <div className="p-2 rounded-xl" style={{ background: `${stat.color}15` }}>{stat.icon}</div>
               <div>
                 <div className="text-xs text-slate-400">{stat.label}</div>
@@ -658,9 +663,13 @@ export default function HarmonicScannerPage() {
             </select>
             <label className="flex items-center gap-2 px-3 py-2 rounded-xl cursor-pointer border"
               style={{ background: przOnly ? '#1e1b4b' : '#0f1729', borderColor: przOnly ? '#6366f1' : '#334155' }}>
-              <input type="checkbox" checked={przOnly} onChange={e => setPrzOnly(e.target.checked)} className="hidden" />
-              <Zap size={14} style={{ color: przOnly ? '#818cf8' : '#6b7280' }} />
+              <input type="checkbox" checked={przOnly} onChange={e => setPrzOnly(e.target.checked)} className="accent-violet-500" />
               <span className="text-sm font-medium" style={{ color: przOnly ? '#c7d2fe' : '#6b7280' }}>PRZ Only</span>
+            </label>
+            <label className="flex items-center gap-2 px-3 py-2 rounded-xl cursor-pointer border"
+              style={{ background: rsiConfluenceOnly ? '#052e16' : '#0f1729', borderColor: rsiConfluenceOnly ? '#059669' : '#334155' }}>
+              <input type="checkbox" checked={rsiConfluenceOnly} onChange={e => setRsiConfluenceOnly(e.target.checked)} className="accent-emerald-500" />
+              <span className="text-sm font-semibold" style={{ color: rsiConfluenceOnly ? '#34d399' : '#cbd5e1' }}>RSI Confluence ✓</span>
             </label>
             <button onClick={() => scan()} disabled={loading}
               className="px-4 py-2 rounded-xl text-sm font-bold text-white disabled:opacity-50 hover:scale-105 transition-all"
