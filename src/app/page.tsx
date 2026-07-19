@@ -247,6 +247,21 @@ export default function Home() {
       const r = localStorage.getItem('selectedRange') || '1y'
       setSelectedProvider(p)
       setSelectedRange(r)
+
+      // Handle Upstox connection callback messages
+      const params = new URLSearchParams(window.location.search)
+      const upstoxParam = params.get('upstox')
+      const msgParam = params.get('msg')
+      if (upstoxParam === 'connected') {
+        toast.success('Successfully connected to Upstox API!')
+        // Clean URL params so they don't linger on reload
+        window.history.replaceState({}, document.title, window.location.pathname)
+      } else if (upstoxParam === 'error') {
+        toast.error('Upstox connection failed', {
+          description: msgParam ? decodeURIComponent(msgParam) : 'Unknown error occurred',
+        })
+        window.history.replaceState({}, document.title, window.location.pathname)
+      }
     }
 
     fetch('/api/upstox/status', { cache: 'no-store' })
