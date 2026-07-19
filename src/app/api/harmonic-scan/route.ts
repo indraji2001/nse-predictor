@@ -12,16 +12,16 @@ export const maxDuration = 60
 //   Weekly (1W chart) → Mid/Long Term trades (15–60D+) → fetch 2yr daily, resample→weekly
 const CHART_CONFIGS: Record<string, { yahooRange: string; interval: string; deviation: number; label: string; suitableFor: string }> = {
   DAILY: {
-    yahooRange: '1y',
+    yahooRange: '2y',          // 2 years of daily data for richer pivot history
     interval: '1d',
-    deviation: 0.025,         // 2.5% pivot threshold on daily candles
+    deviation: 0.015,          // 1.5% pivot threshold — captures more real swings on Indian stocks
     label: 'Daily (1D)',
     suitableFor: 'Short Term (5–15 days)',
   },
   WEEKLY: {
-    yahooRange: '2y',
-    interval: '1wk',          // Yahoo supports weekly interval directly!
-    deviation: 0.035,         // 3.5% pivot threshold on weekly candles
+    yahooRange: '3y',          // 3 years of weekly data
+    interval: '1wk',
+    deviation: 0.020,          // 2.0% pivot threshold on weekly candles
     label: 'Weekly (1W)',
     suitableFor: 'Mid Term (15–60 days) & Long Term (60+ days)',
   },
@@ -206,10 +206,13 @@ export async function GET(req: NextRequest) {
   let liveCount = 0
   let demoCount = 0
 
-  // Fetch in batches of 4 (stay within 60s Vercel limit)
-  const BATCH_SIZE = 4
-  for (let i = 0; i < universe.length; i += BATCH_SIZE) {
-    const batch = universe.slice(i, i + BATCH_SIZE)
+  // Scan up to 150 stocks per request (stay within 60s Vercel limit)
+  // Universe is already sorted by liquidity/importance so top stocks come first.
+  const MAX_STOCKS = 150
+  const universeSlice = universe.slice(0, MAX_STOCKS)
+  const BATCH_SIZE = 10  // Increased batch size for faster throughput
+  for (let i = 0; i < universeSlice.length; i += BATCH_SIZE) {
+    const batch = universeSlice.slice(i, i + BATCH_SIZE)
     await Promise.all(batch.map(async (meta) => {
       scannedCount++
 
@@ -229,7 +232,8 @@ export async function GET(req: NextRequest) {
       }
 
       // Detect patterns with timeframe-appropriate deviation
-      const patterns = detectHarmonicPatterns(candles, cfg.deviation, 15)
+      // Use 20 pivot windows for better pattern detection coverage
+      const patterns = detectHarmonicPatterns(candles, cfg.deviation, 20)
       if (patterns.length === 0) return
 
       const currentPrice = candles[candles.length - 1].close
@@ -290,6 +294,7 @@ export async function GET(req: NextRequest) {
     suitableFor: cfg.suitableFor,
     sectors,
     results,
+    universeSize: universe.length,
     scannedAt: new Date().toISOString(),
   })
 }
