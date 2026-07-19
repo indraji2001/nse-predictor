@@ -118,7 +118,7 @@ export interface IndicatorSnapshot {
   pctFrom250High: number
 }
 
-export type DataSource = 'NSE' | 'YAHOO' | 'DEMO' | 'LIVE'
+export type DataSource = 'NSE' | 'YAHOO' | 'DEMO' | 'LIVE' | 'UPSTOX'
 
 export interface Signal {
   symbol: string
@@ -152,15 +152,22 @@ export interface Signal {
 export interface UniverseResult {
   asOf: string
   nextTradingDay: string
+  // BUY signals (long)
   btst: Signal[]
   shortTerm: Signal[]
   midterm: Signal[]
   longTerm: Signal[]
+  // SELL signals (short / bearish)
+  btstSell: Signal[]
+  shortTermSell: Signal[]
+  midtermSell: Signal[]
+  longTermSell: Signal[]
   breadth: {
     advancing: number
     declining: number
     unchanged: number
     strongBuys: number
+    strongSells: number
   }
   topGainers: Array<{ symbol: string; name: string; changePct: number; price: number }>
   topLosers: Array<{ symbol: string; name: string; changePct: number; price: number }>

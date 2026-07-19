@@ -572,17 +572,28 @@ function finalizeSignal(
   else if (candleCount >= 30) dataQuality = 'LIMITED'
   else dataQuality = 'SYNTHETIC'
 
-  // Stop loss and targets
+  // Stop loss and targets — DIRECTION-AWARE
+  // BUY (long): SL below entry, targets above entry
+  // SELL (short): SL above entry, targets below entry
   const atr = ind.atr14 || price * 0.02
   const activeStopAtrMult = isNiftyBullish ? opts.stopAtrMult : opts.stopAtrMult + 0.5
-  const stopLoss = +(price - atr * activeStopAtrMult).toFixed(2)
-  const risk = Math.max(0.01, price - stopLoss)
+  const isSell = action === 'SELL'
+  const stopLoss = isSell
+    ? +(price + atr * activeStopAtrMult).toFixed(2)   // SELL: SL above entry
+    : +(price - atr * activeStopAtrMult).toFixed(2)   // BUY: SL below entry
+  const risk = Math.max(0.01, Math.abs(price - stopLoss))
   const entry = +price.toFixed(2)
   const entryRangeLow = +(price - atr * 0.2).toFixed(2)
   const entryRangeHigh = +(price + atr * 0.2).toFixed(2)
-  const target1 = +(price + risk * opts.targetRr1).toFixed(2)
-  const target2 = +(price + risk * opts.targetRr2).toFixed(2)
-  const target3 = +(price + risk * opts.targetRr3).toFixed(2)
+  const target1 = isSell
+    ? +(price - risk * opts.targetRr1).toFixed(2)     // SELL: target below entry
+    : +(price + risk * opts.targetRr1).toFixed(2)     // BUY: target above entry
+  const target2 = isSell
+    ? +(price - risk * opts.targetRr2).toFixed(2)
+    : +(price + risk * opts.targetRr2).toFixed(2)
+  const target3 = isSell
+    ? +(price - risk * opts.targetRr3).toFixed(2)
+    : +(price + risk * opts.targetRr3).toFixed(2)
   const riskReward = +opts.targetRr2.toFixed(2)
 
   // Compute LightGBM ML prediction probability
@@ -654,6 +665,144 @@ function buildHarmonicFactor(ind: IndicatorSnapshot, price: number): SignalFacto
 
 function isBearishActive(f: SignalFactor): boolean {
   return f.direction === 'bearish'
+}
+
+// --- Dedicated SELL Signal Engine ------------------------------------------
+// Produces bearish SELL signals when multiple bearish conditions align.
+// This mirrors the BUY engines but with all conditions inverted.
+// Uses the same finalizeSignal mechanism but with bearish factors that
+// produce confidence<=25 + 2+ bearish hits → triggers SELL action.
+//
+// Bearish checklist (8 factors):
+//  1. Death Cross zone: price < EMA50 AND EMA50 < EMA200
+//  2. RSI overbought (>= 65) or extremely overbought (>= 70)
+//  3. MACD bearish cross or MACD below signal line
+//  4. ADX trend with -DI > +DI (bearish directional strength)
+//  5. Price below VWAP (distribution)
+//  6. Bollinger Band %B > 0.85 (price extended at upper band = due for reversal)
+//  7. Bearish candlestick pattern (Bearish Engulfing, Evening Star, Shooting Star)
+//  8. Supertrend bearish (trend = -1)
+function evaluateSell(
+  series: StockSeries,
+  ind: IndicatorSnapshot,
+  isNiftyBullish = true,
+  timeframe: Timeframe = 'BTST',
+): Signal {
+  const c = series.candles
+  const last = c[c.length - 1]
+  const factors: SignalFactor[] = []
+
+  // 1. Death Cross zone: price < EMA50 AND EMA50 < EMA200
+  const deathCross = ind.price < ind.ema50 && ind.ema50 < ind.ema200
+  factors.push({
+    name: 'Death cross / bearish trend',
+    detail: `Price ₹${ind.price.toFixed(0)} < EMA50 ₹${ind.ema50.toFixed(0)} < EMA200 ₹${ind.ema200.toFixed(0)}`,
+    weight: 0.18,
+    hit: deathCross,
+    direction: deathCross ? 'bearish' : 'neutral',
+  })
+
+  // 2. RSI overbought >= 65 (extended bull move nearing exhaustion)
+  const rsiOverbought = ind.rsi14 >= 65
+  factors.push({
+    name: 'RSI overbought zone',
+    detail: `RSI ${ind.rsi14.toFixed(1)} (overbought >= 65)`,
+    weight: 0.14,
+    hit: rsiOverbought,
+    direction: rsiOverbought ? 'bearish' : 'neutral',
+  })
+
+  // 3. MACD bearish: MACD below signal line OR recent bearish crossover
+  const macdBearish = ind.macd < ind.macdSignal || ind.macdCross === 'bearish'
+  factors.push({
+    name: 'MACD bearish momentum',
+    detail: `MACD ${ind.macd.toFixed(2)} vs Signal ${ind.macdSignal.toFixed(2)}, cross=${ind.macdCross}`,
+    weight: 0.15,
+    hit: macdBearish,
+    direction: macdBearish ? 'bearish' : 'neutral',
+  })
+
+  // 4. ADX with -DI > +DI (bearish directional strength)
+  const adxBearish = ind.adx >= 20 && ind.minusDI > ind.plusDI
+  factors.push({
+    name: 'ADX bearish directional strength',
+    detail: `ADX ${ind.adx.toFixed(1)}, +DI ${ind.plusDI.toFixed(1)}, -DI ${ind.minusDI.toFixed(1)}`,
+    weight: 0.12,
+    hit: adxBearish,
+    direction: adxBearish ? 'bearish' : 'neutral',
+  })
+
+  // 5. Price below VWAP (distribution / selling pressure)
+  const belowVwap = ind.price < ind.vwap20
+  factors.push({
+    name: 'Below VWAP (distribution)',
+    detail: `Price ₹${ind.price.toFixed(2)} vs VWAP ₹${ind.vwap20.toFixed(2)}`,
+    weight: 0.10,
+    hit: belowVwap,
+    direction: belowVwap ? 'bearish' : 'neutral',
+  })
+
+  // 6. Bollinger Band %B > 0.85 (upper-band extended, reversal likely)
+  const bbExtended = ind.bbPercentB >= 0.85
+  factors.push({
+    name: 'Bollinger upper-band extended',
+    detail: `%B ${(ind.bbPercentB * 100).toFixed(0)}% — price near/above upper band`,
+    weight: 0.10,
+    hit: bbExtended,
+    direction: bbExtended ? 'bearish' : 'neutral',
+  })
+
+  // 7. Bearish candlestick pattern
+  const bearPatterns = ind.patterns.filter((p) =>
+    ['BearishEngulfing', 'EveningStar', 'ShootingStar', 'BearishMarubozu', 'DarkCloudCover', 'HangingMan'].includes(p)
+  )
+  factors.push({
+    name: 'Bearish candle pattern',
+    detail: bearPatterns.length ? bearPatterns.join(', ') : 'None detected',
+    weight: 0.12,
+    hit: bearPatterns.length > 0,
+    direction: bearPatterns.length > 0 ? 'bearish' : 'neutral',
+  })
+
+  // 8. Supertrend bearish (trend flipped down)
+  const stBearish = ind.supertrendTrend === -1
+  factors.push({
+    name: 'Supertrend bearish',
+    detail: `Supertrend ${stBearish ? 'DOWN' : 'UP'} @ ₹${ind.supertrendValue.toFixed(2)}`,
+    weight: 0.09,
+    hit: stBearish,
+    direction: stBearish ? 'bearish' : 'neutral',
+  })
+
+  // 9. Negative recent momentum (5-day return negative)
+  const negMomentum = ind.ret5d < -0.5
+  factors.push({
+    name: 'Negative short-term momentum',
+    detail: `5-day return ${ind.ret5d.toFixed(2)}%`,
+    weight: 0.10,
+    hit: negMomentum,
+    direction: negMomentum ? 'bearish' : 'neutral',
+  })
+
+  // 10. Volume surge (distribution with high volume = bearish confirmation)
+  const volSurge = ind.volumeRatio >= 1.3
+  factors.push({
+    name: 'Volume surge (distribution)',
+    detail: `Volume ratio ${ind.volumeRatio.toFixed(2)}× vs 20-day avg`,
+    weight: 0.10,
+    hit: volSurge && belowVwap, // volume surge + below VWAP = confirmed distribution
+    direction: volSurge && belowVwap ? 'bearish' : 'neutral',
+  })
+
+  // Determine timeframe-specific opts
+  const timeframeOpts: Record<Timeframe, { targetRr1: number; targetRr2: number; targetRr3: number; stopAtrMult: number; holdingPeriod: string }> = {
+    BTST:       { targetRr1: 0.8,  targetRr2: 1.5,  targetRr3: 2.5,   stopAtrMult: 1.0, holdingPeriod: '1-2 sessions (cover by next trading day close)' },
+    SHORT_TERM: { targetRr1: 1.5,  targetRr2: 2.5,  targetRr3: 4.0,   stopAtrMult: 1.5, holdingPeriod: '5-15 trading days' },
+    MIDTERM:    { targetRr1: 2.0,  targetRr2: 3.5,  targetRr3: 5.0,   stopAtrMult: 2.0, holdingPeriod: '1-3 months (30-60 trading days)' },
+    LONG_TERM:  { targetRr1: 2.5,  targetRr2: 4.0,  targetRr3: 6.0,   stopAtrMult: 2.5, holdingPeriod: '3-12 months positional short' },
+  }
+
+  return finalizeSignal(series, ind, timeframe, factors, timeframeOpts[timeframe], isNiftyBullish)
 }
 
 // --- Long-term Engine (6-24 months) ---------------------------------------
@@ -920,20 +1069,27 @@ export function evaluateStock(
   return signals
 }
 
-// --- Public API: evaluate the whole universe, filter BUY signals ----------
+// --- Public API: evaluate the whole universe, filter BUY + SELL signals ----
 export interface UniverseResult {
   asOf: string
   nextTradingDay: string
+  // BUY signals (long)
   btst: Signal[]
   shortTerm: Signal[]
   midterm: Signal[]
   longTerm: Signal[]
+  // SELL signals (short / bearish)
+  btstSell: Signal[]
+  shortTermSell: Signal[]
+  midtermSell: Signal[]
+  longTermSell: Signal[]
   // Each stock evaluated (for the market breadth widget)
   breadth: {
     advancing: number
     declining: number
     unchanged: number
     strongBuys: number
+    strongSells: number
   }
   // Top movers
   topGainers: Array<{ symbol: string; name: string; changePct: number; price: number }>
@@ -961,7 +1117,11 @@ export function evaluateUniverse(
 ): UniverseResult {
   const signals = allSeries.map((s) => ({
     series: s,
-    sig: evaluateStock(s, isNiftyBullish, tvConsensusMap?.[s.symbol])
+    sig: evaluateStock(s, isNiftyBullish, tvConsensusMap?.[s.symbol]),
+    sellBTST: evaluateSell(s, computeIndicators(s.candles), isNiftyBullish, 'BTST'),
+    sellST: evaluateSell(s, computeIndicators(s.candles), isNiftyBullish, 'SHORT_TERM'),
+    sellMT: evaluateSell(s, computeIndicators(s.candles), isNiftyBullish, 'MIDTERM'),
+    sellLT: evaluateSell(s, computeIndicators(s.candles), isNiftyBullish, 'LONG_TERM'),
   }))
 
   // BUY signals for each timeframe, sorted by ML Probability desc
@@ -982,13 +1142,32 @@ export function evaluateUniverse(
     .filter((s) => s.action === 'BUY')
     .sort((a, b) => (b.mlProbability ?? 0) - (a.mlProbability ?? 0))
 
+  // SELL signals for each timeframe (dedicated bearish engine), sorted by confidence desc
+  const btstSell = signals
+    .map((x) => x.sellBTST)
+    .filter((s) => s.action === 'SELL')
+    .sort((a, b) => b.confidence - a.confidence)
+  const shortTermSell = signals
+    .map((x) => x.sellST)
+    .filter((s) => s.action === 'SELL')
+    .sort((a, b) => b.confidence - a.confidence)
+  const midtermSell = signals
+    .map((x) => x.sellMT)
+    .filter((s) => s.action === 'SELL')
+    .sort((a, b) => b.confidence - a.confidence)
+  const longTermSell = signals
+    .map((x) => x.sellLT)
+    .filter((s) => s.action === 'SELL')
+    .sort((a, b) => b.confidence - a.confidence)
+
   // Market breadth based on today's candle direction
   let advancing = 0
   let declining = 0
   let unchanged = 0
   let strongBuys = 0
+  let strongSells = 0
   const topMovers: Array<{ symbol: string; name: string; changePct: number; price: number }> = []
-  for (const { series, sig } of signals) {
+  for (const { series, sig, sellBTST, sellST, sellMT, sellLT } of signals) {
     const last = series.candles[series.candles.length - 1]
     const prev = series.candles[series.candles.length - 2]
     const ch = prev ? ((last.close - prev.close) / prev.close) * 100 : 0
@@ -1002,6 +1181,13 @@ export function evaluateUniverse(
       sig.MIDTERM.action === 'BUY' &&
       sig.LONG_TERM.action === 'BUY'
     ) strongBuys++
+    // strong sell = SELL in ALL 4 timeframes (highest conviction bearish)
+    if (
+      sellBTST.action === 'SELL' &&
+      sellST.action === 'SELL' &&
+      sellMT.action === 'SELL' &&
+      sellLT.action === 'SELL'
+    ) strongSells++
     topMovers.push({ symbol: series.symbol, name: series.name, changePct: +ch.toFixed(2), price: last.close })
   }
   topMovers.sort((a, b) => b.changePct - a.changePct)
@@ -1038,7 +1224,11 @@ export function evaluateUniverse(
     shortTerm,
     midterm,
     longTerm,
-    breadth: { advancing, declining, unchanged, strongBuys },
+    btstSell,
+    shortTermSell,
+    midtermSell,
+    longTermSell,
+    breadth: { advancing, declining, unchanged, strongBuys, strongSells },
     topGainers,
     topLosers,
     sectorBreadth,

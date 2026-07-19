@@ -57,6 +57,7 @@ export default function Home() {
   const [selectedRange, setSelectedRange] = useState<string>('1y')
   const [upstoxConfigured, setUpstoxConfigured] = useState(false)
   const [healthOpen, setHealthOpen] = useState(false)
+  const [signalDirection, setSignalDirection] = useState<'BUY' | 'SELL'>('BUY')
 
   const loadIntraday = useCallback(async (showToast = true) => {
     setIntradayLoading(true)
@@ -228,7 +229,7 @@ export default function Home() {
           srcSummary = parts.length ? ` · ${parts.join(' · ')}` : ''
         }
         toast.success(`Predictions ready for ${new Date(data.nextTradingDay).toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' })}`, {
-          description: `${data.btst.length} BTST · ${data.shortTerm.length} ST · ${data.midterm.length} MT · ${data.longTerm.length} LT BUY signals${srcSummary}`,
+          description: `BUY: ${data.btst.length} BTST · ${data.shortTerm.length} ST · ${data.midterm.length} MT · ${data.longTerm.length} LT | SELL: ${(data.btstSell ?? []).length} BTST · ${(data.shortTermSell ?? []).length} ST${srcSummary}`,
         })
       }
     } catch (e) {
@@ -340,12 +341,19 @@ export default function Home() {
 
   const signalsForTab: Signal[] = useMemo(() => {
     if (!result) return []
-    if (activeTab === 'BTST') return result.btst
-    if (activeTab === 'SHORT_TERM') return result.shortTerm
-    if (activeTab === 'MIDTERM') return result.midterm
-    if (activeTab === 'LONG_TERM') return result.longTerm
+    if (signalDirection === 'SELL') {
+      if (activeTab === 'BTST') return result.btstSell ?? []
+      if (activeTab === 'SHORT_TERM') return result.shortTermSell ?? []
+      if (activeTab === 'MIDTERM') return result.midtermSell ?? []
+      if (activeTab === 'LONG_TERM') return result.longTermSell ?? []
+    } else {
+      if (activeTab === 'BTST') return result.btst
+      if (activeTab === 'SHORT_TERM') return result.shortTerm
+      if (activeTab === 'MIDTERM') return result.midterm
+      if (activeTab === 'LONG_TERM') return result.longTerm
+    }
     return [] // INTRADAY handled separately
-  }, [result, activeTab])
+  }, [result, activeTab, signalDirection])
 
   const intradayFiltered = useMemo(() => {
     if (!intradayResult) return []
@@ -376,11 +384,14 @@ export default function Home() {
       list = list.filter((s) => s.confidence >= minConfidence)
     }
     if (onlyTripleBuy && result) {
-      // A signal is "all-timeframe-buy" if its symbol appears in all 4 lists
-      const btstSyms = new Set(result.btst.map((s) => s.symbol))
-      const stSyms = new Set(result.shortTerm.map((s) => s.symbol))
-      const mtSyms = new Set(result.midterm.map((s) => s.symbol))
-      const ltSyms = new Set(result.longTerm.map((s) => s.symbol))
+      // A signal is "all-timeframe" if its symbol appears in all 4 lists for the current direction
+      const src = signalDirection === 'SELL'
+        ? { b: result.btstSell ?? [], s: result.shortTermSell ?? [], m: result.midtermSell ?? [], l: result.longTermSell ?? [] }
+        : { b: result.btst, s: result.shortTerm, m: result.midterm, l: result.longTerm }
+      const btstSyms = new Set(src.b.map((s) => s.symbol))
+      const stSyms = new Set(src.s.map((s) => s.symbol))
+      const mtSyms = new Set(src.m.map((s) => s.symbol))
+      const ltSyms = new Set(src.l.map((s) => s.symbol))
       list = list.filter((s) => btstSyms.has(s.symbol) && stSyms.has(s.symbol) && mtSyms.has(s.symbol) && ltSyms.has(s.symbol))
     }
     return list
@@ -389,9 +400,12 @@ export default function Home() {
   const sectorOptions = useMemo(() => {
     if (!result) return ['ALL']
     const set = new Set<string>()
-    ;[...result.btst, ...result.shortTerm, ...result.midterm].forEach((s) => set.add(s.sector))
+    const allSignals = signalDirection === 'SELL'
+      ? [...(result.btstSell ?? []), ...(result.shortTermSell ?? []), ...(result.midtermSell ?? [])]
+      : [...result.btst, ...result.shortTerm, ...result.midterm]
+    allSignals.forEach((s) => set.add(s.sector))
     return ['ALL', ...Array.from(set).sort()]
-  }, [result])
+  }, [result, signalDirection])
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -604,6 +618,59 @@ export default function Home() {
 
             {/* Timeframe tabs + filters */}
             <div className="space-y-3">
+              {/* BUY / SELL Direction Toggle */}
+              <div className="flex items-center gap-3">
+                <button
+                  id="dir-buy"
+                  onClick={() => setSignalDirection('BUY')}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-semibold transition-all duration-200 \${
+                    signalDirection === 'BUY'
+                      ? 'bg-emerald-500 border-emerald-500 text-white shadow-lg shadow-emerald-500/30'
+                      : 'bg-card border-border text-muted-foreground hover:border-emerald-400 hover:text-emerald-600'
+                  }`}
+                >
+                  <span>📈</span>
+                  <span>BUY Signals</span>
+                  <span className={`inline-flex items-center justify-center text-[11px] font-bold px-1.5 py-0.5 rounded-full \${
+                    signalDirection === 'BUY' ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
+                  }`}>
+                    {result && activeTab !== 'INTRADAY' && activeTab !== 'PAPER_TRADES'
+                      ? (activeTab === 'BTST' ? result.btst.length
+                        : activeTab === 'SHORT_TERM' ? result.shortTerm.length
+                        : activeTab === 'MIDTERM' ? result.midterm.length
+                        : result.longTerm.length)
+                      : '—'}
+                  </span>
+                </button>
+                <button
+                  id="dir-sell"
+                  onClick={() => setSignalDirection('SELL')}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-semibold transition-all duration-200 \${
+                    signalDirection === 'SELL'
+                      ? 'bg-red-500 border-red-500 text-white shadow-lg shadow-red-500/30'
+                      : 'bg-card border-border text-muted-foreground hover:border-red-400 hover:text-red-600'
+                  }`}
+                >
+                  <span>📉</span>
+                  <span>SELL Signals</span>
+                  <span className={`inline-flex items-center justify-center text-[11px] font-bold px-1.5 py-0.5 rounded-full \${
+                    signalDirection === 'SELL' ? 'bg-white/20 text-white' : 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300'
+                  }`}>
+                    {result && activeTab !== 'INTRADAY' && activeTab !== 'PAPER_TRADES'
+                      ? (activeTab === 'BTST' ? (result.btstSell ?? []).length
+                        : activeTab === 'SHORT_TERM' ? (result.shortTermSell ?? []).length
+                        : activeTab === 'MIDTERM' ? (result.midtermSell ?? []).length
+                        : (result.longTermSell ?? []).length)
+                      : '—'}
+                  </span>
+                </button>
+                {signalDirection === 'SELL' && (
+                  <div className="ml-2 px-3 py-1.5 rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 text-xs text-red-700 dark:text-red-300">
+                    ⚠️ SELL signals: bearish setups for shorting. SL is <strong>above</strong> entry, targets <strong>below</strong>.
+                  </div>
+                )}
+              </div>
+
               <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as Timeframe)}>
                 <div className="flex items-start justify-between gap-3 flex-wrap">
                   <div className="space-y-1">
@@ -616,19 +683,27 @@ export default function Home() {
                       </TabsTrigger>
                       <TabsTrigger value="BTST" className="text-xs gap-1.5">
                         <Flame className="h-3 w-3" /> BTST
-                        <Badge variant="secondary" className="text-[10px] ml-1">{result.btst.length}</Badge>
+                        <Badge variant="secondary" className="text-[10px] ml-1">
+                          {signalDirection === 'SELL' ? (result.btstSell ?? []).length : result.btst.length}
+                        </Badge>
                       </TabsTrigger>
                       <TabsTrigger value="SHORT_TERM" className="text-xs gap-1.5">
                         <Sparkles className="h-3 w-3" /> Short
-                        <Badge variant="secondary" className="text-[10px] ml-1">{result.shortTerm.length}</Badge>
+                        <Badge variant="secondary" className="text-[10px] ml-1">
+                          {signalDirection === 'SELL' ? (result.shortTermSell ?? []).length : result.shortTerm.length}
+                        </Badge>
                       </TabsTrigger>
                       <TabsTrigger value="MIDTERM" className="text-xs gap-1.5">
                         <ShieldCheck className="h-3 w-3" /> Mid
-                        <Badge variant="secondary" className="text-[10px] ml-1">{result.midterm.length}</Badge>
+                        <Badge variant="secondary" className="text-[10px] ml-1">
+                          {signalDirection === 'SELL' ? (result.midtermSell ?? []).length : result.midterm.length}
+                        </Badge>
                       </TabsTrigger>
                       <TabsTrigger value="LONG_TERM" className="text-xs gap-1.5">
                         <Clock className="h-3 w-3" /> Long
-                        <Badge variant="secondary" className="text-[10px] ml-1">{result.longTerm.length}</Badge>
+                        <Badge variant="secondary" className="text-[10px] ml-1">
+                          {signalDirection === 'SELL' ? (result.longTermSell ?? []).length : result.longTerm.length}
+                        </Badge>
                       </TabsTrigger>
                       <TabsTrigger value="PAPER_TRADES" className="text-xs gap-1.5">
                         <Award className="h-3 w-3" /> Trades
@@ -742,7 +817,7 @@ export default function Home() {
                         onCheckedChange={setOnlyTripleBuy}
                         className="scale-75"
                       />
-                      <Label htmlFor="triple" className="text-[11px] cursor-pointer">All-timeframe BUY only</Label>
+                      <Label htmlFor="triple" className="text-[11px] cursor-pointer">All-timeframe {signalDirection} only</Label>
                     </div>
                   </div>
                 </div>
@@ -812,19 +887,24 @@ export default function Home() {
                   <>
                     <div className="flex items-center justify-between text-xs text-muted-foreground">
                       <span>
-                        Showing <span className="font-semibold text-foreground tabular-nums">{filtered.length}</span> of{' '}
-                        <span className="tabular-nums">{signalsForTab.length}</span> {TIMEFRAME_LABELS[activeTab as Timeframe]} BUY signals
+                        Showing <span className={`font-semibold tabular-nums \${signalDirection === 'SELL' ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400'}`}>{filtered.length}</span> of{' '}
+                        <span className="tabular-nums text-foreground">{signalsForTab.length}</span>{' '}
+                        <span className={signalDirection === 'SELL' ? 'text-red-600 dark:text-red-400 font-medium' : 'text-emerald-600 dark:text-emerald-400 font-medium'}>
+                          {signalDirection === 'SELL' ? '📉 SELL' : '📈 BUY'}
+                        </span>{' '}
+                        signals for <span className="font-medium text-foreground">{TIMEFRAME_LABELS[activeTab as Timeframe]}</span>
                       </span>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                       {filtered.map((sig, i) => (
                         <SignalCard
-                          key={`${sig.symbol}-${sig.timeframe}`}
+                          key={`${sig.symbol}-${sig.timeframe}-${signalDirection}`}
                           signal={sig}
                           rank={i + 1}
                           onOpen={() => setDetailSymbol(sig.symbol)}
                           onTrack={trackSignal}
                           isTracked={trackedKeys.has(`${sig.symbol}-${sig.timeframe}`)}
+                          direction={signalDirection}
                         />
                       ))}
                     </div>

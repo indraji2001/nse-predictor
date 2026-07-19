@@ -11,19 +11,19 @@
 //  4. Fixed Butterfly B: near(0.786) not inRange(0.75, 0.81)
 //  5. Fixed Crab CD range: 2.24–3.618 (was 2.618–3.618)
 //
-// VERIFIED RATIO TABLE (Scott Carney + luckyJeffy PineScript + djoffrey Python):
+// VERIFIED RATIO TABLE (Scott Carney Harmonic Trading Vol 1+2, luckyJeffy PineScript, djoffrey Python):
 //
 //  Pattern      | AB/XA      | BC/AB      | CD/BC       | D-target
 //  -------------|------------|------------|-------------|---------------------
-//  Gartley      | 0.618      | 0.382-0.886| 1.27-1.618  | 0.786 XA retrace from A
+//  Gartley      | 0.618      | 0.382-0.886| 1.13-1.618  | 0.786 XA retrace from A   ← 1.13 min per Carney Vol 1
 //  Bat          | 0.382-0.50 | 0.382-0.886| 1.618-2.618 | 0.886 XA retrace from A
 //  Perfect Bat  | 0.50       | 0.50-0.618 | 2.0         | 0.886 XA retrace from A
 //  Alt Bat      | 0.382      | 0.382-0.886| 2.0-3.618   | 1.13× XA from A (D beyond X)
-//  Butterfly    | 0.786      | 0.382-0.886| 1.618-2.618 | 1.27× XA from A (D beyond X)
-//  Crab         | 0.382-0.618| 0.382-0.886| 2.24-3.618  | 1.618× XA from A (D beyond X)
-//  Deep Crab    | 0.886      | 0.382-0.886| 2.0-3.618   | 1.618× XA from A (D beyond X)
-//  Cypher       | 0.382-0.618| 1.272-1.414×XA | 0.786×XC | measured from XC leg
-//  Shark        | —          | 1.13-1.618×XA | 1.618-2.24 | 0.886-1.13 of OX (5-pt)
+//  Butterfly    | 0.786      | 0.382-0.886| 1.618-2.24  | 1.27× XA from A (D beyond X)  ← 2.24 max per Carney Vol 1
+//  Crab         | 0.382-0.618| 0.382-0.886| 2.618-3.618 | 1.618× XA from A (D beyond X)
+//  Deep Crab    | 0.886      | 0.382-0.886| 2.24-3.618  | 1.618× XA from A (D beyond X) ← 2.24 min per Carney Vol 2
+//  Cypher       | 0.382-0.786| 1.272-1.414×XA | 0.786×XC | measured from XC leg
+//  Shark        | 0.5-0.886  | 1.13-1.618×XA | 0.886-1.13| 0.886-1.13 of OX (5-pt, C IS the PRZ)
 //  AB=CD        | —          | 0.382-0.886| ≈1.0        | CD ≈ AB in length
 //
 // NOTE on "D beyond X" patterns (Butterfly, Crab, Alt Bat, Deep Crab):

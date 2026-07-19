@@ -112,19 +112,29 @@ export function MarketSummary({ result }: Props) {
               <span className="text-xs uppercase tracking-wide text-muted-foreground">BTST setups</span>
               <Flame className="h-4 w-4 text-orange-500" />
             </div>
-            <div className="text-2xl font-bold tabular-nums">{result.btst.length}</div>
-            <div className="text-[11px] text-muted-foreground">buy signals for tomorrow</div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl font-bold tabular-nums text-emerald-600 dark:text-emerald-400">{result.btst.length}</span>
+              <span className="text-xs text-muted-foreground">BUY</span>
+              <span className="text-base font-bold tabular-nums text-red-500">{(result.btstSell ?? []).length}</span>
+              <span className="text-xs text-muted-foreground">SELL</span>
+            </div>
+            <div className="text-[11px] text-muted-foreground">signals for tomorrow's session</div>
           </CardContent>
         </Card>
 
         <Card className="border-border/60">
           <CardContent className="p-4 space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-xs uppercase tracking-wide text-muted-foreground">All-timeframe BUY</span>
+              <span className="text-xs uppercase tracking-wide text-muted-foreground">All-timeframe</span>
               <Layers className="h-4 w-4 text-primary" />
             </div>
-            <div className="text-2xl font-bold tabular-nums text-emerald-600 dark:text-emerald-400">{result.breadth.strongBuys}</div>
-            <div className="text-[11px] text-muted-foreground">BUY across all 4 timeframes</div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl font-bold tabular-nums text-emerald-600 dark:text-emerald-400">{result.breadth.strongBuys}</span>
+              <span className="text-xs text-muted-foreground">BUY</span>
+              <span className="text-base font-bold tabular-nums text-red-500">{result.breadth.strongSells ?? 0}</span>
+              <span className="text-xs text-muted-foreground">SELL</span>
+            </div>
+            <div className="text-[11px] text-muted-foreground">signals across all 4 timeframes</div>
           </CardContent>
         </Card>
       </div>

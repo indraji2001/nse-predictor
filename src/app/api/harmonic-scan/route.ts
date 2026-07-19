@@ -97,51 +97,25 @@ async function fetchCandlesForStock(
   }
 }
 
-// ── Weekly resampling (daily → weekly) ────────────────────────────────────
-// Group daily candles by ISO week (Monday–Sunday) and produce OHLCV weekly bars.
-function resampleToWeekly(dailyCandles: Candle[]): Candle[] {
-  if (dailyCandles.length === 0) return []
+// NOTE: resampleToWeekly() removed — WEEKLY config now fetches interval='1wk' directly from Yahoo,
+// so no resampling is needed. Yahoo returns native weekly bars.
 
-  const weekMap = new Map<string, Candle[]>()
-  for (const c of dailyCandles) {
-    const d = new Date(c.date + 'T00:00:00Z')
-    const day = d.getUTCDay()
-    // Monday-based week: find the Monday of this week
-    const mondayOffset = (day === 0 ? -6 : 1 - day)
-    const monday = new Date(d)
-    monday.setUTCDate(d.getUTCDate() + mondayOffset)
-    const weekKey = monday.toISOString().slice(0, 10)
-    const grp = weekMap.get(weekKey) ?? []
-    grp.push(c)
-    weekMap.set(weekKey, grp)
-  }
-
-  const weeks = [...weekMap.entries()].sort((a, b) => a[0].localeCompare(b[0]))
-  return weeks.map(([weekDate, bars]) => ({
-    date: weekDate,
-    open: bars[0].open,
-    high: Math.max(...bars.map(b => b.high)),
-    low: Math.min(...bars.map(b => b.low)),
-    close: bars[bars.length - 1].close,
-    volume: bars.reduce((s, b) => s + b.volume, 0),
-    adjClose: bars[bars.length - 1].adjClose ?? bars[bars.length - 1].close,
-  }))
-}
 
 // ── Trade levels from pattern ──────────────────────────────────────────────
+// SL: 1.2% beyond the PRZ boundary (clean, pattern-independent buffer)
+//   Bullish: SL = 1.2% below przLow  (price closes below PRZ = pattern invalidated)
+//   Bearish: SL = 1.2% above przHigh (price closes above PRZ = pattern invalidated)
+// Targets: 38.2% and 61.8% of the CD leg from entry (per Carney PRZ trade management)
+//   Bullish: price should move UP from PRZ → targets above entry
+//   Bearish: price should move DOWN from PRZ → targets below entry
 function computeTradeLevels(p: HarmonicPattern) {
-  const XA = Math.abs(p.A - p.X)
   const bullish = p.direction === 'Bullish'
-  // p.D is the PRZ midpoint (przMid in v1 terminology)
   const przMid = p.D
-
-  let slMultiplier = 1.0
-  if (p.name === 'Butterfly' || p.name === 'Perfect Butterfly') slMultiplier = 1.41
-  if (p.name === 'Crab' || p.name === 'Deep Crab' || p.name === 'Perfect Crab') slMultiplier = 2.0
+  const SL_BUFFER = 0.012  // 1.2% beyond PRZ boundary
 
   const stopLoss = bullish
-    ? p.przLow - slMultiplier * XA * 0.05
-    : p.przHigh + slMultiplier * XA * 0.05
+    ? p.przLow * (1 - SL_BUFFER)      // 1.2% below PRZ Low
+    : p.przHigh * (1 + SL_BUFFER)     // 1.2% above PRZ High
 
   const CD = Math.abs(p.D - p.C)
   const target1 = bullish ? przMid + 0.382 * CD : przMid - 0.382 * CD
@@ -177,7 +151,7 @@ export interface HarmonicScanEntry {
   riskReward: number
 }
 
-// ── Run 5-stock probe to check Yahoo availability ─────────────────────────
+// ── Run 3-stock probe to check Yahoo availability ─────────────────────────
 async function checkYahooAvailable(range: string, interval: string): Promise<boolean> {
   const probe = NSE_UNIVERSE.slice(0, 3)
   const results = await Promise.all(
@@ -297,6 +271,10 @@ export async function GET(req: NextRequest) {
 
   const sectors = [...new Set(NSE_UNIVERSE.map(s => s.sector))].sort()
 
+  // Direction-split stats for UI (tabs show bullish vs bearish separately)
+  const bullishResults = results.filter(r => r.bestPattern?.direction === 'Bullish')
+  const bearishResults = results.filter(r => r.bestPattern?.direction === 'Bearish')
+
   const rsiConfluenceCount = results.filter(r =>
     r.bestPattern?.rsiBullish || r.bestPattern?.rsiBearish
   ).length
@@ -306,9 +284,19 @@ export async function GET(req: NextRequest) {
     scannedCount,
     liveCount,
     demoCount,
+    // Combined stats
     inPRZ: results.filter(r => r.inPRZ).length,
     nearPRZ: results.filter(r => r.nearPRZ && !r.inPRZ).length,
     rsiConfluenceCount,
+    // Direction-split stats for BUY/SELL tabs
+    bullishCount: bullishResults.length,
+    bearishCount: bearishResults.length,
+    bullishInPRZ: bullishResults.filter(r => r.inPRZ).length,
+    bearishInPRZ: bearishResults.filter(r => r.inPRZ).length,
+    bullishNearPRZ: bullishResults.filter(r => r.nearPRZ && !r.inPRZ).length,
+    bearishNearPRZ: bearishResults.filter(r => r.nearPRZ && !r.inPRZ).length,
+    bullishRsiCount: bullishResults.filter(r => r.bestPattern?.rsiBullish).length,
+    bearishRsiCount: bearishResults.filter(r => r.bestPattern?.rsiBearish).length,
     yahooAvailable,
     chartPeriod: cfg.label,
     suitableFor: cfg.suitableFor,
