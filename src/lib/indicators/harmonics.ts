@@ -279,13 +279,14 @@ function validateAltBat(r: LegRatios): boolean {
 }
 
 // BUTTERFLY: B = 0.786 of XA (key signature), D = 1.27 extension from A (xaExt = 0.27)
-// BCD (CD/BC): 1.618~2.618 per Scott Carney official (harmonictrader.com)
+// BCD (CD/BC): 1.618~2.24 — Carney Vol 1: "ideal Butterfly allows BC variation up to 2.24"
+// (2.618+ belongs to Crab territory)
 function validateButterfly(r: LegRatios): boolean {
   return (
-    near(r.ab, 0.786) &&               // exact 0.786 ±5%
+    near(r.ab, 0.786) &&               // mandatory 0.786 ±5% per Carney
     inRange(r.bc, 0.382, 0.886) &&
     near(r.xaExt, 0.27) &&             // D = 0.27×XA beyond X (= 1.27 XA from A)
-    inRange(r.cd, 1.618, 2.618)        // Carney official: 1.618-2.618
+    inRange(r.cd, 1.618, 2.24)         // Carney Vol 1: up to 2.24 max
   )
 }
 
