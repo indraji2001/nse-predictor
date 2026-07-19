@@ -225,12 +225,13 @@ function computeLegRatios(X: number, A: number, B: number, C: number, D: number)
 // "Perfect" variants use ±3% (TIGHT=0.03).
 
 // GARTLEY: B = 0.618 of XA, D = 0.786 of XA from A (inside XA range)
+// BCD (CD/BC): 1.13~1.618 — allowing wider per Scott Carney v2
 function validateGartley(r: LegRatios): boolean {
   return (
     near(r.ab, 0.618) &&
     inRange(r.bc, 0.382, 0.886) &&
     near(r.xad, 0.786) &&
-    inRange(r.cd, 1.27, 1.618)
+    inRange(r.cd, 1.13, 1.618)    // table: 1.13~1.168 (tight), we allow up to 1.618 per Carney v2
   )
 }
 
@@ -245,13 +246,14 @@ function validatePerfectGartley(r: LegRatios): boolean {
 }
 
 // BAT: B = 0.382–0.500 of XA (must be < 0.618), D = 0.886 of XA from A
+// BCD (CD/BC): 1.618~2.618 per Scott Carney official (harmonictrader.com)
 function validateBat(r: LegRatios): boolean {
   return (
     inRange(r.ab, 0.382, 0.500) &&
     r.ab < 0.618 &&                    // strict: B must not reach Gartley territory
     inRange(r.bc, 0.382, 0.886) &&
     near(r.xad, 0.886) &&
-    inRange(r.cd, 1.618, 2.618)
+    inRange(r.cd, 1.618, 2.618)        // Carney official: 1.618-2.618
   )
 }
 
@@ -277,13 +279,13 @@ function validateAltBat(r: LegRatios): boolean {
 }
 
 // BUTTERFLY: B = 0.786 of XA (key signature), D = 1.27 extension from A (xaExt = 0.27)
-// FIXED: B must be near 0.786, not a range of 0.75-0.81
+// BCD (CD/BC): 1.618~2.618 per Scott Carney official (harmonictrader.com)
 function validateButterfly(r: LegRatios): boolean {
   return (
-    near(r.ab, 0.786) &&               // FIXED: exact 0.786 ±5%, not 0.75-0.81
+    near(r.ab, 0.786) &&               // exact 0.786 ±5%
     inRange(r.bc, 0.382, 0.886) &&
     near(r.xaExt, 0.27) &&             // D = 0.27×XA beyond X (= 1.27 XA from A)
-    inRange(r.cd, 1.618, 2.618)
+    inRange(r.cd, 1.618, 2.618)        // Carney official: 1.618-2.618
   )
 }
 
@@ -298,24 +300,25 @@ function validatePerfectButterfly(r: LegRatios): boolean {
 }
 
 // CRAB: B = 0.382–0.618, D = 1.618 extension from A (xaExt = 0.618)
-// FIXED CD range: 2.24–3.618 (was 2.618–3.618, missing the 2.24–2.618 band)
+// BCD (CD/BC): 2.618~3.618 per reference table (2.24-2.618 belongs to Butterfly/Deep Crab)
 function validateCrab(r: LegRatios): boolean {
   return (
     inRange(r.ab, 0.382, 0.618) &&
     inRange(r.bc, 0.382, 0.886) &&
     near(r.xaExt, 0.618) &&            // D = 0.618×XA beyond X (= 1.618 XA from A)
-    inRange(r.cd, 2.24, 3.618)         // FIXED: was 2.618-3.618
+    inRange(r.cd, 2.618, 3.618)        // CORRECTED: was 2.24, table says 2.618 min
   )
 }
 
 // DEEP CRAB: B = 0.886 (very deep retrace, key differentiator), D same as Crab
+// BCD (CD/BC): 2.24~3.618 per reference table
 function validateDeepCrab(r: LegRatios): boolean {
   return (
     near(r.ab, 0.886) &&               // B must be very near 0.886
     r.ab < 1.0 &&                      // B cannot reach X
     inRange(r.bc, 0.382, 0.886) &&
     near(r.xaExt, 0.618) &&            // Same D as Crab
-    inRange(r.cd, 2.0, 3.618)
+    inRange(r.cd, 2.24, 3.618)         // table: 2.24~3.618
   )
 }
 
@@ -357,9 +360,9 @@ function validateCypher(
 
   const valid = (
     cExceedsA &&
-    inRange(ratioAB, 0.382, 0.618) &&
-    inRange(ratioXC_XA, 1.272, 1.414) &&   // C extends 1.272–1.414× XA from X
-    near(ratioD_XC, 0.786)                  // D = 0.786 of XC
+    inRange(ratioAB, 0.382, 0.786) &&    // table: 0.382~0.786 (was 0.382~0.618)
+    inRange(ratioXC_XA, 1.272, 1.414) && // C extends 1.272–1.414× XA from X
+    near(ratioD_XC, 0.786)               // D = 0.786 of XC
   )
 
   return { valid, ratioAB, ratioXC_XA, ratioD_XC }
@@ -396,9 +399,9 @@ function validateShark(O: number, X: number, A: number, B: number, C: number, bu
 
   const valid = (
     bBeyondX &&
-    inRange(ratioXA_OX, 0.382, 0.618) &&
+    inRange(ratioXA_OX, 0.5, 0.886) &&  // table: 0.5~0.886 (was 0.382~0.618)
     inRange(ratioAB_XA, 1.13, 1.618) &&
-    inRange(ratioC_OX, 0.886, 1.13)    // FIXED: 0.886-1.13 range (was 0.886 ±7%)
+    inRange(ratioC_OX, 0.886, 1.13)      // PRZ of Shark: 0.886~1.13 of OX
   )
 
   return { valid, ratioXA_OX, ratioAB_XA, ratioC_OX }
