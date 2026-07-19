@@ -618,58 +618,54 @@ export default function Home() {
 
             {/* Timeframe tabs + filters */}
             <div className="space-y-3">
-              {/* BUY / SELL Direction Toggle */}
-              <div className="flex items-center gap-3">
-                <button
-                  id="dir-buy"
-                  onClick={() => setSignalDirection('BUY')}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-semibold transition-all duration-200 \${
-                    signalDirection === 'BUY'
-                      ? 'bg-emerald-500 border-emerald-500 text-white shadow-lg shadow-emerald-500/30'
-                      : 'bg-card border-border text-muted-foreground hover:border-emerald-400 hover:text-emerald-600'
-                  }`}
-                >
-                  <span>📈</span>
-                  <span>BUY Signals</span>
-                  <span className={`inline-flex items-center justify-center text-[11px] font-bold px-1.5 py-0.5 rounded-full \${
-                    signalDirection === 'BUY' ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
-                  }`}>
-                    {result && activeTab !== 'INTRADAY' && activeTab !== 'PAPER_TRADES'
-                      ? (activeTab === 'BTST' ? result.btst.length
-                        : activeTab === 'SHORT_TERM' ? result.shortTerm.length
-                        : activeTab === 'MIDTERM' ? result.midterm.length
-                        : result.longTerm.length)
-                      : '—'}
-                  </span>
-                </button>
-                <button
-                  id="dir-sell"
-                  onClick={() => setSignalDirection('SELL')}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-semibold transition-all duration-200 \${
-                    signalDirection === 'SELL'
-                      ? 'bg-red-500 border-red-500 text-white shadow-lg shadow-red-500/30'
-                      : 'bg-card border-border text-muted-foreground hover:border-red-400 hover:text-red-600'
-                  }`}
-                >
-                  <span>📉</span>
-                  <span>SELL Signals</span>
-                  <span className={`inline-flex items-center justify-center text-[11px] font-bold px-1.5 py-0.5 rounded-full \${
-                    signalDirection === 'SELL' ? 'bg-white/20 text-white' : 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300'
-                  }`}>
-                    {result && activeTab !== 'INTRADAY' && activeTab !== 'PAPER_TRADES'
-                      ? (activeTab === 'BTST' ? (result.btstSell ?? []).length
-                        : activeTab === 'SHORT_TERM' ? (result.shortTermSell ?? []).length
-                        : activeTab === 'MIDTERM' ? (result.midtermSell ?? []).length
-                        : (result.longTermSell ?? []).length)
-                      : '—'}
-                  </span>
-                </button>
-                {signalDirection === 'SELL' && (
-                  <div className="ml-2 px-3 py-1.5 rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 text-xs text-red-700 dark:text-red-300">
-                    ⚠️ SELL signals: bearish setups for shorting. SL is <strong>above</strong> entry, targets <strong>below</strong>.
-                  </div>
-                )}
+              {/* BUY / SELL Direction — traditional radio buttons */}
+              <div className="flex items-center gap-1 p-1 rounded-lg border border-border bg-muted/40 w-fit">
+                {(['BUY', 'SELL'] as const).map((dir) => {
+                  const isBuy = dir === 'BUY'
+                  const isActive = signalDirection === dir
+                  const count = result && activeTab !== 'INTRADAY' && activeTab !== 'PAPER_TRADES'
+                    ? (isBuy
+                        ? (activeTab === 'BTST' ? result.btst.length : activeTab === 'SHORT_TERM' ? result.shortTerm.length : activeTab === 'MIDTERM' ? result.midterm.length : result.longTerm.length)
+                        : (activeTab === 'BTST' ? (result.btstSell ?? []).length : activeTab === 'SHORT_TERM' ? (result.shortTermSell ?? []).length : activeTab === 'MIDTERM' ? (result.midtermSell ?? []).length : (result.longTermSell ?? []).length))
+                    : null
+                  return (
+                    <button
+                      key={dir}
+                      id={`dir-${dir.toLowerCase()}`}
+                      onClick={() => setSignalDirection(dir)}
+                      className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-150 ${
+                        isActive
+                          ? isBuy
+                            ? 'bg-white dark:bg-card shadow-sm text-emerald-700 dark:text-emerald-300'
+                            : 'bg-white dark:bg-card shadow-sm text-red-700 dark:text-red-300'
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      {/* Radio circle */}
+                      <span className={`inline-flex h-3.5 w-3.5 shrink-0 rounded-full border-2 items-center justify-center transition-colors ${
+                        isActive
+                          ? isBuy ? 'border-emerald-500' : 'border-red-500'
+                          : 'border-muted-foreground/40'
+                      }`}>
+                        {isActive && (
+                          <span className={`h-1.5 w-1.5 rounded-full ${isBuy ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                        )}
+                      </span>
+                      <span>{isBuy ? '📈' : '📉'} {dir}</span>
+                      {count !== null && (
+                        <span className={`tabular-nums text-[10px] font-bold px-1 py-0.5 rounded ${
+                          isActive
+                            ? isBuy ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300' : 'bg-red-100 dark:bg-red-950 text-red-700 dark:text-red-300'
+                            : 'bg-muted text-muted-foreground'
+                        }`}>
+                          {count}
+                        </span>
+                      )}
+                    </button>
+                  )
+                })}
               </div>
+
 
               <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as Timeframe)}>
                 <div className="flex items-start justify-between gap-3 flex-wrap">

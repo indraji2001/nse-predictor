@@ -668,20 +668,28 @@ function isBearishActive(f: SignalFactor): boolean {
 }
 
 // --- Dedicated SELL Signal Engine ------------------------------------------
-// Produces bearish SELL signals when multiple bearish conditions align.
-// This mirrors the BUY engines but with all conditions inverted.
-// Uses the same finalizeSignal mechanism but with bearish factors that
-// produce confidence<=25 + 2+ bearish hits → triggers SELL action.
+// Standalone bearish scoring - does NOT reuse finalizeSignal.
+// Reason: finalizeSignal is designed for bullish scoring. When all factors
+// are "bearish" direction, bullishWeight=0, rawConfidence=0 always, so every
+// stock with 2+ common bearish factors fires SELL (the 393-signal bug).
 //
-// Bearish checklist (8 factors):
-//  1. Death Cross zone: price < EMA50 AND EMA50 < EMA200
-//  2. RSI overbought (>= 65) or extremely overbought (>= 70)
-//  3. MACD bearish cross or MACD below signal line
-//  4. ADX trend with -DI > +DI (bearish directional strength)
-//  5. Price below VWAP (distribution)
-//  6. Bollinger Band %B > 0.85 (price extended at upper band = due for reversal)
-//  7. Bearish candlestick pattern (Bearish Engulfing, Evening Star, Shooting Star)
-//  8. Supertrend bearish (trend = -1)
+// This engine computes a "bearish confluence score" directly:
+//   bearishScore = (sum of weights of hit factors) / totalWeight * 100
+// SELL requires BOTH: bearishHits >= minHits AND bearishScore >= minScore
+//
+// Thresholds calibrated for 5-25 SELL signals per timeframe from ~500 stocks.
+//
+// Bearish conditions (10 factors):
+//  1. Death Cross zone: price < EMA50 < EMA200              (w=0.18)
+//  2. RSI >= 70 (strongly overbought — was 65, too loose)   (w=0.14)
+//  3. MACD confirmed bearish CROSS (not just below signal)  (w=0.13)
+//  4. ADX >= 20 with -DI > +DI margin >= 5                  (w=0.11)
+//  5. Bearish MA stack: price < EMA21 AND < EMA50           (w=0.10)
+//  6. Supertrend bearish (trend = -1)                       (w=0.10)
+//  7. Bearish reversal candlestick pattern                  (w=0.10)
+//  8. Bollinger %B >= 0.90 (extreme upper-band extension)   (w=0.08)
+//  9. Negative 5d return < -1%                              (w=0.08)
+// 10. Volume surge (>=1.5x) + price below VWAP              (w=0.08)
 function evaluateSell(
   series: StockSeries,
   ind: IndicatorSnapshot,
@@ -690,119 +698,165 @@ function evaluateSell(
 ): Signal {
   const c = series.candles
   const last = c[c.length - 1]
+  const price = ind.price
   const factors: SignalFactor[] = []
 
-  // 1. Death Cross zone: price < EMA50 AND EMA50 < EMA200
-  const deathCross = ind.price < ind.ema50 && ind.ema50 < ind.ema200
+  // 1. Death Cross zone: price < EMA50 < EMA200
+  const deathCross = price < ind.ema50 && ind.ema50 < ind.ema200
   factors.push({
-    name: 'Death cross / bearish trend',
-    detail: `Price ₹${ind.price.toFixed(0)} < EMA50 ₹${ind.ema50.toFixed(0)} < EMA200 ₹${ind.ema200.toFixed(0)}`,
-    weight: 0.18,
-    hit: deathCross,
-    direction: deathCross ? 'bearish' : 'neutral',
+    name: 'Death cross zone',
+    detail: `Price Rs.${price.toFixed(0)} < EMA50 Rs.${ind.ema50.toFixed(0)} < EMA200 Rs.${ind.ema200.toFixed(0)}`,
+    weight: 0.18, hit: deathCross, direction: deathCross ? 'bearish' : 'neutral',
   })
 
-  // 2. RSI overbought >= 65 (extended bull move nearing exhaustion)
-  const rsiOverbought = ind.rsi14 >= 65
+  // 2. RSI strongly overbought >= 70 (raised from 65 to reduce false signals)
+  const rsiOverbought = ind.rsi14 >= 70
   factors.push({
-    name: 'RSI overbought zone',
-    detail: `RSI ${ind.rsi14.toFixed(1)} (overbought >= 65)`,
-    weight: 0.14,
-    hit: rsiOverbought,
-    direction: rsiOverbought ? 'bearish' : 'neutral',
+    name: 'RSI strongly overbought',
+    detail: `RSI ${ind.rsi14.toFixed(1)} (threshold >= 70)`,
+    weight: 0.14, hit: rsiOverbought, direction: rsiOverbought ? 'bearish' : 'neutral',
   })
 
-  // 3. MACD bearish: MACD below signal line OR recent bearish crossover
-  const macdBearish = ind.macd < ind.macdSignal || ind.macdCross === 'bearish'
+  // 3. MACD confirmed bearish crossover (not just below signal line)
+  const macdBearishCross = ind.macdCross === 'bearish'
   factors.push({
-    name: 'MACD bearish momentum',
-    detail: `MACD ${ind.macd.toFixed(2)} vs Signal ${ind.macdSignal.toFixed(2)}, cross=${ind.macdCross}`,
-    weight: 0.15,
-    hit: macdBearish,
-    direction: macdBearish ? 'bearish' : 'neutral',
+    name: 'MACD bearish crossover',
+    detail: `MACD ${ind.macd.toFixed(2)} crossed below signal ${ind.macdSignal.toFixed(2)}`,
+    weight: 0.13, hit: macdBearishCross, direction: macdBearishCross ? 'bearish' : 'neutral',
   })
 
-  // 4. ADX with -DI > +DI (bearish directional strength)
-  const adxBearish = ind.adx >= 20 && ind.minusDI > ind.plusDI
+  // 4. ADX >= 20 with -DI > +DI by at least 5 points (strong bearish trend)
+  const adxBearish = ind.adx >= 20 && ind.minusDI > ind.plusDI && (ind.minusDI - ind.plusDI) >= 5
   factors.push({
-    name: 'ADX bearish directional strength',
+    name: 'ADX bearish trend confirmed',
     detail: `ADX ${ind.adx.toFixed(1)}, +DI ${ind.plusDI.toFixed(1)}, -DI ${ind.minusDI.toFixed(1)}`,
-    weight: 0.12,
-    hit: adxBearish,
-    direction: adxBearish ? 'bearish' : 'neutral',
+    weight: 0.11, hit: adxBearish, direction: adxBearish ? 'bearish' : 'neutral',
   })
 
-  // 5. Price below VWAP (distribution / selling pressure)
-  const belowVwap = ind.price < ind.vwap20
+  // 5. Bearish MA stack: price below both EMA21 and EMA50
+  const bearishMaStack = price < ind.ema21 && price < ind.ema50
   factors.push({
-    name: 'Below VWAP (distribution)',
-    detail: `Price ₹${ind.price.toFixed(2)} vs VWAP ₹${ind.vwap20.toFixed(2)}`,
-    weight: 0.10,
-    hit: belowVwap,
-    direction: belowVwap ? 'bearish' : 'neutral',
+    name: 'Bearish MA stack',
+    detail: `Price Rs.${price.toFixed(0)} below EMA21 Rs.${ind.ema21.toFixed(0)} & EMA50 Rs.${ind.ema50.toFixed(0)}`,
+    weight: 0.10, hit: bearishMaStack, direction: bearishMaStack ? 'bearish' : 'neutral',
   })
 
-  // 6. Bollinger Band %B > 0.85 (upper-band extended, reversal likely)
-  const bbExtended = ind.bbPercentB >= 0.85
-  factors.push({
-    name: 'Bollinger upper-band extended',
-    detail: `%B ${(ind.bbPercentB * 100).toFixed(0)}% — price near/above upper band`,
-    weight: 0.10,
-    hit: bbExtended,
-    direction: bbExtended ? 'bearish' : 'neutral',
-  })
-
-  // 7. Bearish candlestick pattern
-  const bearPatterns = ind.patterns.filter((p) =>
-    ['BearishEngulfing', 'EveningStar', 'ShootingStar', 'BearishMarubozu', 'DarkCloudCover', 'HangingMan'].includes(p)
-  )
-  factors.push({
-    name: 'Bearish candle pattern',
-    detail: bearPatterns.length ? bearPatterns.join(', ') : 'None detected',
-    weight: 0.12,
-    hit: bearPatterns.length > 0,
-    direction: bearPatterns.length > 0 ? 'bearish' : 'neutral',
-  })
-
-  // 8. Supertrend bearish (trend flipped down)
+  // 6. Supertrend bearish (trend = -1)
   const stBearish = ind.supertrendTrend === -1
   factors.push({
     name: 'Supertrend bearish',
-    detail: `Supertrend ${stBearish ? 'DOWN' : 'UP'} @ ₹${ind.supertrendValue.toFixed(2)}`,
-    weight: 0.09,
-    hit: stBearish,
-    direction: stBearish ? 'bearish' : 'neutral',
+    detail: `Supertrend DOWN @ Rs.${ind.supertrendValue.toFixed(2)}`,
+    weight: 0.10, hit: stBearish, direction: stBearish ? 'bearish' : 'neutral',
   })
 
-  // 9. Negative recent momentum (5-day return negative)
-  const negMomentum = ind.ret5d < -0.5
+  // 7. Bearish reversal candlestick (high-reliability patterns only)
+  const bearPatterns = ind.patterns.filter((p) =>
+    ['BearishEngulfing', 'EveningStar', 'ShootingStar', 'BearishMarubozu', 'DarkCloudCover', 'HangingMan'].includes(p)
+  )
+  const hasBearPattern = bearPatterns.length > 0
   factors.push({
-    name: 'Negative short-term momentum',
-    detail: `5-day return ${ind.ret5d.toFixed(2)}%`,
-    weight: 0.10,
-    hit: negMomentum,
-    direction: negMomentum ? 'bearish' : 'neutral',
+    name: 'Bearish reversal candle',
+    detail: hasBearPattern ? bearPatterns.join(', ') : 'None detected',
+    weight: 0.10, hit: hasBearPattern, direction: hasBearPattern ? 'bearish' : 'neutral',
   })
 
-  // 10. Volume surge (distribution with high volume = bearish confirmation)
-  const volSurge = ind.volumeRatio >= 1.3
+  // 8. Bollinger %B >= 0.90 (extreme upper-band extension — raised from 0.85)
+  const bbExtreme = ind.bbPercentB >= 0.90
   factors.push({
-    name: 'Volume surge (distribution)',
-    detail: `Volume ratio ${ind.volumeRatio.toFixed(2)}× vs 20-day avg`,
-    weight: 0.10,
-    hit: volSurge && belowVwap, // volume surge + below VWAP = confirmed distribution
-    direction: volSurge && belowVwap ? 'bearish' : 'neutral',
+    name: 'Bollinger extreme extension',
+    detail: `%B ${(ind.bbPercentB * 100).toFixed(0)}% (deep above upper band)`,
+    weight: 0.08, hit: bbExtreme, direction: bbExtreme ? 'bearish' : 'neutral',
   })
 
-  // Determine timeframe-specific opts
-  const timeframeOpts: Record<Timeframe, { targetRr1: number; targetRr2: number; targetRr3: number; stopAtrMult: number; holdingPeriod: string }> = {
-    BTST:       { targetRr1: 0.8,  targetRr2: 1.5,  targetRr3: 2.5,   stopAtrMult: 1.0, holdingPeriod: '1-2 sessions (cover by next trading day close)' },
-    SHORT_TERM: { targetRr1: 1.5,  targetRr2: 2.5,  targetRr3: 4.0,   stopAtrMult: 1.5, holdingPeriod: '5-15 trading days' },
-    MIDTERM:    { targetRr1: 2.0,  targetRr2: 3.5,  targetRr3: 5.0,   stopAtrMult: 2.0, holdingPeriod: '1-3 months (30-60 trading days)' },
-    LONG_TERM:  { targetRr1: 2.5,  targetRr2: 4.0,  targetRr3: 6.0,   stopAtrMult: 2.5, holdingPeriod: '3-12 months positional short' },
+  // 9. Sharply negative 5-day return (< -1%, raised from -0.5%)
+  const negMomentum = ind.ret5d < -1.0
+  factors.push({
+    name: 'Sharp negative momentum',
+    detail: `5-day return ${ind.ret5d.toFixed(2)}% (threshold < -1%)`,
+    weight: 0.08, hit: negMomentum, direction: negMomentum ? 'bearish' : 'neutral',
+  })
+
+  // 10. Volume surge (>=1.5x) + below VWAP = confirmed distribution
+  const belowVwap = price < ind.vwap20
+  const distributionVolume = ind.volumeRatio >= 1.5 && belowVwap
+  factors.push({
+    name: 'Distribution volume',
+    detail: `Volume ${ind.volumeRatio.toFixed(2)}x avg, below VWAP Rs.${ind.vwap20.toFixed(2)}`,
+    weight: 0.08, hit: distributionVolume, direction: distributionVolume ? 'bearish' : 'neutral',
+  })
+
+  // --- Standalone bearish confluence scoring ---
+  const bearishHits = factors.filter((f) => f.hit)
+  const bearishWeightHit = bearishHits.reduce((s, f) => s + f.weight, 0)
+  const totalWeight = factors.reduce((s, f) => s + f.weight, 0) || 1
+  const bearishScore = (bearishWeightHit / totalWeight) * 100
+  const confidence = Math.min(100, Math.round(bearishScore))
+
+  // Thresholds: require genuine bearish confluence (not just 2 common conditions)
+  const minHitsMap: Record<Timeframe, number> = { BTST: 4, SHORT_TERM: 4, MIDTERM: 5, LONG_TERM: 5 }
+  const minScoreMap: Record<Timeframe, number> = { BTST: 38, SHORT_TERM: 38, MIDTERM: 42, LONG_TERM: 42 }
+  const minHits = minHitsMap[timeframe]
+  const minScore = isNiftyBullish ? minScoreMap[timeframe] : minScoreMap[timeframe] - 5
+  const action: Action = (bearishHits.length >= minHits && bearishScore >= minScore) ? 'SELL' : 'AVOID'
+
+  // SELL trade levels: SL above entry, targets below entry
+  const atr = ind.atr14 || price * 0.02
+  const stopMultMap: Record<Timeframe, number> = { BTST: 1.0, SHORT_TERM: 1.5, MIDTERM: 2.0, LONG_TERM: 2.5 }
+  const rrMap: Record<Timeframe, [number, number, number]> = {
+    BTST:       [0.8, 1.5, 2.5],
+    SHORT_TERM: [1.5, 2.5, 4.0],
+    MIDTERM:    [2.0, 3.5, 5.0],
+    LONG_TERM:  [2.5, 4.0, 6.0],
+  }
+  const stopMult = stopMultMap[timeframe] + (!isNiftyBullish ? 0.5 : 0)
+  const [rr1, rr2, rr3] = rrMap[timeframe]
+  const stopLoss = +(price + atr * stopMult).toFixed(2)   // SL is ABOVE entry for shorts
+  const risk = Math.max(0.01, Math.abs(price - stopLoss))
+  const target1 = +(price - risk * rr1).toFixed(2)        // T1, T2, T3 BELOW entry
+  const target2 = +(price - risk * rr2).toFixed(2)
+  const target3 = +(price - risk * rr3).toFixed(2)
+
+  const holdingPeriods: Record<Timeframe, string> = {
+    BTST:       '1-2 sessions (cover by next close)',
+    SHORT_TERM: '5-15 trading days',
+    MIDTERM:    '1-3 months (30-60 trading days)',
+    LONG_TERM:  '3-12 months positional short',
   }
 
-  return finalizeSignal(series, ind, timeframe, factors, timeframeOpts[timeframe], isNiftyBullish)
+  // ML probability for SELL: invert buy probability (low buy prob = bearish confidence)
+  const mlFeatures = [
+    ind.rsi14, ind.macd, ind.macdSignal, ind.macdHist, ind.adx,
+    ind.bbPercentB, ind.bbBandwidth, ind.volumeRatio,
+    ind.ret5d, ind.ret20d, ind.ret50d, ind.distFrom200,
+  ]
+  const buyProb = predictProbability(mlFeatures)
+  const mlProbability = +(100 - buyProb).toFixed(1) // high value = high bearish confidence
+
+  const dataQuality: 'LIVE' | 'LIMITED' | 'SYNTHETIC' =
+    c.length >= 120 ? 'LIVE' : c.length >= 30 ? 'LIMITED' : 'SYNTHETIC'
+
+  return {
+    symbol: series.symbol,
+    name: series.name,
+    sector: series.sector,
+    timeframe,
+    action,
+    confidence,
+    entry: +price.toFixed(2),
+    entryRangeLow: +(price - atr * 0.2).toFixed(2),
+    entryRangeHigh: +(price + atr * 0.2).toFixed(2),
+    target1,
+    target2,
+    target3,
+    stopLoss,
+    riskReward: +rr2.toFixed(2),
+    holdingPeriod: holdingPeriods[timeframe],
+    factors,
+    snapshot: ind,
+    todayCandle: last,
+    dataQuality,
+    mlProbability,
+  }
 }
 
 // --- Long-term Engine (6-24 months) ---------------------------------------
