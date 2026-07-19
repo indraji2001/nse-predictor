@@ -24,6 +24,7 @@ import { SignalCard } from '@/components/predictor/signal-card'
 import { StockDetailDialog } from '@/components/predictor/stock-detail-dialog'
 import { DataArchiveDialog } from '@/components/predictor/data-archive-dialog'
 import { UpstoxSettingsDialog } from '@/components/predictor/upstox-settings-dialog'
+import { UniverseHealthDialog } from '@/components/predictor/universe-health-dialog'
 import { IntradayCard } from '@/components/predictor/intraday-card'
 import { IntradayDetailDialog } from '@/components/predictor/intraday-detail-dialog'
 import { PaperTradeCard, type PaperTrade } from '@/components/predictor/paper-trade-card'
@@ -55,6 +56,7 @@ export default function Home() {
   const [selectedProvider, setSelectedProvider] = useState<string>('DEFAULT')
   const [selectedRange, setSelectedRange] = useState<string>('1y')
   const [upstoxConfigured, setUpstoxConfigured] = useState(false)
+  const [healthOpen, setHealthOpen] = useState(false)
 
   const loadIntraday = useCallback(async (showToast = true) => {
     setIntradayLoading(true)
@@ -449,6 +451,16 @@ export default function Home() {
               <Zap className="h-3.5 w-3.5 text-violet-500 fill-violet-500" />
               <span className="hidden sm:inline">Upstox</span>
             </Button>
+            <Button
+              onClick={() => setHealthOpen(true)}
+              size="sm"
+              variant="outline"
+              className="gap-1.5 border-emerald-200 hover:border-emerald-300 text-emerald-700 dark:text-emerald-300 bg-emerald-50/30 hover:bg-emerald-50/60 dark:bg-emerald-950/20"
+              title="Validate stock database and mapping health"
+            >
+              <ShieldCheck className="h-3.5 w-3.5 text-emerald-500 fill-emerald-500" />
+              <span className="hidden sm:inline">Health Check</span>
+            </Button>
             <Button onClick={() => load(true)} disabled={loading} size="sm" className="gap-1.5">
               <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
               {loading ? 'Fetching live data…' : 'Refresh'}
@@ -823,6 +835,12 @@ export default function Home() {
       <IntradayDetailDialog symbol={intradaySymbol} onClose={() => setIntradaySymbol(null)} />
       <DataArchiveDialog open={archiveOpen} onClose={() => setArchiveOpen(false)} />
       <UpstoxSettingsDialog open={upstoxOpen} onClose={() => setUpstoxOpen(false)} />
+      <UniverseHealthDialog
+        open={healthOpen}
+        onClose={() => setHealthOpen(false)}
+        provider={selectedProvider}
+        range={selectedRange}
+      />
     </div>
   )
 }

@@ -1,0 +1,3502 @@
+[
+  {
+    "providedName": "ACC Ltd",
+    "symbol": "ACC",
+    "name": "ACC Limited",
+    "sector": "Infra",
+    "yahooSymbol": "ACC.NS"
+  },
+  {
+    "providedName": "Aegis Logistics Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Apollo Tyres Ltd",
+    "symbol": "APOLLOTYRE",
+    "name": "Apollo Tyres",
+    "sector": "Auto",
+    "yahooSymbol": "APOLLOTYRE.NS"
+  },
+  {
+    "providedName": "Ashok Leyland Ltd",
+    "symbol": "ASHOKLEY",
+    "name": "Ashok Leyland",
+    "sector": "Auto",
+    "yahooSymbol": "ASHOKLEY.NS"
+  },
+  {
+    "providedName": "Asian Paints Ltd",
+    "symbol": "ASIANPAINT",
+    "name": "Asian Paints",
+    "sector": "Consumer",
+    "yahooSymbol": "ASIANPAINT.NS"
+  },
+  {
+    "providedName": "Atul Ltd",
+    "symbol": "ATUL",
+    "name": "Atul",
+    "sector": "Chemicals",
+    "yahooSymbol": "ATUL.NS"
+  },
+  {
+    "providedName": "Bajaj Holdings & Investment Ltd",
+    "symbol": "BAJAJHLDNG",
+    "name": "Bajaj Holdings",
+    "sector": "Financials",
+    "yahooSymbol": "BAJAJHLDNG.NS"
+  },
+  {
+    "providedName": "Force Motors Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Balkrishna Industries Ltd",
+    "symbol": "BALKRISIND",
+    "name": "Balkrishna Industries",
+    "sector": "Auto",
+    "yahooSymbol": "BALKRISIND.NS"
+  },
+  {
+    "providedName": "Bata India Ltd",
+    "symbol": "BATAINDIA",
+    "name": "Bata India",
+    "sector": "Consumer",
+    "yahooSymbol": "BATAINDIA.NS"
+  },
+  {
+    "providedName": "Bayer CropScience Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Berger Paints India Ltd",
+    "symbol": "BERGEPAINT",
+    "name": "Berger Paints",
+    "sector": "Chemicals",
+    "yahooSymbol": "BERGEPAINT.NS"
+  },
+  {
+    "providedName": "Bharat Forge Ltd",
+    "symbol": "BHARATFORG",
+    "name": "Bharat Forge",
+    "sector": "Consumer",
+    "yahooSymbol": "BHARATFORG.NS"
+  },
+  {
+    "providedName": "Blue Star Ltd",
+    "symbol": "BLUESTARCO",
+    "name": "Blue Star",
+    "sector": "Consumer",
+    "yahooSymbol": "BLUESTARCO.NS"
+  },
+  {
+    "providedName": "The Bombay Burmah Trading Corporation Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Abbott India Ltd",
+    "symbol": "ABBOTINDIA",
+    "name": "Abbott India",
+    "sector": "Pharma",
+    "yahooSymbol": "ABBOTINDIA.NS"
+  },
+  {
+    "providedName": "Britannia Industries Ltd",
+    "symbol": "BRITANNIA",
+    "name": "Britannia Industries",
+    "sector": "FMCG",
+    "yahooSymbol": "BRITANNIA.NS"
+  },
+  {
+    "providedName": "CESC Ltd",
+    "symbol": "CESC",
+    "name": "CESC Limited",
+    "sector": "Power",
+    "yahooSymbol": "CESC.NS"
+  },
+  {
+    "providedName": "Graphite India Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Carborundum Universal Ltd",
+    "symbol": "CARBORUNIV",
+    "name": "Carborundum Universal",
+    "sector": "Consumer",
+    "yahooSymbol": "CARBORUNIV.NS"
+  },
+  {
+    "providedName": "CEAT Ltd",
+    "symbol": "CEATLTD",
+    "name": "CEAT Limited",
+    "sector": "Auto",
+    "yahooSymbol": "CEATLTD.NS"
+  },
+  {
+    "providedName": "Cemindia Projects Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Aditya Birla Real Estate Ltd",
+    "symbol": "BIRLACORPN",
+    "name": "Birla Corporation",
+    "sector": "Infra",
+    "yahooSymbol": "BIRLACORPN.NS"
+  },
+  {
+    "providedName": "Exide Industries Ltd",
+    "symbol": "EXIDEIND",
+    "name": "Exide Industries",
+    "sector": "Auto",
+    "yahooSymbol": "EXIDEIND.NS"
+  },
+  {
+    "providedName": "Cipla Ltd",
+    "symbol": "CIPLA",
+    "name": "Cipla",
+    "sector": "Pharma",
+    "yahooSymbol": "CIPLA.NS"
+  },
+  {
+    "providedName": "Colgate-Palmolive (India) Ltd",
+    "symbol": "COLPAL",
+    "name": "Colgate-Palmolive",
+    "sector": "FMCG",
+    "yahooSymbol": "COLPAL.NS"
+  },
+  {
+    "providedName": "Coromandel International Ltd",
+    "symbol": "COROMANDEL",
+    "name": "Coromandel International",
+    "sector": "Chemicals",
+    "yahooSymbol": "COROMANDEL.NS"
+  },
+  {
+    "providedName": "CG Power & Industrial Solutions Ltd",
+    "symbol": "CGPOWER",
+    "name": "CG Power & Industrial",
+    "sector": "Power",
+    "yahooSymbol": "CGPOWER.NS"
+  },
+  {
+    "providedName": "Deepak Fertilisers & Petrochemicals Corp Ltd",
+    "symbol": "DEEPAKFERT",
+    "name": "Deepak Fertilizers",
+    "sector": "Chemicals",
+    "yahooSymbol": "DEEPAKFERT.NS"
+  },
+  {
+    "providedName": "Deepak Nitrite Ltd",
+    "symbol": "DEEPAKNTR",
+    "name": "Deepak Nitrite",
+    "sector": "Chemicals",
+    "yahooSymbol": "DEEPAKNTR.NS"
+  },
+  {
+    "providedName": "EID Parry (India) Ltd",
+    "symbol": "EIDPARRY",
+    "name": "EID Parry India",
+    "sector": "Consumer",
+    "yahooSymbol": "EIDPARRY.NS"
+  },
+  {
+    "providedName": "EIH Ltd",
+    "symbol": "EIHOTEL",
+    "name": "EIH Limited",
+    "sector": "Consumer",
+    "yahooSymbol": "EIHOTEL.NS"
+  },
+  {
+    "providedName": "Eicher Motors Ltd",
+    "symbol": "EICHERMOT",
+    "name": "Eicher Motors",
+    "sector": "Auto",
+    "yahooSymbol": "EICHERMOT.NS"
+  },
+  {
+    "providedName": "Elecon Engineering Company Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Elgi Equipments Ltd",
+    "symbol": "ELGIEQUIP",
+    "name": "Elgi Equipments",
+    "sector": "Consumer",
+    "yahooSymbol": "ELGIEQUIP.NS"
+  },
+  {
+    "providedName": "GE Vernova T&D India Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Escorts Kubota Ltd",
+    "symbol": "ESCORTS",
+    "name": "Escorts",
+    "sector": "Auto",
+    "yahooSymbol": "ESCORTS.NS"
+  },
+  {
+    "providedName": "Finolex Cables Ltd",
+    "symbol": "FINCABLES",
+    "name": "Finolex Cables",
+    "sector": "Consumer",
+    "yahooSymbol": "FINCABLES.NS"
+  },
+  {
+    "providedName": "Nestle India Ltd",
+    "symbol": "NESTLEIND",
+    "name": "Nestle India",
+    "sector": "FMCG",
+    "yahooSymbol": "NESTLEIND.NS"
+  },
+  {
+    "providedName": "Gabriel India Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Glaxosmithkline Pharmaceuticals Ltd",
+    "symbol": "GLAXO",
+    "name": "Glaxosmithkline Pharmaceuticals",
+    "sector": "Pharma",
+    "yahooSymbol": "GLAXO.NS"
+  },
+  {
+    "providedName": "Saregama India Ltd",
+    "symbol": "SAREGAMA",
+    "name": "Saregama India",
+    "sector": "Media",
+    "yahooSymbol": "SAREGAMA.NS"
+  },
+  {
+    "providedName": "Great Eastern Shipping Company Ltd",
+    "symbol": "GE SHIPPING",
+    "name": "Great Eastern Shipping",
+    "sector": "Energy",
+    "yahooSymbol": "GESHIP.NS"
+  },
+  {
+    "providedName": "Ambuja Cements Ltd",
+    "symbol": "AMBUJACEM",
+    "name": "Ambuja Cements",
+    "sector": "Infra",
+    "yahooSymbol": "AMBUJACEM.NS"
+  },
+  {
+    "providedName": "Grasim Industries Ltd",
+    "symbol": "GRASIM",
+    "name": "Grasim Industries",
+    "sector": "Infra",
+    "yahooSymbol": "GRASIM.NS"
+  },
+  {
+    "providedName": "Hero MotoCorp Ltd",
+    "symbol": "HEROMOTOCO",
+    "name": "Hero MotoCorp",
+    "sector": "Auto",
+    "yahooSymbol": "HEROMOTOCO.NS"
+  },
+  {
+    "providedName": "ABB India Ltd",
+    "symbol": "ABB",
+    "name": "ABB India",
+    "sector": "Infra",
+    "yahooSymbol": "ABB.NS"
+  },
+  {
+    "providedName": "HEG Ltd",
+    "symbol": "HEG",
+    "name": "HEG Limited",
+    "sector": "Consumer",
+    "yahooSymbol": "HEG.NS"
+  },
+  {
+    "providedName": "Hindalco Industries Ltd",
+    "symbol": "HINDALCO",
+    "name": "Hindalco Industries",
+    "sector": "Metals",
+    "yahooSymbol": "HINDALCO.NS"
+  },
+  {
+    "providedName": "Hindustan Unilever Ltd",
+    "symbol": "HINDUNILVR",
+    "name": "Hindustan Unilever",
+    "sector": "FMCG",
+    "yahooSymbol": "HINDUNILVR.NS"
+  },
+  {
+    "providedName": "Zensar Technologies Ltd",
+    "symbol": "ZENSARTECH",
+    "name": "Zensar Technologies",
+    "sector": "IT",
+    "yahooSymbol": "ZENSARTECH.NS"
+  },
+  {
+    "providedName": "JSW Dulux Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "India Cements Ltd",
+    "symbol": "SHREECEM",
+    "name": "Shree Cement",
+    "sector": "Infra",
+    "yahooSymbol": "SHREECEM.NS"
+  },
+  {
+    "providedName": "Indian Hotels Co Ltd",
+    "symbol": "INDHOTEL",
+    "name": "Indian Hotels Company",
+    "sector": "Consumer",
+    "yahooSymbol": "INDHOTEL.NS"
+  },
+  {
+    "providedName": "Linde India Ltd",
+    "symbol": "LINDEINDIA",
+    "name": "Linde India",
+    "sector": "Chemicals",
+    "yahooSymbol": "LINDEINDIA.NS"
+  },
+  {
+    "providedName": "Gillette India Ltd",
+    "symbol": "GILLETTE",
+    "name": "Gillette India",
+    "sector": "FMCG",
+    "yahooSymbol": "GILLETTE.NS"
+  },
+  {
+    "providedName": "Castrol India Ltd",
+    "symbol": "CASTROLIND",
+    "name": "Castrol India",
+    "sector": "Energy",
+    "yahooSymbol": "CASTROLIND.NS"
+  },
+  {
+    "providedName": "Tata Investment Corporation Ltd",
+    "symbol": "TATAINVEST",
+    "name": "Tata Investment Corporation",
+    "sector": "Financials",
+    "yahooSymbol": "TATAINVEST.NS"
+  },
+  {
+    "providedName": "ITC Ltd",
+    "symbol": "ITC",
+    "name": "ITC Limited",
+    "sector": "FMCG",
+    "yahooSymbol": "ITC.NS"
+  },
+  {
+    "providedName": "JK Tyre & Industries Ltd",
+    "symbol": "JKTYRE",
+    "name": "JK Tyre & Industries",
+    "sector": "Auto",
+    "yahooSymbol": "JKTYRE.NS"
+  },
+  {
+    "providedName": "Whirlpool of India Ltd",
+    "symbol": "WHIRLPOOL",
+    "name": "Whirlpool of India",
+    "sector": "Consumer",
+    "yahooSymbol": "WHIRLPOOL.NS"
+  },
+  {
+    "providedName": "Cummins India Ltd",
+    "symbol": "CUMMINSIND",
+    "name": "Cummins India",
+    "sector": "Consumer",
+    "yahooSymbol": "CUMMINSIND.NS"
+  },
+  {
+    "providedName": "Trent Ltd",
+    "symbol": "TRENTLTD",
+    "name": "Trent Limited",
+    "sector": "Consumer",
+    "yahooSymbol": "TRENT.NS"
+  },
+  {
+    "providedName": "Larsen & Toubro Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "The Ramco Cements Ltd",
+    "symbol": "RAMCOCEM",
+    "name": "Ramco Cements",
+    "sector": "Consumer",
+    "yahooSymbol": "RAMCOCEM.NS"
+  },
+  {
+    "providedName": "Mahindra & Mahindra Ltd",
+    "symbol": "M&MFIN",
+    "name": "Mahindra & Mahindra Financial",
+    "sector": "Financials",
+    "yahooSymbol": "M&MFIN.NS"
+  },
+  {
+    "providedName": "Max Financial Services Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Bosch Ltd",
+    "symbol": "BOSCHLTD",
+    "name": "Bosch Limited",
+    "sector": "Auto",
+    "yahooSymbol": "BOSCHLTD.NS"
+  },
+  {
+    "providedName": "MRF Ltd",
+    "symbol": "MRF",
+    "name": "MRF Limited",
+    "sector": "Auto",
+    "yahooSymbol": "MRF.NS"
+  },
+  {
+    "providedName": "Pfizer Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "PCBL Chemical Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Schaeffler India Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Reliance Industries Ltd",
+    "symbol": "RELIANCE",
+    "name": "Reliance Industries",
+    "sector": "Energy",
+    "yahooSymbol": "RELIANCE.NS"
+  },
+  {
+    "providedName": "Vedanta Ltd",
+    "symbol": "VEDL",
+    "name": "Vedanta",
+    "sector": "Metals",
+    "yahooSymbol": "VEDL.NS"
+  },
+  {
+    "providedName": "Shree Cement Ltd",
+    "symbol": "SHREECEM",
+    "name": "Shree Cement",
+    "sector": "Infra",
+    "yahooSymbol": "SHREECEM.NS"
+  },
+  {
+    "providedName": "SRF Ltd",
+    "symbol": "SRF",
+    "name": "SRF Limited",
+    "sector": "Chemicals",
+    "yahooSymbol": "SRF.NS"
+  },
+  {
+    "providedName": "Siemens Ltd",
+    "symbol": "SIEMENS",
+    "name": "Siemens India",
+    "sector": "Infra",
+    "yahooSymbol": "SIEMENS.NS"
+  },
+  {
+    "providedName": "Sundaram Finance Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Supreme Industries Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Tata Chemicals Ltd",
+    "symbol": "TATACHEM",
+    "name": "Tata Chemicals",
+    "sector": "Chemicals",
+    "yahooSymbol": "TATACHEM.NS"
+  },
+  {
+    "providedName": "Tata Power Company Ltd",
+    "symbol": "TATACHEM",
+    "name": "Tata Chemicals",
+    "sector": "Chemicals",
+    "yahooSymbol": "TATACHEM.NS"
+  },
+  {
+    "providedName": "Tata Consumer Products Ltd",
+    "symbol": "TATACONSUM",
+    "name": "Tata Consumer Products",
+    "sector": "FMCG",
+    "yahooSymbol": "TATACONSUM.NS"
+  },
+  {
+    "providedName": "Tata Motors Passenger Vehicles Ltd",
+    "symbol": "TATACHEM",
+    "name": "Tata Chemicals",
+    "sector": "Chemicals",
+    "yahooSymbol": "TATACHEM.NS"
+  },
+  {
+    "providedName": "Tata Steel Ltd",
+    "symbol": "TATACHEM",
+    "name": "Tata Chemicals",
+    "sector": "Chemicals",
+    "yahooSymbol": "TATACHEM.NS"
+  },
+  {
+    "providedName": "Cholamandalam Financial Holdings Ltd",
+    "symbol": "CHOLAHLDNG",
+    "name": "Cholamandalam Financial Holdings",
+    "sector": "Financials",
+    "yahooSymbol": "CHOLAHLDNG.NS"
+  },
+  {
+    "providedName": "Jubilant Pharmova Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Voltas Ltd",
+    "symbol": "VOLTAS",
+    "name": "Voltas Limited",
+    "sector": "Consumer",
+    "yahooSymbol": "VOLTAS.NS"
+  },
+  {
+    "providedName": "Wipro Ltd",
+    "symbol": "WIPRO",
+    "name": "Wipro",
+    "sector": "IT",
+    "yahooSymbol": "WIPRO.NS"
+  },
+  {
+    "providedName": "Apollo Hospitals Enterprise Ltd",
+    "symbol": "APOLLOHOSP",
+    "name": "Apollo Hospitals",
+    "sector": "Pharma",
+    "yahooSymbol": "APOLLOHOSP.NS"
+  },
+  {
+    "providedName": "Godfrey Phillips India Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Patanjali Foods Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Dr Reddys Laboratories Ltd",
+    "symbol": "DRREDDY",
+    "name": "Dr. Reddy\u0393\u00c7\u00d6s Laboratories",
+    "sector": "Pharma",
+    "yahooSymbol": "DRREDDY.NS"
+  },
+  {
+    "providedName": "Vardhman Textiles Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Jindal Saw Ltd",
+    "symbol": "JINDALSTEL",
+    "name": "Jindal Steel & Power",
+    "sector": "Metals",
+    "yahooSymbol": "JINDALSTEL.NS"
+  },
+  {
+    "providedName": "Titan Company Ltd",
+    "symbol": "TITAN",
+    "name": "Titan Company",
+    "sector": "Consumer",
+    "yahooSymbol": "TITAN.NS"
+  },
+  {
+    "providedName": "Asahi India Glass Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Usha Martin Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Kajaria Ceramics Ltd",
+    "symbol": "CERA",
+    "name": "Cera Sanitaryware",
+    "sector": "Infra",
+    "yahooSymbol": "CERA.NS"
+  },
+  {
+    "providedName": "Honeywell Automation India Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Sarda Energy & Minerals Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "HFCL Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Can Fin Homes Ltd",
+    "symbol": "CANFINHOME",
+    "name": "Can Fin Homes",
+    "sector": "Financials",
+    "yahooSymbol": "CANFINHOME.NS"
+  },
+  {
+    "providedName": "State Bank of India",
+    "symbol": "SBIN",
+    "name": "State Bank of India",
+    "sector": "Banking",
+    "yahooSymbol": "SBIN.NS"
+  },
+  {
+    "providedName": "Anant Raj Ltd",
+    "symbol": "ANANTRAJ",
+    "name": "Anant Raj Limited",
+    "sector": "Realty",
+    "yahooSymbol": "ANANTRAJ.NS"
+  },
+  {
+    "providedName": "Godrej Industries Ltd",
+    "symbol": "GODREJIND",
+    "name": "Godrej Industries",
+    "sector": "Infra",
+    "yahooSymbol": "GODREJIND.NS"
+  },
+  {
+    "providedName": "Shriram Finance Ltd",
+    "symbol": "SHRIRAMFIN",
+    "name": "Shriram Finance",
+    "sector": "Financials",
+    "yahooSymbol": "SHRIRAMFIN.NS"
+  },
+  {
+    "providedName": "Piramal Finance Ltd",
+    "symbol": "PIIND",
+    "name": "Piramal Enterprises",
+    "sector": "Financials",
+    "yahooSymbol": "PIIND.NS"
+  },
+  {
+    "providedName": "Apar Industries Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "3M India Ltd",
+    "symbol": "3MINDIA",
+    "name": "3M India",
+    "sector": "Consumer",
+    "yahooSymbol": "3MINDIA.NS"
+  },
+  {
+    "providedName": "Amara Raja Energy & Mobility Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "JM Financial Ltd",
+    "symbol": "JMFINANCIL",
+    "name": "JM Financial",
+    "sector": "Financials",
+    "yahooSymbol": "JMFINANCIL.NS"
+  },
+  {
+    "providedName": "Swan Corp Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Radico Khaitan Ltd",
+    "symbol": "RADICO",
+    "name": "Radico Khaitan",
+    "sector": "FMCG",
+    "yahooSymbol": "RADICO.NS"
+  },
+  {
+    "providedName": "Cholamandalam Investment & Finance Company Ltd",
+    "symbol": "CHOLAFIN",
+    "name": "Cholamandalam Investment",
+    "sector": "Financials",
+    "yahooSymbol": "CHOLAFIN.NS"
+  },
+  {
+    "providedName": "Balrampur Chini Mills Ltd",
+    "symbol": "BALRAMCHIN",
+    "name": "Balrampur Chini Mills",
+    "sector": "Consumer",
+    "yahooSymbol": "BALRAMCHIN.NS"
+  },
+  {
+    "providedName": "Timken India Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Welspun Living Ltd",
+    "symbol": "WELSPUNLIV",
+    "name": "Welspun Living",
+    "sector": "Consumer",
+    "yahooSymbol": "WELSPUNLIV.NS"
+  },
+  {
+    "providedName": "Bharat Petroleum Corporation Ltd",
+    "symbol": "BPCL",
+    "name": "Bharat Petroleum",
+    "sector": "Energy",
+    "yahooSymbol": "BPCL.NS"
+  },
+  {
+    "providedName": "MMTC Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "BEML Ltd",
+    "symbol": "BEML",
+    "name": "BEML",
+    "sector": "Consumer",
+    "yahooSymbol": "BEML.NS"
+  },
+  {
+    "providedName": "Tata Communications Ltd",
+    "symbol": "TATACOMM",
+    "name": "Tata Communications",
+    "sector": "Telecom",
+    "yahooSymbol": "TATACOMM.NS"
+  },
+  {
+    "providedName": "Bharat Electronics Ltd",
+    "symbol": "BEL",
+    "name": "Bharat Electronics",
+    "sector": "Infra",
+    "yahooSymbol": "BEL.NS"
+  },
+  {
+    "providedName": "Steel Authority of India Ltd",
+    "symbol": "SAIL",
+    "name": "Steel Authority of India",
+    "sector": "Metals",
+    "yahooSymbol": "SAIL.NS"
+  },
+  {
+    "providedName": "Fertilizers & Chemicals Travancore Ltd",
+    "symbol": "FACT",
+    "name": "Fertilizers & Chemicals",
+    "sector": "Chemicals",
+    "yahooSymbol": "FACT.NS"
+  },
+  {
+    "providedName": "NLC India Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "National Aluminium Company Ltd",
+    "symbol": "NALCO",
+    "name": "National Aluminium",
+    "sector": "Metals",
+    "yahooSymbol": "NATIONALUM.NS"
+  },
+  {
+    "providedName": "Hindustan Petroleum Corporation Ltd",
+    "symbol": "HINDPETRO",
+    "name": "Hindustan Petroleum",
+    "sector": "Pharma",
+    "yahooSymbol": "HINDPETRO.NS"
+  },
+  {
+    "providedName": "Bharat Heavy Electricals Ltd",
+    "symbol": "BHEL",
+    "name": "Bharat Heavy Electricals",
+    "sector": "Infra",
+    "yahooSymbol": "BHEL.NS"
+  },
+  {
+    "providedName": "Hindustan Zinc Ltd",
+    "symbol": "HINDZINC",
+    "name": "Hindustan Zinc",
+    "sector": "Metals",
+    "yahooSymbol": "HINDZINC.NS"
+  },
+  {
+    "providedName": "Tata Elxsi Ltd",
+    "symbol": "TATAELXSI",
+    "name": "Tata Elxsi",
+    "sector": "IT",
+    "yahooSymbol": "TATAELXSI.NS"
+  },
+  {
+    "providedName": "Kotak Mahindra Bank Ltd",
+    "symbol": "KOTAKBANK",
+    "name": "Kotak Mahindra Bank",
+    "sector": "Banking",
+    "yahooSymbol": "KOTAKBANK.NS"
+  },
+  {
+    "providedName": "ITI Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "DCM Shriram Ltd",
+    "symbol": "DCMSHRIRAM",
+    "name": "DCM Shriram",
+    "sector": "Consumer",
+    "yahooSymbol": "DCMSHRIRAM.NS"
+  },
+  {
+    "providedName": "Chennai Petroleum Corporation Ltd",
+    "symbol": "CHENNPETRO",
+    "name": "Chennai Petroleum Corporation",
+    "sector": "Energy",
+    "yahooSymbol": "CHENNPETRO.NS"
+  },
+  {
+    "providedName": "Shipping Corporation of India Ltd",
+    "symbol": "SHIPCORP",
+    "name": "Shipping Corporation of India",
+    "sector": "Energy",
+    "yahooSymbol": "SCI.NS"
+  },
+  {
+    "providedName": "Aarti Industries Ltd",
+    "symbol": "AARTIIND",
+    "name": "Aarti Industries",
+    "sector": "Chemicals",
+    "yahooSymbol": "AARTIIND.NS"
+  },
+  {
+    "providedName": "HBL Engineering Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "UPL Ltd",
+    "symbol": "UPL",
+    "name": "UPL Limited",
+    "sector": "Chemicals",
+    "yahooSymbol": "UPL.NS"
+  },
+  {
+    "providedName": "Mangalore Refinery And Petrochemicals Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "NCC Ltd",
+    "symbol": "NCC",
+    "name": "Nagarjuna Construction",
+    "sector": "Infra",
+    "yahooSymbol": "NCC.NS"
+  },
+  {
+    "providedName": "Lloyds Metals & Energy Ltd",
+    "symbol": "LLOYDSME",
+    "name": "Lloyds Metals & Energy",
+    "sector": "Metals",
+    "yahooSymbol": "LLOYDSME.NS"
+  },
+  {
+    "providedName": "P I Industries Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Karur Vysya Bank Ltd",
+    "symbol": "KARURVYSYA",
+    "name": "Karur Vysya Bank",
+    "sector": "Banking",
+    "yahooSymbol": "KARURVYSYA.NS"
+  },
+  {
+    "providedName": "Himadri Speciality Chemical Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Infosys Ltd",
+    "symbol": "INFY",
+    "name": "Infosys",
+    "sector": "IT",
+    "yahooSymbol": "INFY.NS"
+  },
+  {
+    "providedName": "Samvardhana Motherson International Ltd",
+    "symbol": "MOTHERSON",
+    "name": "Motherson Sumi Systems",
+    "sector": "Auto",
+    "yahooSymbol": "MOTHERSON.NS"
+  },
+  {
+    "providedName": "Trident Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Lupin Ltd",
+    "symbol": "LUPIN",
+    "name": "Lupin",
+    "sector": "Pharma",
+    "yahooSymbol": "LUPIN.NS"
+  },
+  {
+    "providedName": "Chambal Fertilisers & Chemicals Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Zee Entertainment Enterprises Ltd",
+    "symbol": "ZEEL",
+    "name": "Zee Entertainment",
+    "sector": "Media",
+    "yahooSymbol": "ZEEL.NS"
+  },
+  {
+    "providedName": "IFCI Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Pidilite Industries Ltd",
+    "symbol": "PIDILITIND",
+    "name": "Pidilite Industries",
+    "sector": "Chemicals",
+    "yahooSymbol": "PIDILITIND.NS"
+  },
+  {
+    "providedName": "CRISIL Ltd",
+    "symbol": "CRISIL",
+    "name": "CRISIL",
+    "sector": "Financials",
+    "yahooSymbol": "CRISIL.NS"
+  },
+  {
+    "providedName": "Havells India Ltd",
+    "symbol": "HAVELLS",
+    "name": "Havells India",
+    "sector": "Consumer",
+    "yahooSymbol": "HAVELLS.NS"
+  },
+  {
+    "providedName": "Mphasis Ltd",
+    "symbol": "MPHASIS",
+    "name": "Mphasis",
+    "sector": "IT",
+    "yahooSymbol": "MPHASIS.NS"
+  },
+  {
+    "providedName": "Dabur India Ltd",
+    "symbol": "DABUR",
+    "name": "Dabur India",
+    "sector": "FMCG",
+    "yahooSymbol": "DABUR.NS"
+  },
+  {
+    "providedName": "Supreme Petrochem Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Torrent Pharmaceuticals Ltd",
+    "symbol": "TORNTPHARM",
+    "name": "Torrent Pharmaceuticals",
+    "sector": "Pharma",
+    "yahooSymbol": "TORNTPHARM.NS"
+  },
+  {
+    "providedName": "Ipca Laboratories Ltd",
+    "symbol": "IPCALAB",
+    "name": "IPCA Laboratories",
+    "sector": "Pharma",
+    "yahooSymbol": "IPCALAB.NS"
+  },
+  {
+    "providedName": "Federal Bank Ltd",
+    "symbol": "FEDERALBNK",
+    "name": "Federal Bank",
+    "sector": "Banking",
+    "yahooSymbol": "FEDERALBNK.NS"
+  },
+  {
+    "providedName": "Bajaj Finance Ltd",
+    "symbol": "BAJAJHLDNG",
+    "name": "Bajaj Holdings",
+    "sector": "Financials",
+    "yahooSymbol": "BAJAJHLDNG.NS"
+  },
+  {
+    "providedName": "Nava Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Neuland Laboratories Ltd",
+    "symbol": "NEULAND",
+    "name": "Neuland Laboratories",
+    "sector": "Pharma",
+    "yahooSymbol": "NEULANDLAB.NS"
+  },
+  {
+    "providedName": "Hindustan Copper Ltd",
+    "symbol": "HINDMOTORS",
+    "name": "Hindustan Motors",
+    "sector": "Auto",
+    "yahooSymbol": "500500.BO"
+  },
+  {
+    "providedName": "Blue Dart Express Ltd",
+    "symbol": "BLUEDART",
+    "name": "Blue Dart Express",
+    "sector": "Consumer",
+    "yahooSymbol": "BLUEDART.NS"
+  },
+  {
+    "providedName": "Adani Enterprises Ltd",
+    "symbol": "ADANIPOWER",
+    "name": "Adani Power",
+    "sector": "Power",
+    "yahooSymbol": "ADANIPOWER.NS"
+  },
+  {
+    "providedName": "LIC Housing Finance Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Sun Pharmaceutical Industries Ltd",
+    "symbol": "SUNPHARMA",
+    "name": "Sun Pharmaceutical",
+    "sector": "Pharma",
+    "yahooSymbol": "SUNPHARMA.NS"
+  },
+  {
+    "providedName": "Caplin Point Laboratories Ltd",
+    "symbol": "CAPLIPOINT",
+    "name": "Caplin Point Laboratories",
+    "sector": "Pharma",
+    "yahooSymbol": "CAPLIPOINT.NS"
+  },
+  {
+    "providedName": "Kalpataru Projects International Ltd",
+    "symbol": "KALPATARA",
+    "name": "Kalpataru Projects",
+    "sector": "Infra",
+    "yahooSymbol": "KPIL.NS"
+  },
+  {
+    "providedName": "Aurobindo Pharma Ltd",
+    "symbol": "AUROPHARMA",
+    "name": "Aurobindo Pharma",
+    "sector": "Pharma",
+    "yahooSymbol": "AUROPHARMA.NS"
+  },
+  {
+    "providedName": "KEI Industries Ltd",
+    "symbol": "KEI",
+    "name": "KEI Industries",
+    "sector": "Consumer",
+    "yahooSymbol": "KEI.NS"
+  },
+  {
+    "providedName": "Natco Pharma Ltd",
+    "symbol": "NATCOPHARM",
+    "name": "Natco Pharma",
+    "sector": "Pharma",
+    "yahooSymbol": "NATCOPHARM.NS"
+  },
+  {
+    "providedName": "JSW Steel Ltd",
+    "symbol": "JSWENERGY",
+    "name": "JSW Energy",
+    "sector": "Power",
+    "yahooSymbol": "JSWENERGY.NS"
+  },
+  {
+    "providedName": "Thermax Ltd",
+    "symbol": "THERMAX",
+    "name": "Thermax Limited",
+    "sector": "Power",
+    "yahooSymbol": "THERMAX.NS"
+  },
+  {
+    "providedName": "CCL Products (India) Ltd",
+    "symbol": "CCLPRODUCT",
+    "name": "CCL Products India",
+    "sector": "FMCG",
+    "yahooSymbol": "CCL.NS"
+  },
+  {
+    "providedName": "HDFC Bank Ltd",
+    "symbol": "HDFCBANK",
+    "name": "HDFC Bank",
+    "sector": "Banking",
+    "yahooSymbol": "HDFCBANK.NS"
+  },
+  {
+    "providedName": "Poonawalla Fincorp Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "PTC Industries Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Tata Consultancy Services Ltd",
+    "symbol": "TCS",
+    "name": "Tata Consultancy Services",
+    "sector": "IT",
+    "yahooSymbol": "TCS.NS"
+  },
+  {
+    "providedName": "ICICI Bank Ltd",
+    "symbol": "ICICIBANK",
+    "name": "ICICI Bank",
+    "sector": "Banking",
+    "yahooSymbol": "ICICIBANK.NS"
+  },
+  {
+    "providedName": "IDBI Bank Ltd",
+    "symbol": "IDBI",
+    "name": "IDBI Bank",
+    "sector": "Banking",
+    "yahooSymbol": "IDBI.NS"
+  },
+  {
+    "providedName": "Oil India Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Power Grid Corporation of India Ltd",
+    "symbol": "POWERGRID",
+    "name": "Power Grid Corporation",
+    "sector": "Power",
+    "yahooSymbol": "POWERGRID.NS"
+  },
+  {
+    "providedName": "Bank of Baroda",
+    "symbol": "BANKBARODA",
+    "name": "Bank of Baroda",
+    "sector": "Banking",
+    "yahooSymbol": "BANKBARODA.NS"
+  },
+  {
+    "providedName": "Canara Bank",
+    "symbol": "CANBK",
+    "name": "Canara Bank",
+    "sector": "Banking",
+    "yahooSymbol": "CANBK.NS"
+  },
+  {
+    "providedName": "UCO Bank",
+    "symbol": "UCOBANK",
+    "name": "UCO Bank",
+    "sector": "Banking",
+    "yahooSymbol": "UCOBANK.NS"
+  },
+  {
+    "providedName": "General Insurance Corporation of India",
+    "symbol": "TI",
+    "name": "Tilaknagar Industries",
+    "sector": "FMCG",
+    "yahooSymbol": "TI.NS"
+  },
+  {
+    "providedName": "Union Bank of India",
+    "symbol": "BANKINDIA",
+    "name": "Bank of India",
+    "sector": "Financials",
+    "yahooSymbol": "BANKINDIA.NS"
+  },
+  {
+    "providedName": "Maruti Suzuki India Ltd",
+    "symbol": "MARUTI",
+    "name": "Maruti Suzuki India",
+    "sector": "Auto",
+    "yahooSymbol": "MARUTI.NS"
+  },
+  {
+    "providedName": "Ircon International Ltd",
+    "symbol": "IRCON",
+    "name": "IRCON International",
+    "sector": "Infra",
+    "yahooSymbol": "IRCON.NS"
+  },
+  {
+    "providedName": "IndusInd Bank Ltd",
+    "symbol": "INDUSIND-BK",
+    "name": "IndusInd Bank",
+    "sector": "Telecom",
+    "yahooSymbol": "INDUSINDBK.NS"
+  },
+  {
+    "providedName": "Central Bank of India",
+    "symbol": "CENTRALBK",
+    "name": "Central Bank of India",
+    "sector": "Banking",
+    "yahooSymbol": "CENTRALBK.NS"
+  },
+  {
+    "providedName": "Axis Bank Ltd",
+    "symbol": "AXISBANK",
+    "name": "Axis Bank",
+    "sector": "Banking",
+    "yahooSymbol": "AXISBANK.NS"
+  },
+  {
+    "providedName": "Bank of Maharashtra",
+    "symbol": "MAHABANK",
+    "name": "Bank of Maharashtra",
+    "sector": "Banking",
+    "yahooSymbol": "MAHABANK.NS"
+  },
+  {
+    "providedName": "Bank of India",
+    "symbol": "BANKINDIA",
+    "name": "Bank of India",
+    "sector": "Financials",
+    "yahooSymbol": "BANKINDIA.NS"
+  },
+  {
+    "providedName": "HCL Technologies Ltd",
+    "symbol": "HCLTECH",
+    "name": "HCL Technologies",
+    "sector": "IT",
+    "yahooSymbol": "HCLTECH.NS"
+  },
+  {
+    "providedName": "Cochin Shipyard Ltd",
+    "symbol": "COCHINSHIP",
+    "name": "Cochin Shipyard",
+    "sector": "Consumer",
+    "yahooSymbol": "COCHINSHIP.NS"
+  },
+  {
+    "providedName": "Indian Overseas Bank",
+    "symbol": "IOB",
+    "name": "Indian Overseas Bank",
+    "sector": "Banking",
+    "yahooSymbol": "IOB.NS"
+  },
+  {
+    "providedName": "RBL Bank Ltd",
+    "symbol": "RBLBANK",
+    "name": "RBL Bank",
+    "sector": "Banking",
+    "yahooSymbol": "RBLBANK.NS"
+  },
+  {
+    "providedName": "Indian Bank",
+    "symbol": "INDHOTEL",
+    "name": "Indian Hotels Company",
+    "sector": "Consumer",
+    "yahooSymbol": "INDHOTEL.NS"
+  },
+  {
+    "providedName": "Oil & Natural Gas Corpn Ltd",
+    "symbol": "ONGC",
+    "name": "Oil & Natural Gas Corp",
+    "sector": "Energy",
+    "yahooSymbol": "ONGC.NS"
+  },
+  {
+    "providedName": "Manappuram Finance Ltd",
+    "symbol": "MANAPPURAM",
+    "name": "Manappuram Finance",
+    "sector": "Financials",
+    "yahooSymbol": "MANAPPURAM.NS"
+  },
+  {
+    "providedName": "Zydus Wellness Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Phoenix Mills Ltd",
+    "symbol": "PHOENIXLTD",
+    "name": "Phoenix Mills",
+    "sector": "Infra",
+    "yahooSymbol": "PHOENIXLTD.NS"
+  },
+  {
+    "providedName": "Emami Ltd",
+    "symbol": "EMAMILTD",
+    "name": "Emami",
+    "sector": "Consumer",
+    "yahooSymbol": "EMAMILTD.NS"
+  },
+  {
+    "providedName": "Choice International Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Afcons Infrastructure Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Five-Star Business Finance Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "DLF Ltd",
+    "symbol": "DLF",
+    "name": "DLF Limited",
+    "sector": "Realty",
+    "yahooSymbol": "DLF.NS"
+  },
+  {
+    "providedName": "City Union Bank Ltd",
+    "symbol": "CUB",
+    "name": "City Union Bank",
+    "sector": "Banking",
+    "yahooSymbol": "CUB.NS"
+  },
+  {
+    "providedName": "Jammu and Kashmir Bank Ltd",
+    "symbol": "J&KBANK",
+    "name": "Jammu & Kashmir Bank",
+    "sector": "Banking",
+    "yahooSymbol": "J&KBANK.NS"
+  },
+  {
+    "providedName": "Punjab National Bank",
+    "symbol": "PNB",
+    "name": "Punjab National Bank",
+    "sector": "Banking",
+    "yahooSymbol": "PNB.NS"
+  },
+  {
+    "providedName": "Welspun Corp Ltd",
+    "symbol": "WELSIND",
+    "name": "Welspun India",
+    "sector": "Consumer",
+    "yahooSymbol": "WELSPUNLIV.NS"
+  },
+  {
+    "providedName": "Wockhardt Ltd",
+    "symbol": "WOCKPHARMA",
+    "name": "Wockhardt",
+    "sector": "Pharma",
+    "yahooSymbol": "WOCKPHARMA.NS"
+  },
+  {
+    "providedName": "TVS Motor Company Ltd",
+    "symbol": "TVSMOTOR",
+    "name": "TVS Motor Company",
+    "sector": "Auto",
+    "yahooSymbol": "TVSMOTOR.NS"
+  },
+  {
+    "providedName": "United Spirits Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "NTPC Ltd",
+    "symbol": "NTPC",
+    "name": "NTPC Limited",
+    "sector": "Power",
+    "yahooSymbol": "NTPC.NS"
+  },
+  {
+    "providedName": "Indian Oil Corporation Ltd",
+    "symbol": "IOC",
+    "name": "Indian Oil Corporation",
+    "sector": "Energy",
+    "yahooSymbol": "IOC.NS"
+  },
+  {
+    "providedName": "Coal India Ltd",
+    "symbol": "COALINDIA",
+    "name": "Coal India",
+    "sector": "Energy",
+    "yahooSymbol": "COALINDIA.NS"
+  },
+  {
+    "providedName": "Life Insurance Corporation of India",
+    "symbol": "LICI",
+    "name": "Life Insurance Corp of India",
+    "sector": "Financials",
+    "yahooSymbol": "LICI.NS"
+  },
+  {
+    "providedName": "Engineers India Ltd",
+    "symbol": "ENGINERSIN",
+    "name": "Engineers India",
+    "sector": "Infra",
+    "yahooSymbol": "ENGINERSIN.NS"
+  },
+  {
+    "providedName": "Hindustan Aeronautics Ltd",
+    "symbol": "HAL",
+    "name": "Hindustan Aeronautics",
+    "sector": "Infra",
+    "yahooSymbol": "HAL.NS"
+  },
+  {
+    "providedName": "NMDC Ltd",
+    "symbol": "NMDC",
+    "name": "NMDC Limited",
+    "sector": "Metals",
+    "yahooSymbol": "NMDC.NS"
+  },
+  {
+    "providedName": "Power Finance Corporation Ltd",
+    "symbol": "PFC",
+    "name": "Power Finance Corporation",
+    "sector": "Financials",
+    "yahooSymbol": "PFC.NS"
+  },
+  {
+    "providedName": "SJVN Ltd",
+    "symbol": "SJVN",
+    "name": "SJVN Limited",
+    "sector": "Power",
+    "yahooSymbol": "SJVN.NS"
+  },
+  {
+    "providedName": "Hexaware Technologies Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Housing & Urban Development Corporation Ltd",
+    "symbol": "ENERGYDEV",
+    "name": "Energy Development",
+    "sector": "Power",
+    "yahooSymbol": "ENERGYDEV.NS"
+  },
+  {
+    "providedName": "New India Assurance Company Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Uno Minda Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "APL Apollo Tubes Ltd",
+    "symbol": "APLAPOLLO",
+    "name": "APL Apollo Tubes",
+    "sector": "Metals",
+    "yahooSymbol": "APLAPOLLO.NS"
+  },
+  {
+    "providedName": "GAIL (India) Ltd",
+    "symbol": "GAIL",
+    "name": "GAIL India",
+    "sector": "Energy",
+    "yahooSymbol": "GAIL.NS"
+  },
+  {
+    "providedName": "Paradeep Phosphates Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Sonata Software Ltd",
+    "symbol": "SONATSOFTW",
+    "name": "Sonata Software",
+    "sector": "IT",
+    "yahooSymbol": "SONATSOFTW.NS"
+  },
+  {
+    "providedName": "Page Industries Ltd",
+    "symbol": "PAGEIND",
+    "name": "Page Industries",
+    "sector": "Consumer",
+    "yahooSymbol": "PAGEIND.NS"
+  },
+  {
+    "providedName": "NHPC Ltd",
+    "symbol": "NHPC",
+    "name": "NHPC Limited",
+    "sector": "Power",
+    "yahooSymbol": "NHPC.NS"
+  },
+  {
+    "providedName": "Marico Ltd",
+    "symbol": "MARICO",
+    "name": "Marico",
+    "sector": "FMCG",
+    "yahooSymbol": "MARICO.NS"
+  },
+  {
+    "providedName": "Redington Ltd",
+    "symbol": "REDINGTON",
+    "name": "Redington India",
+    "sector": "IT",
+    "yahooSymbol": "REDINGTON.NS"
+  },
+  {
+    "providedName": "Container Corporation Of India Ltd",
+    "symbol": "CONCOR",
+    "name": "Container Corp of India",
+    "sector": "Infra",
+    "yahooSymbol": "CONCOR.NS"
+  },
+  {
+    "providedName": "Nippon Life India Asset Management Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Granules India Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Reliance Power Ltd",
+    "symbol": "RELIANCE",
+    "name": "Reliance Industries",
+    "sector": "Energy",
+    "yahooSymbol": "RELIANCE.NS"
+  },
+  {
+    "providedName": "Capri Global Capital Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Indian Railway Finance Corporation Ltd",
+    "symbol": "IRFC",
+    "name": "Indian Railway Finance",
+    "sector": "Infra",
+    "yahooSymbol": "IRFC.NS"
+  },
+  {
+    "providedName": "Mazagon Dock Shipbuilders Ltd",
+    "symbol": "MAZDOCK",
+    "name": "Mazagon Dock Shipbuilders",
+    "sector": "Infra",
+    "yahooSymbol": "MAZDOCK.NS"
+  },
+  {
+    "providedName": "Oracle Financial Services Software Ltd",
+    "symbol": "OFSS",
+    "name": "Oracle Financial Services",
+    "sector": "IT",
+    "yahooSymbol": "OFSS.NS"
+  },
+  {
+    "providedName": "NBCC (India) Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Prestige Estates Projects Ltd",
+    "symbol": "PRESTIGE",
+    "name": "Prestige Estates",
+    "sector": "Infra",
+    "yahooSymbol": "PRESTIGE.NS"
+  },
+  {
+    "providedName": "Garden Reach Shipbuilders & Engineers Ltd",
+    "symbol": "ENGINERSIN",
+    "name": "Engineers India",
+    "sector": "Infra",
+    "yahooSymbol": "ENGINERSIN.NS"
+  },
+  {
+    "providedName": "Mahanagar Gas Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Ajanta Pharma Ltd",
+    "symbol": "AJANTPHARM",
+    "name": "Ajanta Pharmaceuticals",
+    "sector": "Pharma",
+    "yahooSymbol": "AJANTPHARM.NS"
+  },
+  {
+    "providedName": "Cyient Ltd",
+    "symbol": "CYIENT",
+    "name": "Cyient",
+    "sector": "IT",
+    "yahooSymbol": "CYIENT.NS"
+  },
+  {
+    "providedName": "Newgen Software Technologies Ltd",
+    "symbol": "NEWGEN",
+    "name": "Newgen Software",
+    "sector": "IT",
+    "yahooSymbol": "NEWGEN.NS"
+  },
+  {
+    "providedName": "Gujarat Mineral Development Corporation Ltd",
+    "symbol": "GMDC",
+    "name": "Gujarat Mineral Development",
+    "sector": "Metals",
+    "yahooSymbol": "GMDCLTD.NS"
+  },
+  {
+    "providedName": "Suzlon Energy Ltd",
+    "symbol": "SUZLON",
+    "name": "Suzlon Energy",
+    "sector": "Power",
+    "yahooSymbol": "SUZLON.NS"
+  },
+  {
+    "providedName": "Poly Medicure Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Aadhar Housing Finance Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Jaiprakash Power Ventures Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Gland Pharma Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Jubilant Foodworks Ltd",
+    "symbol": "JUBLFOOD",
+    "name": "Jubilant FoodWorks",
+    "sector": "Consumer",
+    "yahooSymbol": "JUBLFOOD.NS"
+  },
+  {
+    "providedName": "PVR Inox Ltd",
+    "symbol": "PVRINOX",
+    "name": "PVR INOX Limited",
+    "sector": "Media",
+    "yahooSymbol": "PVRINOX.NS"
+  },
+  {
+    "providedName": "Biocon Ltd",
+    "symbol": "BIOCON",
+    "name": "Biocon",
+    "sector": "Pharma",
+    "yahooSymbol": "BIOCON.NS"
+  },
+  {
+    "providedName": "Minda Corporation Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Sun TV Network Ltd",
+    "symbol": "SUNTV",
+    "name": "Sun TV Network",
+    "sector": "Media",
+    "yahooSymbol": "SUNTV.NS"
+  },
+  {
+    "providedName": "Bharti Hexacom Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Bharti Airtel Ltd",
+    "symbol": "BHARTIARTL",
+    "name": "Bharti Airtel",
+    "sector": "Telecom",
+    "yahooSymbol": "BHARTIARTL.NS"
+  },
+  {
+    "providedName": "Indian Renewable Energy Development Agency Ltd",
+    "symbol": "INDHOTEL",
+    "name": "Indian Hotels Company",
+    "sector": "Consumer",
+    "yahooSymbol": "INDHOTEL.NS"
+  },
+  {
+    "providedName": "Godrej Properties Ltd",
+    "symbol": "GODREJPROP",
+    "name": "Godrej Properties",
+    "sector": "Realty",
+    "yahooSymbol": "GODREJPROP.NS"
+  },
+  {
+    "providedName": "PNB Housing Finance Ltd",
+    "symbol": "PNB",
+    "name": "Punjab National Bank",
+    "sector": "Banking",
+    "yahooSymbol": "PNB.NS"
+  },
+  {
+    "providedName": "Hyundai Motor India Ltd",
+    "symbol": "HYUNDAI",
+    "name": "Hyundai Motor India",
+    "sector": "Auto",
+    "yahooSymbol": "HYUNDAI.NS"
+  },
+  {
+    "providedName": "Birlasoft Ltd",
+    "symbol": "BSOFT",
+    "name": "Birlasoft",
+    "sector": "IT",
+    "yahooSymbol": "BSOFT.NS"
+  },
+  {
+    "providedName": "Mahindra & Mahindra Financial Services Ltd",
+    "symbol": "M&MFIN",
+    "name": "Mahindra & Mahindra Financial",
+    "sector": "Financials",
+    "yahooSymbol": "M&MFIN.NS"
+  },
+  {
+    "providedName": "Emcure Pharmaceuticals Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "J K Cements Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Tech Mahindra Ltd",
+    "symbol": "TECHM",
+    "name": "Tech Mahindra",
+    "sector": "IT",
+    "yahooSymbol": "TECHM.NS"
+  },
+  {
+    "providedName": "Bharat Dynamics Ltd",
+    "symbol": "BDL",
+    "name": "Bharat Dynamics",
+    "sector": "Infra",
+    "yahooSymbol": "BDL.NS"
+  },
+  {
+    "providedName": "Adani Power Ltd",
+    "symbol": "ADANIPOWER",
+    "name": "Adani Power",
+    "sector": "Power",
+    "yahooSymbol": "ADANIPOWER.NS"
+  },
+  {
+    "providedName": "REC Ltd",
+    "symbol": "RECLTD",
+    "name": "REC Limited",
+    "sector": "Financials",
+    "yahooSymbol": "RECLTD.NS"
+  },
+  {
+    "providedName": "LTM Ltd",
+    "symbol": "LTM",
+    "name": "LTIMindtree",
+    "sector": "IT",
+    "yahooSymbol": "LTM.NS"
+  },
+  {
+    "providedName": "Persistent Systems Ltd",
+    "symbol": "PERSISTENT",
+    "name": "Persistent Systems",
+    "sector": "IT",
+    "yahooSymbol": "PERSISTENT.NS"
+  },
+  {
+    "providedName": "Tata Technologies Ltd",
+    "symbol": "TATACHEM",
+    "name": "Tata Chemicals",
+    "sector": "Chemicals",
+    "yahooSymbol": "TATACHEM.NS"
+  },
+  {
+    "providedName": "Sona BLW Precision Forgings Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Torrent Power Ltd",
+    "symbol": "TORNTPHARM",
+    "name": "Torrent Pharmaceuticals",
+    "sector": "Pharma",
+    "yahooSymbol": "TORNTPHARM.NS"
+  },
+  {
+    "providedName": "LG Electronics India Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Info Edge (India) Ltd",
+    "symbol": "NAUKRI",
+    "name": "Info Edge India",
+    "sector": "IT",
+    "yahooSymbol": "NAUKRI.NS"
+  },
+  {
+    "providedName": "Alkem Laboratories Ltd",
+    "symbol": "ALKEM",
+    "name": "Alkem Laboratories",
+    "sector": "Pharma",
+    "yahooSymbol": "ALKEM.NS"
+  },
+  {
+    "providedName": "Titagarh Rail Systems Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Petronet LNG Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Central Depository Services (India) Ltd",
+    "symbol": "CDSL",
+    "name": "Central Depository Services",
+    "sector": "IT",
+    "yahooSymbol": "CDSL.NS"
+  },
+  {
+    "providedName": "SBI Cards & Payment Services Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Jindal Steel Ltd",
+    "symbol": "JINDALSTEL",
+    "name": "Jindal Steel & Power",
+    "sector": "Metals",
+    "yahooSymbol": "JINDALSTEL.NS"
+  },
+  {
+    "providedName": "Glenmark Pharmaceuticals Ltd",
+    "symbol": "GLENMARK",
+    "name": "Glenmark Pharma",
+    "sector": "Pharma",
+    "yahooSymbol": "GLENMARK.NS"
+  },
+  {
+    "providedName": "Aditya Birla Sun Life AMC Ltd",
+    "symbol": "BIRLACORPN",
+    "name": "Birla Corporation",
+    "sector": "Infra",
+    "yahooSymbol": "BIRLACORPN.NS"
+  },
+  {
+    "providedName": "AWL Agri Business Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Indraprastha Gas Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Jio Financial Services Ltd",
+    "symbol": "JIOFIN",
+    "name": "Jio Financial Services",
+    "sector": "Financials",
+    "yahooSymbol": "JIOFIN.NS"
+  },
+  {
+    "providedName": "Nuvoco Vistas Corporation Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Zydus Lifesciences Ltd",
+    "symbol": "ZYDUSLIFE",
+    "name": "Zydus Lifesciences",
+    "sector": "Pharma",
+    "yahooSymbol": "ZYDUSLIFE.NS"
+  },
+  {
+    "providedName": "ICICI Prudential Asset Management Co Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Divis Laboratories Ltd",
+    "symbol": "DIVISLAB",
+    "name": "Divi\u0393\u00c7\u00d6s Laboratories",
+    "sector": "Pharma",
+    "yahooSymbol": "DIVISLAB.NS"
+  },
+  {
+    "providedName": "Zen Technologies Ltd",
+    "symbol": "ZENOTECH",
+    "name": "Zen Technologies",
+    "sector": "Consumer",
+    "yahooSymbol": "ZENOTECH.BO"
+  },
+  {
+    "providedName": "Tata Teleservices (Maharashtra) Ltd",
+    "symbol": "TATATELE",
+    "name": "Tata Teleservices Maharashtra",
+    "sector": "Telecom",
+    "yahooSymbol": "TTML.NS"
+  },
+  {
+    "providedName": "BSE Ltd",
+    "symbol": "BSE",
+    "name": "BSE Limited",
+    "sector": "Financials",
+    "yahooSymbol": "BSE.NS"
+  },
+  {
+    "providedName": "HDFC Asset Management Company Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Adani Ports & Special Economic Zone Ltd",
+    "symbol": "ADANIPOWER",
+    "name": "Adani Power",
+    "sector": "Power",
+    "yahooSymbol": "ADANIPOWER.NS"
+  },
+  {
+    "providedName": "Godrej Consumer Products Ltd",
+    "symbol": "GODREJCP",
+    "name": "Godrej Consumer Products",
+    "sector": "FMCG",
+    "yahooSymbol": "GODREJCP.NS"
+  },
+  {
+    "providedName": "HDFC Life Insurance Company Ltd",
+    "symbol": "HDFCLIFE",
+    "name": "HDFC Life Insurance",
+    "sector": "Financials",
+    "yahooSymbol": "HDFCLIFE.NS"
+  },
+  {
+    "providedName": "ICICI Prudential Life Insurance Company Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Olectra Greentech Ltd",
+    "symbol": "OLECTRA",
+    "name": "Olectra Greentech",
+    "sector": "Auto",
+    "yahooSymbol": "OLECTRA.NS"
+  },
+  {
+    "providedName": "SBI Life Insurance Company Ltd",
+    "symbol": "SBILIFE",
+    "name": "SBI Life Insurance",
+    "sector": "Financials",
+    "yahooSymbol": "SBILIFE.NS"
+  },
+  {
+    "providedName": "Railtel Corporation of India Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "BLS International Services Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "ICICI Lombard General Insurance Company Ltd",
+    "symbol": "LICI",
+    "name": "Life Insurance Corp of India",
+    "sector": "Financials",
+    "yahooSymbol": "LICI.NS"
+  },
+  {
+    "providedName": "AIA Engineering Ltd",
+    "symbol": "AIAENG",
+    "name": "AIA Engineering",
+    "sector": "Consumer",
+    "yahooSymbol": "AIAENG.NS"
+  },
+  {
+    "providedName": "Max Healthcare Institute Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Triveni Turbine Ltd",
+    "symbol": "TRITURBINE",
+    "name": "Triveni Turbine",
+    "sector": "Power",
+    "yahooSymbol": "TRITURBINE.NS"
+  },
+  {
+    "providedName": "GMR Airports Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Vodafone Idea Ltd",
+    "symbol": "IDEA",
+    "name": "Vodafone Idea",
+    "sector": "Telecom",
+    "yahooSymbol": "IDEA.NS"
+  },
+  {
+    "providedName": "United Breweries Ltd",
+    "symbol": "UBL",
+    "name": "United Breweries",
+    "sector": "FMCG",
+    "yahooSymbol": "UBL.NS"
+  },
+  {
+    "providedName": "IIFL Finance Ltd",
+    "symbol": "IIFLFIN",
+    "name": "IIFL Finance",
+    "sector": "Financials",
+    "yahooSymbol": "IIFL.NS"
+  },
+  {
+    "providedName": "JBM Auto Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Indian Railway Catering & Tourism Corporation Ltd",
+    "symbol": "INDHOTEL",
+    "name": "Indian Hotels Company",
+    "sector": "Consumer",
+    "yahooSymbol": "INDHOTEL.NS"
+  },
+  {
+    "providedName": "UTI Asset Management Company Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Sumitomo Chemical India Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Fortis Healthcare Ltd",
+    "symbol": "FORTIS",
+    "name": "Fortis Healthcare",
+    "sector": "Pharma",
+    "yahooSymbol": "FORTIS.NS"
+  },
+  {
+    "providedName": "Rites Ltd",
+    "symbol": "RITES",
+    "name": "RITES Limited",
+    "sector": "Infra",
+    "yahooSymbol": "RITES.NS"
+  },
+  {
+    "providedName": "Navin Fluorine International Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Varun Beverages Ltd",
+    "symbol": "VBL",
+    "name": "Varun Beverages",
+    "sector": "Consumer",
+    "yahooSymbol": "VBL.NS"
+  },
+  {
+    "providedName": "Devyani International Ltd",
+    "symbol": "DEVYANI",
+    "name": "Devyani International",
+    "sector": "Consumer",
+    "yahooSymbol": "DEVYANI.NS"
+  },
+  {
+    "providedName": "Jindal Stainless Ltd",
+    "symbol": "JINDALSTEL",
+    "name": "Jindal Steel & Power",
+    "sector": "Metals",
+    "yahooSymbol": "JINDALSTEL.NS"
+  },
+  {
+    "providedName": "Muthoot Finance Ltd",
+    "symbol": "MUTHOOTFIN",
+    "name": "Muthoot Finance",
+    "sector": "Financials",
+    "yahooSymbol": "MUTHOOTFIN.NS"
+  },
+  {
+    "providedName": "Firstsource Solutions Ltd",
+    "symbol": "FSL",
+    "name": "Firstsource Solutions",
+    "sector": "IT",
+    "yahooSymbol": "FSL.NS"
+  },
+  {
+    "providedName": "Ramkrishna Forgings Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "UltraTech Cement Ltd",
+    "symbol": "ULTRACEMCO",
+    "name": "UltraTech Cement",
+    "sector": "Infra",
+    "yahooSymbol": "ULTRACEMCO.NS"
+  },
+  {
+    "providedName": "Coforge Ltd",
+    "symbol": "COFORGE",
+    "name": "Coforge",
+    "sector": "IT",
+    "yahooSymbol": "COFORGE.NS"
+  },
+  {
+    "providedName": "Yes Bank Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Solar Industries India Ltd",
+    "symbol": "SOLARA",
+    "name": "Solara Active Pharma",
+    "sector": "Pharma",
+    "yahooSymbol": "SOLARA.NS"
+  },
+  {
+    "providedName": "Multi Commodity Exchange of India Ltd",
+    "symbol": "MCX",
+    "name": "Multi Commodity Exchange",
+    "sector": "Financials",
+    "yahooSymbol": "MCX.NS"
+  },
+  {
+    "providedName": "Syngene International Ltd",
+    "symbol": "SYNGENE",
+    "name": "Syngene International",
+    "sector": "Pharma",
+    "yahooSymbol": "SYNGENE.NS"
+  },
+  {
+    "providedName": "Bikaji Foods International Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Chalet Hotels Ltd",
+    "symbol": "CHALET",
+    "name": "Chalet Hotels",
+    "sector": "Consumer",
+    "yahooSymbol": "CHALET.NS"
+  },
+  {
+    "providedName": "Polycab India Ltd",
+    "symbol": "POLYCAB",
+    "name": "Polycab India",
+    "sector": "Consumer",
+    "yahooSymbol": "POLYCAB.NS"
+  },
+  {
+    "providedName": "Nuvama Wealth Management Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Rail Vikas Nigam Ltd",
+    "symbol": "RVNL",
+    "name": "Rail Vikas Nigam",
+    "sector": "Infra",
+    "yahooSymbol": "RVNL.NS"
+  },
+  {
+    "providedName": "Godawari Power & Ispat Ltd",
+    "symbol": "GPIL",
+    "name": "Godawari Power & Ispat",
+    "sector": "Metals",
+    "yahooSymbol": "GPIL.NS"
+  },
+  {
+    "providedName": "Gallantt Ispat Ltd.",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Prime Focus Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "KEC International Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "JSW Energy Ltd",
+    "symbol": "JSWENERGY",
+    "name": "JSW Energy",
+    "sector": "Power",
+    "yahooSymbol": "JSWENERGY.NS"
+  },
+  {
+    "providedName": "Action Construction Equipment Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "L T Foods Ltd",
+    "symbol": "LTFOODS",
+    "name": "LT Foods",
+    "sector": "FMCG",
+    "yahooSymbol": "LTFOODS.NS"
+  },
+  {
+    "providedName": "Sobha Ltd",
+    "symbol": "SOBHA",
+    "name": "Sobha Limited",
+    "sector": "Infra",
+    "yahooSymbol": "SOBHA.NS"
+  },
+  {
+    "providedName": "CIE Automotive India Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Astral Ltd",
+    "symbol": "ASTRAL",
+    "name": "Astral Limited",
+    "sector": "Consumer",
+    "yahooSymbol": "ASTRAL.NS"
+  },
+  {
+    "providedName": "Craftsman Automation Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "K P R Mill Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Motilal Oswal Financial Services Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "ZF Commercial Vehicle Control System India Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Bajaj Auto Ltd",
+    "symbol": "BAJAJ-AUTO",
+    "name": "Bajaj Auto",
+    "sector": "Auto",
+    "yahooSymbol": "BAJAJ-AUTO.NS"
+  },
+  {
+    "providedName": "Bajaj Finserv Ltd",
+    "symbol": "BAJAJFINSV",
+    "name": "Bajaj Finserv",
+    "sector": "Financials",
+    "yahooSymbol": "BAJAJFINSV.NS"
+  },
+  {
+    "providedName": "eClerx Services Ltd",
+    "symbol": "ECLERX",
+    "name": "eClerx Services",
+    "sector": "IT",
+    "yahooSymbol": "ECLERX.NS"
+  },
+  {
+    "providedName": "Brigade Enterprises Ltd",
+    "symbol": "BRIGADE",
+    "name": "Brigade Enterprises",
+    "sector": "Infra",
+    "yahooSymbol": "BRIGADE.NS"
+  },
+  {
+    "providedName": "Transformers & Rectifiers India Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "IRB Infrastructure Developers Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Tata Capital Ltd",
+    "symbol": "TATACHEM",
+    "name": "Tata Chemicals",
+    "sector": "Chemicals",
+    "yahooSymbol": "TATACHEM.NS"
+  },
+  {
+    "providedName": "R R Kabel Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Canara HSBC Life Insurance Company Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Authum Investment & Infrastructure Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Interglobe Aviation Ltd",
+    "symbol": "INDIGO",
+    "name": "InterGlobe Aviation",
+    "sector": "Consumer",
+    "yahooSymbol": "INDIGO.NS"
+  },
+  {
+    "providedName": "Kirloskar Oil Engines Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Star Health & Allied Insurance Company Ltd",
+    "symbol": "STARHEALTH",
+    "name": "Star Health Insurance",
+    "sector": "Pharma",
+    "yahooSymbol": "STARHEALTH.NS"
+  },
+  {
+    "providedName": "Anthem Biosciences Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "HDB Financial Services Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Global Health Ltd",
+    "symbol": "GLOBALHOSP",
+    "name": "Global Health (Medanta)",
+    "sector": "Pharma",
+    "yahooSymbol": "MEDANTA.NS"
+  },
+  {
+    "providedName": "AU Small Finance Bank Ltd",
+    "symbol": "AUBANK",
+    "name": "AU Small Finance Bank",
+    "sector": "Banking",
+    "yahooSymbol": "AUBANK.NS"
+  },
+  {
+    "providedName": "Krishna Institute of Medical Sciences Ltd",
+    "symbol": "KIMS",
+    "name": "Krishna Institute of Medical",
+    "sector": "Pharma",
+    "yahooSymbol": "KIMS.NS"
+  },
+  {
+    "providedName": "Tega Industries Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Jyoti CNC Automation Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Gravita India Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Tejas Networks Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Lodha Developers Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Dixon Technologies (India) Ltd",
+    "symbol": "DIXON",
+    "name": "Dixon Technologies (India)",
+    "sector": "Consumer",
+    "yahooSymbol": "DIXON.NS"
+  },
+  {
+    "providedName": "Rainbow Childrens Medicare Ltd",
+    "symbol": "RAINBOW",
+    "name": "Rainbow Children's Medicare",
+    "sector": "Pharma",
+    "yahooSymbol": "RAINBOW.NS"
+  },
+  {
+    "providedName": "Sammaan Capital Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "CreditAccess Grameen Ltd",
+    "symbol": "CREDITACC",
+    "name": "CreditAccess Grameen",
+    "sector": "Financials",
+    "yahooSymbol": "CREDITACC.NS"
+  },
+  {
+    "providedName": "Techno Electric & Engineering Company Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Oberoi Realty Ltd",
+    "symbol": "OBEROIRLTY",
+    "name": "Oberoi Realty",
+    "sector": "Infra",
+    "yahooSymbol": "OBEROIRLTY.NS"
+  },
+  {
+    "providedName": "PG Electroplast Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Mankind Pharma Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Niva Bupa Health Insurance Company Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Angel One Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Belrise Industries Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Adani Total Gas Ltd",
+    "symbol": "ADANIPOWER",
+    "name": "Adani Power",
+    "sector": "Power",
+    "yahooSymbol": "ADANIPOWER.NS"
+  },
+  {
+    "providedName": "Jupiter Wagons Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Waaree Energies Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Latent View Analytics Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Data Patterns (India) Ltd",
+    "symbol": "DATAPATTNS",
+    "name": "Data Patterns India",
+    "sector": "IT",
+    "yahooSymbol": "DATAPATTNS.NS"
+  },
+  {
+    "providedName": "JSW Cement Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "One 97 Communications Ltd",
+    "symbol": "PAYTM",
+    "name": "One 97 Communications",
+    "sector": "Financials",
+    "yahooSymbol": "PAYTM.NS"
+  },
+  {
+    "providedName": "Indus Towers Ltd",
+    "symbol": "INDUSTOWER",
+    "name": "Indus Towers",
+    "sector": "Telecom",
+    "yahooSymbol": "INDUSTOWER.NS"
+  },
+  {
+    "providedName": "Endurance Technologies Ltd",
+    "symbol": "ENDURANCE",
+    "name": "Endurance Technologies",
+    "sector": "Auto",
+    "yahooSymbol": "ENDURANCE.NS"
+  },
+  {
+    "providedName": "Lemon Tree Hotels Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "RHI Magnesita India Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Aditya Birla Capital Ltd",
+    "symbol": "ABCAPITAL",
+    "name": "Aditya Birla Capital",
+    "sector": "Financials",
+    "yahooSymbol": "ABCAPITAL.NS"
+  },
+  {
+    "providedName": "Aditya Birla Fashion & Retail Ltd",
+    "symbol": "BIRLACORPN",
+    "name": "Birla Corporation",
+    "sector": "Infra",
+    "yahooSymbol": "BIRLACORPN.NS"
+  },
+  {
+    "providedName": "Avenue Supermarts Ltd",
+    "symbol": "DMART",
+    "name": "Avenue Supermarts",
+    "sector": "Consumer",
+    "yahooSymbol": "DMART.NS"
+  },
+  {
+    "providedName": "Tube Investments of India Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "L&T Finance Ltd",
+    "symbol": "LTF",
+    "name": "L&T Finance",
+    "sector": "Financials",
+    "yahooSymbol": "LTF.NS"
+  },
+  {
+    "providedName": "Schneider Electric Infrastructure Ltd",
+    "symbol": "SCHNEIDER",
+    "name": "Schneider Electric",
+    "sector": "Power",
+    "yahooSymbol": "SCHNEIDER.NS"
+  },
+  {
+    "providedName": "Dr Lal Pathlabs Ltd",
+    "symbol": "LALPATHLAB",
+    "name": "Dr. Lal Path Labs",
+    "sector": "Pharma",
+    "yahooSymbol": "LALPATHLAB.NS"
+  },
+  {
+    "providedName": "PB Fintech Ltd",
+    "symbol": "POLICYBZR",
+    "name": "PB Fintech (PolicyBazaar)",
+    "sector": "Financials",
+    "yahooSymbol": "POLICYBZR.NS"
+  },
+  {
+    "providedName": "Kalyan Jewellers India Ltd",
+    "symbol": "KALYANKJIL",
+    "name": "Kalyan Jewellers",
+    "sector": "Consumer",
+    "yahooSymbol": "KALYANKJIL.NS"
+  },
+  {
+    "providedName": "JSW Infrastructure Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Aptus Value Housing Finance India Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Aditya Infotech Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Indegene Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Inox Wind Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "L&T Technology Services Ltd",
+    "symbol": "LTF",
+    "name": "L&T Finance",
+    "sector": "Financials",
+    "yahooSymbol": "LTF.NS"
+  },
+  {
+    "providedName": "Narayana Hrudayalaya Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Shyam Metalics & Energy Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "AAVAS Financiers Ltd",
+    "symbol": "AAVAS",
+    "name": "Aavas Financiers",
+    "sector": "Financials",
+    "yahooSymbol": "AAVAS.NS"
+  },
+  {
+    "providedName": "Laurus Labs Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Amber Enterprises India Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Computer Age Management Services Ltd",
+    "symbol": "CAMS",
+    "name": "Computer Age Management",
+    "sector": "IT",
+    "yahooSymbol": "CAMS.NS"
+  },
+  {
+    "providedName": "IDFC First Bank Ltd",
+    "symbol": "IDFCFIRSTB",
+    "name": "IDFC First Bank",
+    "sector": "Banking",
+    "yahooSymbol": "IDFCFIRSTB.NS"
+  },
+  {
+    "providedName": "Intellect Design Arena Ltd",
+    "symbol": "INTELLECT",
+    "name": "Intellect Design Arena",
+    "sector": "IT",
+    "yahooSymbol": "INTELLECT.NS"
+  },
+  {
+    "providedName": "Cartrade Tech Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Crompton Greaves Consumer Electricals Ltd",
+    "symbol": "CROMPTON",
+    "name": "Crompton Greaves",
+    "sector": "Consumer",
+    "yahooSymbol": "CROMPTON.NS"
+  },
+  {
+    "providedName": "360 ONE WAM Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "ERIS Lifesciences Ltd",
+    "symbol": "ERIS",
+    "name": "Eris Lifesciences",
+    "sector": "Pharma",
+    "yahooSymbol": "ERIS.NS"
+  },
+  {
+    "providedName": "Adani Energy Solutions Ltd",
+    "symbol": "ADANIPOWER",
+    "name": "Adani Power",
+    "sector": "Power",
+    "yahooSymbol": "ADANIPOWER.NS"
+  },
+  {
+    "providedName": "Clean Science & Technology Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Anupam Rasayan India Ltd",
+    "symbol": "ANUPAM",
+    "name": "Anupam Rasayan India",
+    "sector": "Chemicals",
+    "yahooSymbol": "ANURAS.NS"
+  },
+  {
+    "providedName": "Anand Rathi Wealth Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Bajaj Housing Finance Ltd",
+    "symbol": "BAJAJHLDNG",
+    "name": "Bajaj Holdings",
+    "sector": "Financials",
+    "yahooSymbol": "BAJAJHLDNG.NS"
+  },
+  {
+    "providedName": "Bandhan Bank Ltd",
+    "symbol": "BANDHANBNK",
+    "name": "Bandhan Bank",
+    "sector": "Banking",
+    "yahooSymbol": "BANDHANBNK.NS"
+  },
+  {
+    "providedName": "Eternal Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Sai Life Sciences Ltd",
+    "symbol": "SAIL",
+    "name": "Steel Authority of India",
+    "sector": "Metals",
+    "yahooSymbol": "SAIL.NS"
+  },
+  {
+    "providedName": "Swiggy Ltd",
+    "symbol": "SWIGGY",
+    "name": "Swiggy Limited",
+    "sector": "Consumer",
+    "yahooSymbol": "SWIGGY.NS"
+  },
+  {
+    "providedName": "Brainbees Solutions Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Delhivery Ltd",
+    "symbol": "DELHIVERY",
+    "name": "Delhivery Limited",
+    "sector": "Consumer",
+    "yahooSymbol": "DELHIVERY.NS"
+  },
+  {
+    "providedName": "Allied Blenders & Distillers Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Aster DM Healthcare Ltd",
+    "symbol": "ASTERDM",
+    "name": "Aster DM Healthcare",
+    "sector": "Pharma",
+    "yahooSymbol": "ASTERDM.NS"
+  },
+  {
+    "providedName": "Lenskart Solutions Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Indiamart Intermesh Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Urban Company Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "TBO Tek Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Travel Food Services Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Adani Green Energy Ltd",
+    "symbol": "ADANIGREEN",
+    "name": "Adani Green Energy",
+    "sector": "Power",
+    "yahooSymbol": "ADANIGREEN.NS"
+  },
+  {
+    "providedName": "Dalmia Bharat Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Indian Energy Exchange Ltd",
+    "symbol": "INDHOTEL",
+    "name": "Indian Hotels Company",
+    "sector": "Consumer",
+    "yahooSymbol": "INDHOTEL.NS"
+  },
+  {
+    "providedName": "ACME Solar Holdings Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Inventurus Knowledge Solutions Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "SBFC Finance Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Home First Finance Company India Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "KPIT Technologies Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Sapphire Foods India Ltd",
+    "symbol": "SAPPHIRE",
+    "name": "Sapphire Foods",
+    "sector": "Consumer",
+    "yahooSymbol": "SAPPHIRE.NS"
+  },
+  {
+    "providedName": "Concord Biotech Ltd",
+    "symbol": "CONCOR",
+    "name": "Container Corp of India",
+    "sector": "Infra",
+    "yahooSymbol": "CONCOR.NS"
+  },
+  {
+    "providedName": "Emmvee Photovoltaic Power Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Go Digit General Insurance Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Acutaas Chemicals Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Affle 3i Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "KFin Technologies Ltd",
+    "symbol": "KFINTECH",
+    "name": "KFin Technologies",
+    "sector": "IT",
+    "yahooSymbol": "KFINTECH.NS"
+  },
+  {
+    "providedName": "Aegis Vopak Terminals Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Gujarat Fluorochemicals Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Hitachi Energy India Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Cohance Lifesciences Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Jubilant Ingrevia Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Ather Energy Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Ola Electric Mobility Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Vijaya Diagnostic Centre Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "NMDC Steel Ltd",
+    "symbol": "NMDC",
+    "name": "NMDC Limited",
+    "sector": "Metals",
+    "yahooSymbol": "NMDC.NS"
+  },
+  {
+    "providedName": "FSN E-Commerce Ventures Ltd",
+    "symbol": "NYKAA",
+    "name": "FSN E-Commerce",
+    "sector": "Consumer",
+    "yahooSymbol": "NYKAA.NS"
+  },
+  {
+    "providedName": "C.E. Info Systems Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Piramal Pharma Ltd",
+    "symbol": "PIIND",
+    "name": "Piramal Enterprises",
+    "sector": "Financials",
+    "yahooSymbol": "PIIND.NS"
+  },
+  {
+    "providedName": "Syrma SGS Technology Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Motherson Sumi Wiring India Ltd",
+    "symbol": "MOTHERSON",
+    "name": "Motherson Sumi Systems",
+    "sector": "Auto",
+    "yahooSymbol": "MOTHERSON.NS"
+  },
+  {
+    "providedName": "Kaynes Technology India Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Premier Energies Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Pine Labs Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "SignatureGlobal India Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Honasa Consumer Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Blue Jet Healthcare Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Meesho Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Billionbrains Garage Ventures Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Physicswallah Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Leela Palaces Hotels & Resorts Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Netweb Technologies India Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "International Gemological Institute Limited",
+    "symbol": "TI",
+    "name": "Tilaknagar Industries",
+    "sector": "FMCG",
+    "yahooSymbol": "TI.NS"
+  },
+  {
+    "providedName": "Tenneco Clean Air India Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "DOMS Industries Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Vishal Mega Mart Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "OneSource Specialty Pharma Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "ITC Hotels Ltd",
+    "symbol": "ITC",
+    "name": "ITC Limited",
+    "sector": "FMCG",
+    "yahooSymbol": "ITC.NS"
+  },
+  {
+    "providedName": "Aditya Birla Lifestyle Brands Ltd",
+    "symbol": "ABCAPITAL",
+    "name": "Aditya Birla Capital",
+    "sector": "Financials",
+    "yahooSymbol": "ABCAPITAL.NS"
+  },
+  {
+    "providedName": "Tata Motors Ltd",
+    "symbol": "TATACHEM",
+    "name": "Tata Chemicals",
+    "sector": "Chemicals",
+    "yahooSymbol": "TATACHEM.NS"
+  },
+  {
+    "providedName": "Sagility Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  },
+  {
+    "providedName": "Siemens Energy India Ltd",
+    "symbol": "SIEMENS",
+    "name": "Siemens India",
+    "sector": "Infra",
+    "yahooSymbol": "SIEMENS.NS"
+  },
+  {
+    "providedName": "NTPC Green Energy Ltd",
+    "symbol": "NTPC",
+    "name": "NTPC Limited",
+    "sector": "Power",
+    "yahooSymbol": "NTPC.NS"
+  },
+  {
+    "providedName": "Jain Resource Recycling Ltd",
+    "symbol": "LT",
+    "name": "Larsen & Toubro",
+    "sector": "Infra",
+    "yahooSymbol": "LT.NS"
+  }
+]
