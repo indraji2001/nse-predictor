@@ -101,7 +101,8 @@ export function StockChart({ candles, indicators, symbol }: Props) {
   const [showEMA, setShowEMA] = useState(true)
   const [showBB, setShowBB] = useState(true)
   const [showVolume, setShowVolume] = useState(true)
-  const [chartType, setChartType] = useState<'line' | 'candle'>('candle') // P3-14: candlestick option
+  const [showFib, setShowFib] = useState(false)  // Fibonacci retracement overlay
+  const [chartType, setChartType] = useState<'line' | 'candle'>('candle')
   const [range, setRange] = useState<'1M' | '3M' | '6M' | '1Y' | '2Y' | '3Y' | '5Y' | '10Y'>('3M')
   const [viewSource, setViewSource] = useState<'custom' | 'tradingview'>('custom')
 
@@ -158,13 +159,29 @@ export function StockChart({ candles, indicators, symbol }: Props) {
     bbUpper: bbSeries.upper[i],
     bbLower: bbSeries.lower[i],
     bbMiddle: bbSeries.middle[i],
-    // For Bollinger Band shaded area (need single value for Area with range)
     bbRange: bbSeries.upper[i] != null && bbSeries.lower[i] != null
       ? [bbSeries.lower[i], bbSeries.upper[i]] as [number, number]
       : null,
   }))
 
+  // Fibonacci levels from the VISIBLE window's high/low range
+  // (matches how traders draw Fib retracements on screen — not all-time range)
+  const fibLevels = useMemo(() => {
+    let high = -Infinity, low = Infinity
+    for (const d of data) { if (d.high > high) high = d.high; if (d.low < low) low = d.low }
+    if (high === -Infinity || high === low) return null
+    const diff = high - low
+    return [
+      { label: '78.6%', val: +(high - 0.786 * diff).toFixed(2), color: '#f43f5e' },
+      { label: '61.8%', val: +(high - 0.618 * diff).toFixed(2), color: '#f97316' },
+      { label: '50.0%', val: +(high - 0.500 * diff).toFixed(2), color: '#eab308' },
+      { label: '38.2%', val: +(high - 0.382 * diff).toFixed(2), color: '#22c55e' },
+      { label: '23.6%', val: +(high - 0.236 * diff).toFixed(2), color: '#3b82f6' },
+    ]
+  }, [data])
+
   const lastClose = candles[candles.length - 1].close
+
 
   return (
     <Card className="border-border/60">
@@ -229,6 +246,16 @@ export function StockChart({ candles, indicators, symbol }: Props) {
                     title="Volume bars"
                   >
                     Vol
+                  </ToggleGroupItem>
+                  <ToggleGroupItem
+                    value="fib"
+                    data-state={showFib ? 'on' : 'off'}
+                    onClick={() => setShowFib((v) => !v)}
+                    className="text-[10px] h-7 px-2"
+                    title="Fibonacci Retracement levels (23.6%, 38.2%, 50%, 61.8%, 78.6%) of visible range"
+                    style={showFib ? { color: '#f97316', fontWeight: 700 } : {}}
+                  >
+                    Fib
                   </ToggleGroupItem>
                 </ToggleGroup>
               </>
@@ -339,6 +366,25 @@ export function StockChart({ candles, indicators, symbol }: Props) {
 
                   {/* Last close reference */}
                   <ReferenceLine y={lastClose} stroke={COLORS.close} strokeDasharray="4 2" />
+
+                  {/* ── Fibonacci Retracement Overlays ── */}
+                  {showFib && fibLevels && fibLevels.map((fl) => (
+                    <ReferenceLine
+                      key={fl.label}
+                      y={fl.val}
+                      stroke={fl.color}
+                      strokeDasharray="5 3"
+                      strokeWidth={1.5}
+                      strokeOpacity={0.85}
+                      label={{
+                        value: `${fl.label}  ₹${fl.val.toFixed(0)}`,
+                        position: 'insideRight',
+                        fontSize: 9,
+                        fill: fl.color,
+                        fontWeight: 600,
+                      }}
+                    />
+                  ))}
                 </ComposedChart>
               </ResponsiveContainer>
             </div>
@@ -414,6 +460,12 @@ export function StockChart({ candles, indicators, symbol }: Props) {
                   <span className="inline-block w-3 h-2 rounded-sm" style={{ backgroundColor: COLORS.volume, opacity: 0.7 }} /> Volume
                 </span>
               )}
+              {showFib && fibLevels && fibLevels.map((fl) => (
+                <span key={fl.label} className="flex items-center gap-1">
+                  <span className="inline-block w-3 h-0.5" style={{ borderTop: `2px dashed ${fl.color}` }} />
+                  <span style={{ color: fl.color }}>{fl.label}</span>
+                </span>
+              ))}
             </div>
           </>
         )}

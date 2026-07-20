@@ -27,6 +27,7 @@ interface HarmonicScanEntry {
   target1: number
   target2: number
   riskReward: number
+  fibConfluence: string | null  // Fibonacci level overlapping PRZ midpoint, null if none
 }
 
 interface ScanResult {
