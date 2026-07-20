@@ -165,35 +165,27 @@ export function StockChart({ candles, indicators, symbol }: Props) {
   }))
 
   // ─────────────────────────────────────────────────────────────────────────
-  // Fibonacci Retracement — VERIFIED formula (StockCharts, Zerodha Varsity)
-  //
-  // UPTREND (this app shows BUY signals → uptrend context):
-  //   Tool is drawn: SWING LOW → SWING HIGH
-  //   Support levels during pullback = High − (Range × Ratio)
-  //
-  //   23.6% level = High − 0.236 × Range  → SHALLOWEST pullback (near High)
-  //   38.2% level = High − 0.382 × Range  → moderate support
-  //   50.0% level = High − 0.500 × Range  → mid-point (Dow Theory, not strict Fib)
-  //   61.8% level = High − 0.618 × Range  → GOLDEN RATIO — strongest support
-  //   78.6% level = High − 0.786 × Range  → DEEPEST pullback (near Low)
-  //
-  // Source: StockCharts ChartSchool, Zerodha Varsity Chapter 16
+  // Fibonacci Retracement — uses the SAME pre-computed indicators.fib values
+  // as the Indicator Panel so both displays show IDENTICAL prices.
+  // Formula (StockCharts/Zerodha verified, uptrend):
+  //   Level = High − (Range × Ratio)
+  //   23.6% = shallowest pullback (near High)
+  //   61.8% ★ = Golden Ratio — strongest support (KEY level)
+  //   78.6% = deepest retracement (near Low)
   // ─────────────────────────────────────────────────────────────────────────
   const fibLevels = useMemo(() => {
-    let high = -Infinity, low = Infinity
-    for (const d of data) { if (d.high > high) high = d.high; if (d.low < low) low = d.low }
-    if (high === -Infinity || high === low) return null
-    const diff = high - low
+    const f = indicators.fib
+    if (!f) return null
     return [
-      { label: '0%   (High)', val: +high.toFixed(2),                   color: '#94a3b8', dash: '2 4' as const },
-      { label: '23.6%',       val: +(high - 0.236 * diff).toFixed(2),  color: '#3b82f6', dash: '5 3' as const },  // blue  — shallow pullback
-      { label: '38.2%',       val: +(high - 0.382 * diff).toFixed(2),  color: '#22c55e', dash: '5 3' as const },  // green
-      { label: '50.0%',       val: +(high - 0.500 * diff).toFixed(2),  color: '#eab308', dash: '5 3' as const },  // yellow — midpoint
-      { label: '61.8% ★',    val: +(high - 0.618 * diff).toFixed(2),  color: '#f97316', dash: '8 3' as const },  // orange — GOLDEN RATIO (thickest)
-      { label: '78.6%',       val: +(high - 0.786 * diff).toFixed(2),  color: '#f43f5e', dash: '5 3' as const },  // rose  — deep retracement
-      { label: '100% (Low)',  val: +low.toFixed(2),                    color: '#94a3b8', dash: '2 4' as const },
+      { label: '0%   (High)', val: +f.high.toFixed(2),    color: '#94a3b8', dash: '2 4' as const },
+      { label: '23.6%',       val: +f.fib236.toFixed(2),  color: '#3b82f6', dash: '5 3' as const },
+      { label: '38.2%',       val: +f.fib382.toFixed(2),  color: '#22c55e', dash: '5 3' as const },
+      { label: '50.0%',       val: +f.fib500.toFixed(2),  color: '#eab308', dash: '5 3' as const },
+      { label: '61.8% ★',    val: +f.fib618.toFixed(2),  color: '#f97316', dash: '8 3' as const },
+      { label: '78.6%',       val: +f.fib786.toFixed(2),  color: '#f43f5e', dash: '5 3' as const },
+      { label: '100% (Low)',  val: +f.low.toFixed(2),     color: '#94a3b8', dash: '2 4' as const },
     ]
-  }, [data])
+  }, [indicators.fib])
 
   const lastClose = candles[candles.length - 1].close
 
