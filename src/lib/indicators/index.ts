@@ -676,7 +676,11 @@ export function detectFibConfluence(
   candles: Candle[],
   ema50: number,
   ema200: number,
-  swings: SwingLevels
+  swings: SwingLevels,
+  // Optional: harmonic pattern PRZ zones to include as reference lines.
+  // When a harmonic D-point (PRZ) overlaps a Fibonacci level, it creates a
+  // much higher-conviction reversal zone than either signal alone.
+  harmonicPRZs?: Array<{ name: string; przLow: number; przHigh: number; direction: string }>
 ): FibConfluence {
   const currentPrice = candles[candles.length - 1]?.close ?? 0
   if (currentPrice === 0) return { isActive: false, levels: [], priceZone: 0, distancePct: 0 }
@@ -697,10 +701,26 @@ export function detectFibConfluence(
     { name: 'EMA200', val: ema200 }
   ]
 
-  // Add the closest swing supports
+  // Add swing supports
   swings.supports.forEach((s, idx) => {
     refLines.push({ name: `Swing Support ${idx + 1}`, val: s })
   })
+
+  // Add harmonic PRZ midpoints as reference lines.
+  // Only include patterns whose PRZ is in a reasonable range (not wildly far).
+  if (harmonicPRZs && harmonicPRZs.length > 0) {
+    harmonicPRZs.forEach((h) => {
+      if (h.przLow > 0 && h.przHigh > 0) {
+        const przMid = (h.przLow + h.przHigh) / 2
+        // Guard: only add if PRZ midpoint is within 8% of current price
+        // (avoids distantly-forming patterns polluting the confluence check)
+        const distToPrice = Math.abs(currentPrice - przMid) / currentPrice * 100
+        if (distToPrice <= 8) {
+          refLines.push({ name: `${h.direction} ${h.name} PRZ`, val: przMid })
+        }
+      }
+    })
+  }
 
   // We look for overlaps: two reference lines that are within 1.2% of each other
   // AND the current price is within 1.5% of this overlap zone.
@@ -823,6 +843,11 @@ export function computeIndicators(candles: Candle[]): IndicatorSnapshot {
   const avg250 = allVol.slice(lookback250).reduce((s, x) => s + x, 0) / Math.max(1, last - lookback250 + 1)
   const volumeAccumulation = avg250 > 0 ? avg60 / avg250 : 1
 
+  // Compute harmonics first so their PRZ zones can enrich the Fibonacci confluence check.
+  // This enables detection of: "Bullish Bat PRZ coincides with 61.8% Fibonacci" — the
+  // highest-conviction reversal zone in harmonic trading (PRZ + Fib confluence).
+  const harmonicsResult = detectHarmonicPatterns(candles)
+
   return {
     price: c[last],
     rsi14: v(rsiArr),
@@ -871,7 +896,11 @@ export function computeIndicators(candles: Candle[]): IndicatorSnapshot {
     ema200Rising,
     pctFrom250High,
     fib: computeFibonacci(candles, 100),
-    fibConfluence: detectFibConfluence(candles, v(ema50), v(ema200), swings),
-    harmonics: detectHarmonicPatterns(candles),
+    // Harmonics computed first so their PRZ zones feed into the Fibonacci confluence check
+    harmonics: harmonicsResult,
+    fibConfluence: detectFibConfluence(
+      candles, v(ema50), v(ema200), swings,
+      harmonicsResult?.map((h) => ({ name: h.name, przLow: h.przLow, przHigh: h.przHigh, direction: h.direction }))
+    ),
   }
 }
