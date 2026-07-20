@@ -111,8 +111,22 @@ export function StockDetailDialog({ symbol, onClose }: Props) {
   return (
     <Dialog open={symbol !== null} onOpenChange={(o) => !o && onClose()}>
       <DialogContent
-        className="w-[80vw] h-[85vh] max-w-[95vw] max-h-[95vh] overflow-auto p-0 gap-0"
-        style={{ resize: 'both', minWidth: '420px', minHeight: '380px' }}
+        className="overflow-auto p-0 gap-0"
+        style={{
+          // Override shadcn's transform-based centering — it conflicts with
+          // CSS resize (resize works from bottom-right but transform recenters)
+          position: 'fixed',
+          top: '5%',
+          left: '5%',
+          transform: 'none',          // cancel the default translate(-50%,-50%)
+          width: '90vw',
+          height: '88vh',
+          maxWidth: '98vw',
+          maxHeight: '96vh',
+          minWidth: '500px',
+          minHeight: '420px',
+          resize: 'both',             // native drag-to-resize from bottom-right corner
+        }}
       >
         <DialogHeader className="p-4 pb-2 border-b border-border/60">
           <DialogTitle className="flex items-center gap-2 flex-wrap text-base">
