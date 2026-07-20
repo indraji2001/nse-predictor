@@ -307,6 +307,11 @@ function StockRow({ entry, onPaperTrade }: { entry: HarmonicScanEntry; onPaperTr
               : p.rsiBearish
               ? <span className="text-xs font-bold px-1.5 py-0.5 rounded" style={{ background: '#dc262620', color: '#f87171', border: '1px solid #dc262640' }}>RSI {p.rsi}</span>
               : <span className="text-xs px-1.5 py-0.5 rounded" style={{ background: '#1e293b', color: '#64748b' }}>RSI {p.rsi}</span>}
+            {entry.fibConfluence &&
+              <span className="text-xs font-bold px-1.5 py-0.5 rounded" style={{ background: '#7c3aed20', color: '#a78bfa', border: '1px solid #7c3aed40' }}
+                title={`PRZ midpoint overlaps ${entry.fibConfluence}`}>
+                Fib∩PRZ
+              </span>}
           </div>
         </td>
         <td className="px-4 py-3">
@@ -381,6 +386,7 @@ function StockRow({ entry, onPaperTrade }: { entry: HarmonicScanEntry; onPaperTr
                       { label: 'D retrace/ext', val: `${(p.ratioXAD * 100).toFixed(1)}%` },
                       { label: 'RSI(14)', val: `${p.rsi}`, special: p.rsiBullish ? '#34d399' : p.rsiBearish ? '#f87171' : '#94a3b8' },
                       { label: 'RSI Confluence', val: p.rsiBullish ? '\u2705 Bullish \u226440' : p.rsiBearish ? '\u2705 Bearish \u226560' : '\u26a0\ufe0f None', special: (p.rsiBullish || p.rsiBearish) ? '#34d399' : '#f59e0b' },
+                      { label: 'Fib \u2229 PRZ', val: entry.fibConfluence ? `\u2705 ${entry.fibConfluence}` : '\u2014 No overlap', special: entry.fibConfluence ? '#a78bfa' : '#475569' },
                       { label: 'Status', val: p.status, special: p.status === 'FORMING' ? '#f59e0b' : '#6366f1' },
                     ].map(row => (
                       <div key={row.label} className="flex justify-between text-sm">

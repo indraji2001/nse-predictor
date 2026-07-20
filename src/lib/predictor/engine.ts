@@ -176,16 +176,14 @@ function evaluateBTST(series: StockSeries, ind: IndicatorSnapshot, isNiftyBullis
     direction: ind.ret5d > 0.5 ? 'bullish' : ind.ret5d < -0.5 ? 'bearish' : 'neutral',
   })
 
-  // 9. Fibonacci Retracement support or Confluence Zone check
-  if (ind.fibConfluence && ind.fibConfluence.isActive) {
-    factors.push({
-      name: 'Fibonacci confluence zone',
-      detail: `Bounce off overlap of: ${ind.fibConfluence.levels.join(" + ")} (dist: ${ind.fibConfluence.distancePct}%)`,
-      weight: 0.18,
-      hit: true,
-      direction: 'bullish',
-    })
+  // 9. Unified Harmonic + Fibonacci + RSI Confluence
+  // One factor that reports whatever combination is applicable:
+  // COMPLETED in PRZ / FORMING approaching / Fib overlap / RSI confluence
+  const unifiedFactor = buildUnifiedConfluenceFactor(ind, ind.price, 'bullish')
+  if (unifiedFactor) {
+    factors.push(unifiedFactor)
   } else if (ind.fib) {
+    // Fallback: simple Fibonacci support bounce when no harmonic pattern present
     const isFibSupport = ind.fib.closestLevel === '38.2%' || ind.fib.closestLevel === '50.0%' || ind.fib.closestLevel === '61.8%'
     const isBouncing = last.close >= last.open || (c[c.length - 2] && last.close > c[c.length - 2].close)
     const isClose = ind.fib.distancePct <= 1.5
@@ -197,10 +195,6 @@ function evaluateBTST(series: StockSeries, ind: IndicatorSnapshot, isNiftyBullis
       direction: isFibSupport && isBouncing && isClose ? 'bullish' : 'neutral',
     })
   }
-
-  // 10. Harmonic Pattern PRZ check
-  const harmonicFactor = buildHarmonicFactor(ind, ind.price)
-  if (harmonicFactor) factors.push(harmonicFactor)
 
   return finalizeSignal(series, ind, 'BTST', factors, {
     targetRr1: 0.8,
@@ -304,15 +298,10 @@ function evaluateShortTerm(series: StockSeries, ind: IndicatorSnapshot, isNiftyB
     direction: ind.ret20d > 2 ? 'bullish' : ind.ret20d < -2 ? 'bearish' : 'neutral',
   })
 
-  // 10. Fibonacci Retracement support or Confluence Zone check
-  if (ind.fibConfluence && ind.fibConfluence.isActive) {
-    factors.push({
-      name: 'Fibonacci confluence zone',
-      detail: `Bounce off overlap of: ${ind.fibConfluence.levels.join(" + ")} (dist: ${ind.fibConfluence.distancePct}%)`,
-      weight: 0.18,
-      hit: true,
-      direction: 'bullish',
-    })
+  // 10. Unified Harmonic + Fibonacci + RSI Confluence
+  const unifiedFactorST = buildUnifiedConfluenceFactor(ind, ind.price, 'bullish')
+  if (unifiedFactorST) {
+    factors.push(unifiedFactorST)
   } else if (ind.fib) {
     const isFibSupport = ind.fib.closestLevel === '38.2%' || ind.fib.closestLevel === '50.0%' || ind.fib.closestLevel === '61.8%'
     const isBouncing = last.close >= last.open || (c[c.length - 2] && last.close > c[c.length - 2].close)
@@ -325,10 +314,6 @@ function evaluateShortTerm(series: StockSeries, ind: IndicatorSnapshot, isNiftyB
       direction: isFibSupport && isBouncing && isClose ? 'bullish' : 'neutral',
     })
   }
-
-  // 11. Harmonic Pattern PRZ check
-  const harmonicFactorST = buildHarmonicFactor(ind, ind.price)
-  if (harmonicFactorST) factors.push(harmonicFactorST)
 
   return finalizeSignal(series, ind, 'SHORT_TERM', factors, {
     targetRr1: 1.5,
@@ -473,15 +458,10 @@ function evaluateMidterm(series: StockSeries, ind: IndicatorSnapshot, isNiftyBul
     }
   }
 
-  // 11. Fibonacci Retracement support or Confluence Zone check
-  if (ind.fibConfluence && ind.fibConfluence.isActive) {
-    factors.push({
-      name: 'Fibonacci confluence zone',
-      detail: `Bounce off overlap of: ${ind.fibConfluence.levels.join(" + ")} (dist: ${ind.fibConfluence.distancePct}%)`,
-      weight: 0.18,
-      hit: true,
-      direction: 'bullish',
-    })
+  // 12. Unified Harmonic + Fibonacci + RSI Confluence
+  const unifiedFactorMT = buildUnifiedConfluenceFactor(ind, ind.price, 'bullish')
+  if (unifiedFactorMT) {
+    factors.push(unifiedFactorMT)
   } else if (ind.fib) {
     const isFibSupport = ind.fib.closestLevel === '38.2%' || ind.fib.closestLevel === '50.0%' || ind.fib.closestLevel === '61.8%'
     const isBouncing = last.close >= last.open || (c[c.length - 2] && last.close > c[c.length - 2].close)
@@ -494,10 +474,6 @@ function evaluateMidterm(series: StockSeries, ind: IndicatorSnapshot, isNiftyBul
       direction: isFibSupport && isBouncing && isClose ? 'bullish' : 'neutral',
     })
   }
-
-  // 12. Harmonic Pattern PRZ check
-  const harmonicFactorMT = buildHarmonicFactor(ind, ind.price)
-  if (harmonicFactorMT) factors.push(harmonicFactorMT)
 
   return finalizeSignal(series, ind, 'MIDTERM', factors, {
     targetRr1: 2.0,
@@ -658,26 +634,105 @@ function finalizeSignal(
   }
 }
 
-// Harmonic Pattern PRZ Factor
-// Called before finalizeSignal in every timeframe engine.
-// If any harmonic pattern has its PRZ within 2% of current price, it fires
-// as a high-conviction confluency factor (bullish bounce or bearish reversal).
-function buildHarmonicFactor(ind: IndicatorSnapshot, price: number): SignalFactor | null {
-  if (!ind.harmonics || ind.harmonics.length === 0) return null
-  // Find the most relevant pattern: FORMING, closest PRZ to current price
-  const best = ind.harmonics
-    .filter((p) => Math.abs(p.distFromD) <= 2.5)
-    .sort((a, b) => Math.abs(a.distFromD) - Math.abs(b.distFromD))[0]
-  if (!best) return null
-  const isBullishHarmonic = best.direction === 'Bullish'
+// ── Unified Harmonic + Fibonacci + RSI Confluence Factor ──────────────────
+// Replaces the old separate "Fibonacci confluence zone" and "Harmonic PRZ"
+// factors with ONE intelligent factor that reports whatever is applicable:
+//   - Pattern COMPLETED and price IN PRZ (highest conviction)
+//   - Pattern FORMING and price APPROACHING PRZ
+//   - Fibonacci level overlapping with PRZ (double confirmation)
+//   - RSI oversold/overbought at the PRZ (triple confirmation)
+//   - Any combination of the above
+// Weight scales from 0.12 (just forming, far) to 0.25 (all 3 confluences)
+function buildUnifiedConfluenceFactor(
+  ind: IndicatorSnapshot,
+  price: number,
+  direction: 'bullish' | 'bearish'
+): SignalFactor | null {
+  const harmonics = ind.harmonics
+  const fibConf = ind.fibConfluence
+
+  // Find the best harmonic: closest PRZ to current price
+  const bestHarmonic = harmonics && harmonics.length > 0
+    ? harmonics
+        .filter((p) => Math.abs(p.distFromD) <= 8)
+        .sort((a, b) => Math.abs(a.distFromD) - Math.abs(b.distFromD))[0]
+    : null
+
+  // Determine if fibConfluence involves a harmonic PRZ
+  const fibHasHarmonicPRZ = !!fibConf?.isActive &&
+    fibConf.levels.some(l => l.includes('PRZ'))
+  const fibOnlyLevels = fibConf?.isActive && !fibHasHarmonicPRZ
+
+  // Nothing at all — return null (no factor added)
+  if (!bestHarmonic && !fibConf?.isActive) return null
+
+  // ── Assemble the status line ──────────────────────────────────────────────
+  const parts: string[] = []
+  let hit = false
+  let weight = 0.12
+
+  if (bestHarmonic) {
+    const dist = bestHarmonic.distFromD
+    const absDist = Math.abs(dist)
+    const inPRZ = absDist <= 2.5
+    const approaching = absDist <= 8
+
+    const statusLabel = bestHarmonic.status === 'COMPLETED'
+      ? '✅ COMPLETED'
+      : '🔄 FORMING'
+
+    const przLabel = inPRZ
+      ? `price IN PRZ (${absDist.toFixed(1)}% away)`
+      : `approaching PRZ (${absDist.toFixed(1)}% away)`
+
+    parts.push(`${bestHarmonic.direction} ${bestHarmonic.name} ${statusLabel} — ${przLabel}`)
+
+    // RSI confluence at PRZ
+    const rsiOk = direction === 'bullish' ? bestHarmonic.rsiBullish : bestHarmonic.rsiBearish
+    if (rsiOk) {
+      parts.push(`RSI ${bestHarmonic.rsi} ${direction === 'bullish' ? '≤40 oversold ✓' : '≥60 overbought ✓'}`)
+      weight += 0.06
+    }
+
+    // Fibonacci overlap with PRZ
+    if (fibHasHarmonicPRZ && fibConf) {
+      const fibLevel = fibConf.levels.find(l => !l.includes('PRZ'))
+      if (fibLevel) {
+        parts.push(`Fib ${fibLevel} overlaps PRZ ✓`)
+        weight += 0.07
+      }
+    }
+
+    // Set hit based on direction alignment + proximity
+    if (direction === 'bullish') {
+      hit = bestHarmonic.direction === 'Bullish' && (inPRZ || approaching)
+    } else {
+      hit = bestHarmonic.direction === 'Bearish' && (inPRZ || approaching)
+    }
+
+    // Boost weight for completed + in PRZ
+    if (inPRZ && bestHarmonic.status === 'COMPLETED') weight += 0.06
+
+  } else if (fibOnlyLevels && fibConf) {
+    // Fibonacci confluence without harmonic — keep existing behaviour
+    parts.push(`Fib confluence: ${fibConf.levels.join(' + ')} (${fibConf.distancePct}% away)`)
+    hit = true
+    weight = 0.18
+  }
+
+  if (parts.length === 0) return null
+
   return {
-    name: `Harmonic ${best.direction} ${best.name} (PRZ)`,
-    detail: best.description,
-    weight: 0.20,
-    hit: isBullishHarmonic,
-    direction: isBullishHarmonic ? 'bullish' : 'bearish',
+    name: bestHarmonic
+      ? `Harmonic${fibHasHarmonicPRZ ? ' + Fib' : ''}${(direction === 'bullish' ? bestHarmonic.rsiBullish : bestHarmonic.rsiBearish) ? ' + RSI' : ''} Confluence`
+      : 'Fibonacci confluence zone',
+    detail: parts.join(' · '),
+    weight: Math.min(0.25, weight),
+    hit,
+    direction,
   }
 }
+
 
 function isBearishActive(f: SignalFactor): boolean {
   return f.direction === 'bearish'
@@ -1049,15 +1104,10 @@ function evaluateLongTerm(series: StockSeries, ind: IndicatorSnapshot, isNiftyBu
     }
   }
 
-  // 12. Fibonacci Retracement support or Confluence Zone check
-  if (ind.fibConfluence && ind.fibConfluence.isActive) {
-    factors.push({
-      name: 'Fibonacci confluence zone',
-      detail: `Bounce off overlap of: ${ind.fibConfluence.levels.join(" + ")} (dist: ${ind.fibConfluence.distancePct}%)`,
-      weight: 0.18,
-      hit: true,
-      direction: 'bullish',
-    })
+  // 13. Unified Harmonic + Fibonacci + RSI Confluence
+  const unifiedFactorLT = buildUnifiedConfluenceFactor(ind, ind.price, 'bullish')
+  if (unifiedFactorLT) {
+    factors.push(unifiedFactorLT)
   } else if (ind.fib) {
     const isFibSupport = ind.fib.closestLevel === '38.2%' || ind.fib.closestLevel === '50.0%' || ind.fib.closestLevel === '61.8%'
     const isBouncing = last.close >= last.open || (c[c.length - 2] && last.close > c[c.length - 2].close)
@@ -1070,10 +1120,6 @@ function evaluateLongTerm(series: StockSeries, ind: IndicatorSnapshot, isNiftyBu
       direction: isFibSupport && isBouncing && isClose ? 'bullish' : 'neutral',
     })
   }
-
-  // 13. Harmonic Pattern PRZ check
-  const harmonicFactorLT = buildHarmonicFactor(ind, ind.price)
-  if (harmonicFactorLT) factors.push(harmonicFactorLT)
 
   return finalizeSignal(series, ind, 'LONG_TERM', factors, {
     targetRr1: 2.5,

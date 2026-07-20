@@ -149,6 +149,9 @@ export interface HarmonicScanEntry {
   target1: number
   target2: number
   riskReward: number
+  // Fibonacci level that overlaps with PRZ midpoint (within 1.5%)
+  // null = no overlap. e.g. '61.8% (150d)' when Bat PRZ coincides with 61.8% fib
+  fibConfluence: string | null
 }
 
 // ── Run 3-stock probe to check Yahoo availability ─────────────────────────
@@ -232,6 +235,30 @@ export async function GET(req: NextRequest) {
 
       const levels = computeTradeLevels(bestPattern)
 
+      // Compute Fibonacci confluence with PRZ
+      // Check if PRZ midpoint of bestPattern overlaps a key Fibonacci retracement
+      // within 1.5% — this is the professional PRZ+Fib confirmation
+      let fibConfluence: string | null = null
+      if (bestPattern) {
+        const przMidPrice = bestPattern.D  // PRZ midpoint
+        const slice150 = candles.slice(-Math.min(150, candles.length))
+        let high150 = -Infinity, low150 = Infinity
+        for (const cd of slice150) { if (cd.high > high150) high150 = cd.high; if (cd.low < low150) low150 = cd.low }
+        const diff150 = high150 - low150
+        const fibLevels = [
+          { name: '38.2% (150d)', val: high150 - 0.382 * diff150 },
+          { name: '50.0% (150d)', val: high150 - 0.500 * diff150 },
+          { name: '61.8% (150d)', val: high150 - 0.618 * diff150 },
+          { name: '78.6% (150d)', val: high150 - 0.786 * diff150 },
+        ]
+        for (const fl of fibLevels) {
+          if (!isNaN(fl.val) && fl.val > 0) {
+            const overlapPct = Math.abs(przMidPrice - fl.val) / przMidPrice * 100
+            if (overlapPct <= 1.5) { fibConfluence = fl.name; break }
+          }
+        }
+      }
+
       results.push({
         symbol: meta.symbol,
         name: meta.name,
@@ -243,6 +270,7 @@ export async function GET(req: NextRequest) {
         inPRZ,
         nearPRZ,
         ...levels,
+        fibConfluence,
       })
     }))
   }
