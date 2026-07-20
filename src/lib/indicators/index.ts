@@ -619,9 +619,22 @@ export interface FibonacciLevels {
   closestLevel: string
   distancePct: number
   // 'uptrend'  = stock near high  → fib levels measure RETRACEMENT from high
-  //              (0% at High/top, 100% at Low/bottom)
-  // 'downtrend' = stock near low  → fib levels measure BOUNCE from low
-  //              (0% at Low/bottom, 100% at High/top)
+  //
+  // INDUSTRY STANDARD (StarTrader / TradingView):
+  //
+  // UPTREND  (price > midpoint):
+  //   Formula: High − ratio × Range
+  //   0% anchor at LOW  (bottom = start of the uptrend move)
+  //   100% anchor at HIGH (top  = peak of the uptrend move)
+  //   Levels act as SUPPORT on pullbacks
+  //   23.6% appears near HIGH (small pullback), 61.8% near LOW (deep pullback)
+  //
+  // DOWNTREND (price ≤ midpoint):
+  //   Formula: High − ratio × Range  ← SAME formula
+  //   0% anchor at HIGH (top  = start of the decline)
+  //   100% anchor at LOW  (bottom = bottom of the decline)
+  //   Levels act as RESISTANCE on bounces
+  //   23.6% appears near HIGH (needs big bounce to reach), 61.8% near LOW (easy first bounce target)
   trend: 'uptrend' | 'downtrend'
 }
 
@@ -637,36 +650,30 @@ export function computeFibonacci(candles: Candle[], lookback = 100): FibonacciLe
   const currentPrice = candles[candles.length - 1]?.close ?? 0
   const midpoint = (high + low) / 2
 
-  // ── Trend detection (per Zerodha Varsity Chapter 16) ──────────────────────
-  // If current price > midpoint → stock is in UPTREND context:
-  //   Fibonacci measures potential RETRACEMENT from the High
-  //   Formula: High − ratio × Range
-  //   Chart labels: 0% at High (top), 100% at Low (bottom)
+  // ── Trend detection (StarTrader / TradingView industry standard) ─────────
+  // SAME formula for both trends: High − ratio × Range
+  // The 'trend' field only controls WHERE the 0% and 100% ANCHOR LABELS sit:
   //
-  // If current price ≤ midpoint → stock is in DOWNTREND context:
-  //   Fibonacci measures potential BOUNCE from the Low
-  //   Formula: Low + ratio × Range
-  //   Chart labels: 0% at Low (bottom), 100% at High (top)
+  // UPTREND  (price > midpoint):
+  //   0% anchor = LOW  (bottom, where the uptrend started)
+  //   100% anchor = HIGH (top, where the uptrend peaked)
+  //   The 23.6% line sits near the HIGH → small pullback from the peak
+  //   The 61.8% line sits near the LOW  → deep pullback, golden ratio support
+  //
+  // DOWNTREND (price ≤ midpoint):
+  //   0% anchor = HIGH (top, where the decline started)
+  //   100% anchor = LOW  (bottom, where the decline bottomed)
+  //   The 23.6% line sits near the HIGH → needs big bounce to reach here
+  //   The 61.8% line sits near the LOW  → first real resistance on a bounce
   // ─────────────────────────────────────────────────────────────────────────
   const trend: 'uptrend' | 'downtrend' = currentPrice > midpoint ? 'uptrend' : 'downtrend'
 
-  let fib236: number, fib382: number, fib500: number, fib618: number, fib786: number
-
-  if (trend === 'uptrend') {
-    // Standard retracement FROM the high (how far it can pull back)
-    fib236 = high - 0.236 * diff
-    fib382 = high - 0.382 * diff
-    fib500 = high - 0.500 * diff
-    fib618 = high - 0.618 * diff
-    fib786 = high - 0.786 * diff
-  } else {
-    // Downtrend: measure bounce FROM the low (how far it can recover)
-    fib236 = low + 0.236 * diff
-    fib382 = low + 0.382 * diff
-    fib500 = low + 0.500 * diff
-    fib618 = low + 0.618 * diff
-    fib786 = low + 0.786 * diff
-  }
+  // Single formula for all cases — High minus ratio times Range
+  const fib236 = high - 0.236 * diff
+  const fib382 = high - 0.382 * diff
+  const fib500 = high - 0.500 * diff
+  const fib618 = high - 0.618 * diff
+  const fib786 = high - 0.786 * diff
 
   const levels = [
     { name: '23.6%', val: fib236 },

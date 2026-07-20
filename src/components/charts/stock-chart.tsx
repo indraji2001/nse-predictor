@@ -168,46 +168,47 @@ export function StockChart({ candles, indicators, symbol }: Props) {
 
   // ─────────────────────────────────────────────────────────────────────────
   // Direction-aware Fibonacci Retracement (per Zerodha Varsity Chapter 16)
+  // Direction-aware Fibonacci Retracement
   //
-  // UPTREND  (price > midpoint of 100d range):
-  //   Stock rallied → fib measures potential RETRACEMENT from the High
-  //   0%   label at HIGH (top)   — no pullback yet
-  //   23.6% → 78.6% levels going downward
-  //   100% label at LOW  (bottom) — full reversal
-  //   Formula: High − ratio × Range
+  // UPTREND  (price > midpoint):
+  //   100% anchor at HIGH (top)   — peak of the uptrend
+  //   23.6% just below HIGH       — small pullback (support)
+  //   61.8% near LOW              — deep pullback, golden ratio support
+  //   0%   anchor at LOW  (bottom) — where the uptrend started
   //
-  // DOWNTREND (price ≤ midpoint of 100d range):
-  //   Stock declined → fib measures potential BOUNCE from the Low
-  //   0%   label at LOW  (bottom) — no bounce yet
-  //   23.6% → 78.6% levels going upward
-  //   100% label at HIGH (top)   — full recovery
-  //   Formula: Low + ratio × Range
+  // DOWNTREND (price ≤ midpoint):
+  //   0%   anchor at HIGH (top)   — where the decline started
+  //   23.6% just below HIGH       — needs big bounce to reach (resistance)
+  //   61.8% near LOW              — first real bounce resistance target
+  //   100% anchor at LOW  (bottom) — trough of the decline
   // ─────────────────────────────────────────────────────────────────────────
   const fibLevels = useMemo(() => {
     const f = indicators.fib
     if (!f) return null
     const isUp = !f.trend || f.trend === 'uptrend'
     if (isUp) {
-      // UPTREND: 0% at High (top), levels descend, 100% at Low (bottom)
+      // UPTREND (StarTrader/TradingView): 100% at HIGH (top), 0% at LOW (bottom)
+      // Levels descend from High: 23.6% = small pullback (near top), 78.6% = deep pullback (near bottom)
       return [
-        { label: '0% (High)',  val: +f.high.toFixed(2),    color: '#94a3b8', dash: '2 4' as const },
-        { label: '23.6%',      val: +f.fib236.toFixed(2),  color: '#3b82f6', dash: '5 3' as const },
-        { label: '38.2%',      val: +f.fib382.toFixed(2),  color: '#22c55e', dash: '5 3' as const },
-        { label: '50.0%',      val: +f.fib500.toFixed(2),  color: '#eab308', dash: '5 3' as const },
-        { label: '61.8% ★',   val: +f.fib618.toFixed(2),  color: '#f97316', dash: '8 3' as const },
-        { label: '78.6%',      val: +f.fib786.toFixed(2),  color: '#f43f5e', dash: '5 3' as const },
-        { label: '100% (Low)', val: +f.low.toFixed(2),     color: '#94a3b8', dash: '2 4' as const },
-      ]
-    } else {
-      // DOWNTREND: 0% at Low (bottom), levels ascend, 100% at High (top)
-      return [
-        { label: '0% (Low)',    val: +f.low.toFixed(2),     color: '#94a3b8', dash: '2 4' as const },
+        { label: '100% (High)', val: +f.high.toFixed(2),    color: '#94a3b8', dash: '2 4' as const },
         { label: '23.6%',       val: +f.fib236.toFixed(2),  color: '#3b82f6', dash: '5 3' as const },
         { label: '38.2%',       val: +f.fib382.toFixed(2),  color: '#22c55e', dash: '5 3' as const },
         { label: '50.0%',       val: +f.fib500.toFixed(2),  color: '#eab308', dash: '5 3' as const },
         { label: '61.8% ★',    val: +f.fib618.toFixed(2),  color: '#f97316', dash: '8 3' as const },
         { label: '78.6%',       val: +f.fib786.toFixed(2),  color: '#f43f5e', dash: '5 3' as const },
-        { label: '100% (High)', val: +f.high.toFixed(2),    color: '#94a3b8', dash: '2 4' as const },
+        { label: '0% (Low)',    val: +f.low.toFixed(2),     color: '#94a3b8', dash: '2 4' as const },
+      ]
+    } else {
+      // DOWNTREND (StarTrader/TradingView): 0% at HIGH (top), 100% at LOW (bottom)
+      // Same price levels — 23.6% near High (big bounce needed), 61.8% near Low (first bounce resistance)
+      return [
+        { label: '0% (High)',   val: +f.high.toFixed(2),    color: '#94a3b8', dash: '2 4' as const },
+        { label: '23.6%',       val: +f.fib236.toFixed(2),  color: '#3b82f6', dash: '5 3' as const },
+        { label: '38.2%',       val: +f.fib382.toFixed(2),  color: '#22c55e', dash: '5 3' as const },
+        { label: '50.0%',       val: +f.fib500.toFixed(2),  color: '#eab308', dash: '5 3' as const },
+        { label: '61.8% ★',    val: +f.fib618.toFixed(2),  color: '#f97316', dash: '8 3' as const },
+        { label: '78.6%',       val: +f.fib786.toFixed(2),  color: '#f43f5e', dash: '5 3' as const },
+        { label: '100% (Low)',  val: +f.low.toFixed(2),     color: '#94a3b8', dash: '2 4' as const },
       ]
     }
   }, [indicators.fib])

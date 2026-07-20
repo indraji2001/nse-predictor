@@ -140,30 +140,31 @@ export function IndicatorPanel({ ind }: Props) {
                     ? 'bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400'
                     : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400'
                 }`}>
-                  {ind.fib.trend === 'downtrend' ? '↓ DOWNTREND BOUNCE' : '↑ UPTREND RETRACEMENT'}
+                  {ind.fib.trend === 'downtrend' ? '↓ DOWNTREND — RESISTANCE' : '↑ UPTREND — SUPPORT'}
                 </span>
               </div>
               <div className="text-xs space-y-0.5 tabular-nums">
-                {/* 0% anchor — at High for uptrend, at Low for downtrend */}
+                {/* Top anchor */}
                 {ind.fib.trend === 'downtrend' ? (
-                  <div className="flex justify-between"><span className="text-[10px] text-muted-foreground">0% — Low (100d)</span><span className="text-muted-foreground">{formatINR(ind.fib.low)}</span></div>
+                  <div className="flex justify-between"><span className="text-[10px] text-muted-foreground">0% — High (start of decline)</span><span className="text-muted-foreground">{formatINR(ind.fib.high)}</span></div>
                 ) : (
-                  <div className="flex justify-between"><span className="text-[10px] text-muted-foreground">0% — High (100d)</span><span className="text-muted-foreground">{formatINR(ind.fib.high)}</span></div>
+                  <div className="flex justify-between"><span className="text-[10px] text-muted-foreground">100% — High (peak)</span><span className="text-muted-foreground">{formatINR(ind.fib.high)}</span></div>
                 )}
-                <div className="flex justify-between"><span className={`text-[10px] ${ind.fib.closestLevel === '23.6%' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-muted-foreground'}`}>23.6% Level</span><span>{formatINR(ind.fib.fib236)}</span></div>
-                <div className="flex justify-between"><span className={`text-[10px] ${ind.fib.closestLevel === '38.2%' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-muted-foreground'}`}>38.2% Level</span><span>{formatINR(ind.fib.fib382)}</span></div>
-                <div className="flex justify-between"><span className={`text-[10px] ${ind.fib.closestLevel === '50.0%' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-muted-foreground'}`}>50.0% Level</span><span>{formatINR(ind.fib.fib500)}</span></div>
-                <div className="flex justify-between"><span className={`text-[10px] ${ind.fib.closestLevel === '61.8%' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-muted-foreground'}`}>61.8% ★ Level</span><span>{formatINR(ind.fib.fib618)}</span></div>
-                <div className="flex justify-between"><span className={`text-[10px] ${ind.fib.closestLevel === '78.6%' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-muted-foreground'}`}>78.6% Level</span><span>{formatINR(ind.fib.fib786)}</span></div>
-                {/* 100% anchor — at Low for uptrend, at High for downtrend */}
+                <div className="flex justify-between"><span className={`text-[10px] ${ind.fib.closestLevel === '23.6%' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-muted-foreground'}`}>23.6%</span><span>{formatINR(ind.fib.fib236)}</span></div>
+                <div className="flex justify-between"><span className={`text-[10px] ${ind.fib.closestLevel === '38.2%' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-muted-foreground'}`}>38.2%</span><span>{formatINR(ind.fib.fib382)}</span></div>
+                <div className="flex justify-between"><span className={`text-[10px] ${ind.fib.closestLevel === '50.0%' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-muted-foreground'}`}>50.0%</span><span>{formatINR(ind.fib.fib500)}</span></div>
+                <div className="flex justify-between"><span className={`text-[10px] ${ind.fib.closestLevel === '61.8%' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-muted-foreground'}`}>61.8% ★</span><span>{formatINR(ind.fib.fib618)}</span></div>
+                <div className="flex justify-between"><span className={`text-[10px] ${ind.fib.closestLevel === '78.6%' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-muted-foreground'}`}>78.6%</span><span>{formatINR(ind.fib.fib786)}</span></div>
+                {/* Bottom anchor */}
                 {ind.fib.trend === 'downtrend' ? (
-                  <div className="flex justify-between"><span className="text-[10px] text-muted-foreground">100% — High (100d)</span><span className="text-muted-foreground">{formatINR(ind.fib.high)}</span></div>
+                  <div className="flex justify-between"><span className="text-[10px] text-muted-foreground">100% — Low (trough)</span><span className="text-muted-foreground">{formatINR(ind.fib.low)}</span></div>
                 ) : (
-                  <div className="flex justify-between"><span className="text-[10px] text-muted-foreground">100% — Low (100d)</span><span className="text-muted-foreground">{formatINR(ind.fib.low)}</span></div>
+                  <div className="flex justify-between"><span className="text-[10px] text-muted-foreground">0% — Low (start of uptrend)</span><span className="text-muted-foreground">{formatINR(ind.fib.low)}</span></div>
                 )}
               </div>
             </div>
           )}
+
 
         </div>
 
