@@ -344,6 +344,48 @@ export function volumeAnalysis(candles: Candle[]): VolumeAnalysis {
   }
 }
 
+// --- Money Flow Index (MFI, period=14) ------------------------------------
+// MFI = volume-weighted RSI. Combines price direction AND volume into one
+// oscillator. Superior to RSI alone for detecting genuine institutional flow.
+//
+// Formula (standard, per John Murphy / Investopedia):
+//   Typical Price (TP) = (High + Low + Close) / 3
+//   Raw Money Flow   = TP × Volume
+//   Positive MF: when TP[i] > TP[i-1]  (bullish session)
+//   Negative MF: when TP[i] < TP[i-1]  (bearish session)
+//   Money Flow Ratio = Sum(PosMF, 14) / Sum(NegMF, 14)
+//   MFI = 100 - (100 / (1 + MFR))
+//
+// Interpretation:
+//   MFI ≥ 80 = overbought WITH volume (distribution likely)
+//   MFI ≤ 20 = oversold WITH volume (accumulation likely)
+//   MFI 50–70 = healthy bullish money flow (BUY zone)
+//   MFI rising while price rising = confirmed uptrend
+//   MFI falling while price rising = bearish DIVERGENCE (smart money exiting)
+export function MFI(candles: Candle[], period = 14): number[] {
+  const out: number[] = new Array(candles.length).fill(NaN)
+  if (candles.length <= period) return out
+
+  const tp: number[] = candles.map((c) => (c.high + c.low + c.close) / 3)
+  const rmf: number[] = candles.map((c, i) => tp[i] * c.volume)
+
+  for (let i = period; i < candles.length; i++) {
+    let posMF = 0
+    let negMF = 0
+    for (let j = i - period + 1; j <= i; j++) {
+      if (tp[j] > tp[j - 1]) posMF += rmf[j]
+      else if (tp[j] < tp[j - 1]) negMF += rmf[j]
+      // if tp[j] === tp[j-1]: neither — unchanged session, skip
+    }
+    if (negMF === 0) {
+      out[i] = 100 // all sessions were positive — fully overbought
+    } else {
+      out[i] = +(100 - 100 / (1 + posMF / negMF)).toFixed(2)
+    }
+  }
+  return out
+}
+
 // --- Candlestick patterns (single-candle & two-candle) --------------------
 export type Pattern =
   | 'BullishEngulfing'
@@ -522,6 +564,12 @@ export interface IndicatorSnapshot {
   ret50d: number
   // Distance from 200 DMA in %
   distFrom200: number
+  // Money Flow Index (14-period, volume-weighted RSI)
+  // Placed here because it directly relates to price+volume momentum
+  mfi14: number
+  // Bearish MFI divergence: price made 5-day high but MFI LOWER than 5 days ago
+  // This is the single most reliable signal of smart-money distribution
+  mfiDivergence: boolean
   // --- Long-term indicators (added for LONG_TERM engine) ---
   // 125-day (~6-month) and 250-day (~1-year) returns
   ret125d: number
@@ -721,6 +769,7 @@ export function computeIndicators(candles: Candle[]): IndicatorSnapshot {
   const sma100 = SMA(c, 100)
   const sma200 = SMA(c, 200)
 
+  const mfiArr = MFI(candles, 14)
   const v = (a: number[]) => a[last]
   const macdPrev = macdRes.macd[last - 1]
   const macdSigPrev = macdRes.signal[last - 1]
@@ -738,6 +787,15 @@ export function computeIndicators(candles: Candle[]): IndicatorSnapshot {
 
   const ret = (p: number) => (c[last - p] ? (c[last] / c[last - p] - 1) * 100 : NaN)
   const distFrom200 = !isNaN(sma200[last]) ? ((c[last] - sma200[last]) / sma200[last]) * 100 : NaN
+
+  // MFI divergence: bearish when price hits 5d high but MFI is lower than 5d ago
+  // This detects smart money selling into a price rally — the best use of MFI
+  const mfi14 = v(mfiArr)
+  const mfi5dAgo = mfiArr[Math.max(0, last - 5)]
+  const price5dHigh = Math.max(...c.slice(Math.max(0, last - 5), last + 1))
+  const mfiDivergence = !isNaN(mfi14) && !isNaN(mfi5dAgo)
+    && c[last] >= price5dHigh * 0.995  // price near 5-day high
+    && mfi14 < mfi5dAgo - 5           // but MFI dropped ≥5 points = real divergence, not noise
 
   // --- Long-term indicators ---
   const ret125d = ret(125)
@@ -795,6 +853,8 @@ export function computeIndicators(candles: Candle[]): IndicatorSnapshot {
     supertrendValue: v(supertrend.value),
     vwap20: v(vwapArr),
     volumeRatio: vol.ratio,
+    mfi14,
+    mfiDivergence,
     patterns: detectPatterns(candles),
     pivots,
     swings,

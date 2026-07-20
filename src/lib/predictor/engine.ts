@@ -90,13 +90,17 @@ function evaluateBTST(series: StockSeries, ind: IndicatorSnapshot, isNiftyBullis
     direction: closePos >= 0.6 ? 'bullish' : 'neutral',
   })
 
-  // 2. Volume surge vs 20-day average (≥1.3×)
+  // 2. MFI (Money Flow Index) ≥ 55 — volume-weighted bullish money flow
+  //    MFI is superior to raw volume ratio because it combines BOTH price direction
+  //    AND volume into one number. MFI ≥ 55 = institutional buying actively flowing in.
+  //    This replaces the old blunt 'volumeRatio ≥ 1.3' which ignored price direction.
+  const mfiBullish = !isNaN(ind.mfi14) && ind.mfi14 >= 55 && ind.mfi14 <= 80
   factors.push({
-    name: 'Volume confirmation',
-    detail: `Volume ratio ${ind.volumeRatio.toFixed(2)}× vs 20-day avg`,
+    name: 'MFI bullish flow',
+    detail: `MFI ${isNaN(ind.mfi14) ? 'N/A' : ind.mfi14.toFixed(1)} — ${mfiBullish ? 'positive institutional money flow' : ind.mfi14 > 80 ? 'overbought (caution)' : 'weak/neutral flow'}`,
     weight: 0.15,
-    hit: ind.volumeRatio >= 1.3,
-    direction: ind.volumeRatio >= 1.3 ? 'bullish' : 'neutral',
+    hit: mfiBullish,
+    direction: mfiBullish ? 'bullish' : ind.mfi14 > 80 ? 'bearish' : 'neutral',
   })
 
   // 3. Price above VWAP
@@ -788,13 +792,33 @@ function evaluateSell(
     weight: 0.08, hit: negMomentum, direction: negMomentum ? 'bearish' : 'neutral',
   })
 
-  // 10. Volume surge (>=1.5x) + below VWAP = confirmed distribution
+  // 10. MFI ≥ 75 OR volume surge below VWAP = confirmed distribution
+  //     MFI ≥ 75 = stocks rising on DECREASING real money flow (overbought with volume).
+  //     This is a far more reliable distribution signal than raw volume alone.
   const belowVwap = price < ind.vwap20
-  const distributionVolume = ind.volumeRatio >= 1.5 && belowVwap
+  const mfiOverbought = !isNaN(ind.mfi14) && ind.mfi14 >= 75
+  const distributionVolume = (ind.volumeRatio >= 1.5 && belowVwap) || mfiOverbought
   factors.push({
-    name: 'Distribution volume',
-    detail: `Volume ${ind.volumeRatio.toFixed(2)}x avg, below VWAP Rs.${ind.vwap20.toFixed(2)}`,
-    weight: 0.08, hit: distributionVolume, direction: distributionVolume ? 'bearish' : 'neutral',
+    name: 'MFI distribution signal',
+    detail: mfiOverbought
+      ? `MFI ${ind.mfi14.toFixed(1)} — volume-weighted overbought (distribution zone)`
+      : `Volume ${ind.volumeRatio.toFixed(2)}x avg below VWAP Rs.${ind.vwap20.toFixed(2)}`,
+    weight: 0.10,
+    hit: distributionVolume,
+    direction: distributionVolume ? 'bearish' : 'neutral',
+  })
+
+  // 11. MFI Bearish Divergence — price at 5-day high but MFI declining
+  //     This is the SINGLE most professional use of MFI: smart money exiting
+  //     while retail pushes price higher. Classic Wyckoff distribution fingerprint.
+  factors.push({
+    name: 'MFI bearish divergence',
+    detail: ind.mfiDivergence
+      ? `Price near 5d high but MFI fell — smart money distributing (MFI ${isNaN(ind.mfi14) ? 'N/A' : ind.mfi14.toFixed(1)})`
+      : `No MFI divergence (MFI ${isNaN(ind.mfi14) ? 'N/A' : ind.mfi14.toFixed(1)})`,
+    weight: 0.10,
+    hit: ind.mfiDivergence,
+    direction: ind.mfiDivergence ? 'bearish' : 'neutral',
   })
 
   // --- Standalone bearish confluence scoring ---
