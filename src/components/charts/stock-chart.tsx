@@ -202,33 +202,26 @@ export function StockChart({ candles, indicators, symbol }: Props) {
               <ToggleGroupItem value="tradingview" className="text-[10px] h-6 px-2 font-semibold" title="Interactive TradingView Chart">TradingView</ToggleGroupItem>
             </ToggleGroup>
 
-                {/* Range + chart-type toggles — stay at the top */}
-                <>
-                  {/* P3-14: Chart type toggle (Line vs Candlestick) */}
-                  <ToggleGroup type="single" value={chartType} onValueChange={(v) => v && setChartType(v as 'line' | 'candle')} size="sm">
-                    <ToggleGroupItem value="candle" className="text-[10px] h-7 px-2" title="Candlestick chart">Candle</ToggleGroupItem>
-                    <ToggleGroupItem value="line" className="text-[10px] h-7 px-2" title="Line chart">Line</ToggleGroupItem>
-                  </ToggleGroup>
-                  <ToggleGroup type="single" value={range} onValueChange={(v) => v && setRange(v as any)} size="sm">
-                    <ToggleGroupItem value="1M" className="text-[10px] h-7 px-2">1M</ToggleGroupItem>
-                    <ToggleGroupItem value="3M" className="text-[10px] h-7 px-2">3M</ToggleGroupItem>
-                    <ToggleGroupItem value="6M" className="text-[10px] h-7 px-2">6M</ToggleGroupItem>
-                    <ToggleGroupItem value="1Y" className="text-[10px] h-7 px-2">1Y</ToggleGroupItem>
-                    {candles.length > 280 && (
-                      <ToggleGroupItem value="2Y" className="text-[10px] h-7 px-2">2Y</ToggleGroupItem>
-                    )}
-                    {candles.length > 530 && (
-                      <ToggleGroupItem value="3Y" className="text-[10px] h-7 px-2">3Y</ToggleGroupItem>
-                    )}
-                    {candles.length > 800 && (
-                      <ToggleGroupItem value="5Y" className="text-[10px] h-7 px-2">5Y</ToggleGroupItem>
-                    )}
-                    {candles.length > 1500 && (
-                      <ToggleGroupItem value="10Y" className="text-[10px] h-7 px-2">10Y</ToggleGroupItem>
-                    )}
-                  </ToggleGroup>
-                </>
-              )}
+            {viewSource === 'custom' && (
+              <>
+                {/* Chart type toggle */}
+                <ToggleGroup type="single" value={chartType} onValueChange={(v) => v && setChartType(v as 'line' | 'candle')} size="sm">
+                  <ToggleGroupItem value="candle" className="text-[10px] h-7 px-2" title="Candlestick chart">Candle</ToggleGroupItem>
+                  <ToggleGroupItem value="line" className="text-[10px] h-7 px-2" title="Line chart">Line</ToggleGroupItem>
+                </ToggleGroup>
+                {/* Time range toggle */}
+                <ToggleGroup type="single" value={range} onValueChange={(v) => v && setRange(v as any)} size="sm">
+                  <ToggleGroupItem value="1M" className="text-[10px] h-7 px-2">1M</ToggleGroupItem>
+                  <ToggleGroupItem value="3M" className="text-[10px] h-7 px-2">3M</ToggleGroupItem>
+                  <ToggleGroupItem value="6M" className="text-[10px] h-7 px-2">6M</ToggleGroupItem>
+                  <ToggleGroupItem value="1Y" className="text-[10px] h-7 px-2">1Y</ToggleGroupItem>
+                  {candles.length > 280 && <ToggleGroupItem value="2Y" className="text-[10px] h-7 px-2">2Y</ToggleGroupItem>}
+                  {candles.length > 530 && <ToggleGroupItem value="3Y" className="text-[10px] h-7 px-2">3Y</ToggleGroupItem>}
+                  {candles.length > 800 && <ToggleGroupItem value="5Y" className="text-[10px] h-7 px-2">5Y</ToggleGroupItem>}
+                  {candles.length > 1500 && <ToggleGroupItem value="10Y" className="text-[10px] h-7 px-2">10Y</ToggleGroupItem>}
+                </ToggleGroup>
+              </>
+            )}
           </div>
         </div>
       </CardHeader>
