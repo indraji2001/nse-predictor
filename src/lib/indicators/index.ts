@@ -597,6 +597,7 @@ export interface IndicatorSnapshot {
     fib786: number
     closestLevel: string
     distancePct: number
+    trend: 'uptrend' | 'downtrend'
   }
   fibConfluence?: {
     isActive: boolean
@@ -617,6 +618,11 @@ export interface FibonacciLevels {
   fib786: number
   closestLevel: string
   distancePct: number
+  // 'uptrend'  = stock near high  → fib levels measure RETRACEMENT from high
+  //              (0% at High/top, 100% at Low/bottom)
+  // 'downtrend' = stock near low  → fib levels measure BOUNCE from low
+  //              (0% at Low/bottom, 100% at High/top)
+  trend: 'uptrend' | 'downtrend'
 }
 
 export function computeFibonacci(candles: Candle[], lookback = 100): FibonacciLevels {
@@ -628,13 +634,40 @@ export function computeFibonacci(candles: Candle[], lookback = 100): FibonacciLe
     if (c.low < low) low = c.low
   }
   const diff = high - low
-  const fib236 = high - 0.236 * diff
-  const fib382 = high - 0.382 * diff
-  const fib500 = high - 0.500 * diff
-  const fib618 = high - 0.618 * diff
-  const fib786 = high - 0.786 * diff
-
   const currentPrice = candles[candles.length - 1]?.close ?? 0
+  const midpoint = (high + low) / 2
+
+  // ── Trend detection (per Zerodha Varsity Chapter 16) ──────────────────────
+  // If current price > midpoint → stock is in UPTREND context:
+  //   Fibonacci measures potential RETRACEMENT from the High
+  //   Formula: High − ratio × Range
+  //   Chart labels: 0% at High (top), 100% at Low (bottom)
+  //
+  // If current price ≤ midpoint → stock is in DOWNTREND context:
+  //   Fibonacci measures potential BOUNCE from the Low
+  //   Formula: Low + ratio × Range
+  //   Chart labels: 0% at Low (bottom), 100% at High (top)
+  // ─────────────────────────────────────────────────────────────────────────
+  const trend: 'uptrend' | 'downtrend' = currentPrice > midpoint ? 'uptrend' : 'downtrend'
+
+  let fib236: number, fib382: number, fib500: number, fib618: number, fib786: number
+
+  if (trend === 'uptrend') {
+    // Standard retracement FROM the high (how far it can pull back)
+    fib236 = high - 0.236 * diff
+    fib382 = high - 0.382 * diff
+    fib500 = high - 0.500 * diff
+    fib618 = high - 0.618 * diff
+    fib786 = high - 0.786 * diff
+  } else {
+    // Downtrend: measure bounce FROM the low (how far it can recover)
+    fib236 = low + 0.236 * diff
+    fib382 = low + 0.382 * diff
+    fib500 = low + 0.500 * diff
+    fib618 = low + 0.618 * diff
+    fib786 = low + 0.786 * diff
+  }
+
   const levels = [
     { name: '23.6%', val: fib236 },
     { name: '38.2%', val: fib382 },
@@ -661,7 +694,8 @@ export function computeFibonacci(candles: Candle[], lookback = 100): FibonacciLe
     fib618,
     fib786,
     closestLevel: closest.name,
-    distancePct
+    distancePct,
+    trend,
   }
 }
 

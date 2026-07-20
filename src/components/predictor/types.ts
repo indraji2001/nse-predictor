@@ -99,6 +99,7 @@ export interface IndicatorSnapshot {
     fib786: number
     closestLevel: string
     distancePct: number
+    trend: 'uptrend' | 'downtrend'
   }
   fibConfluence?: {
     isActive: boolean

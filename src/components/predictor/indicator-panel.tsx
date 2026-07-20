@@ -133,19 +133,38 @@ export function IndicatorPanel({ ind }: Props) {
           {ind.fib && (
             <div className="rounded border border-border/60 p-3 space-y-1">
               <div className="text-[10px] uppercase tracking-wide text-muted-foreground flex items-center gap-1">
-                <Target className="h-3 w-3 text-indigo-500" /> Fibonacci Retracement
+                <Target className="h-3 w-3 text-indigo-500" />
+                Fibonacci Retracement
+                <span className={`ml-auto text-[9px] font-bold px-1.5 py-0.5 rounded ${
+                  ind.fib.trend === 'downtrend'
+                    ? 'bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400'
+                    : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400'
+                }`}>
+                  {ind.fib.trend === 'downtrend' ? '↓ DOWNTREND BOUNCE' : '↑ UPTREND RETRACEMENT'}
+                </span>
               </div>
               <div className="text-xs space-y-0.5 tabular-nums">
-                <div className="flex justify-between"><span className="text-[10px] text-muted-foreground">High (100d)</span><span className="text-muted-foreground">{formatINR(ind.fib.high)}</span></div>
+                {/* 0% anchor — at High for uptrend, at Low for downtrend */}
+                {ind.fib.trend === 'downtrend' ? (
+                  <div className="flex justify-between"><span className="text-[10px] text-muted-foreground">0% — Low (100d)</span><span className="text-muted-foreground">{formatINR(ind.fib.low)}</span></div>
+                ) : (
+                  <div className="flex justify-between"><span className="text-[10px] text-muted-foreground">0% — High (100d)</span><span className="text-muted-foreground">{formatINR(ind.fib.high)}</span></div>
+                )}
                 <div className="flex justify-between"><span className={`text-[10px] ${ind.fib.closestLevel === '23.6%' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-muted-foreground'}`}>23.6% Level</span><span>{formatINR(ind.fib.fib236)}</span></div>
                 <div className="flex justify-between"><span className={`text-[10px] ${ind.fib.closestLevel === '38.2%' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-muted-foreground'}`}>38.2% Level</span><span>{formatINR(ind.fib.fib382)}</span></div>
                 <div className="flex justify-between"><span className={`text-[10px] ${ind.fib.closestLevel === '50.0%' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-muted-foreground'}`}>50.0% Level</span><span>{formatINR(ind.fib.fib500)}</span></div>
-                <div className="flex justify-between"><span className={`text-[10px] ${ind.fib.closestLevel === '61.8%' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-muted-foreground'}`}>61.8% Level</span><span>{formatINR(ind.fib.fib618)}</span></div>
+                <div className="flex justify-between"><span className={`text-[10px] ${ind.fib.closestLevel === '61.8%' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-muted-foreground'}`}>61.8% ★ Level</span><span>{formatINR(ind.fib.fib618)}</span></div>
                 <div className="flex justify-between"><span className={`text-[10px] ${ind.fib.closestLevel === '78.6%' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-muted-foreground'}`}>78.6% Level</span><span>{formatINR(ind.fib.fib786)}</span></div>
-                <div className="flex justify-between"><span className="text-[10px] text-muted-foreground">Low (100d)</span><span className="text-muted-foreground">{formatINR(ind.fib.low)}</span></div>
+                {/* 100% anchor — at Low for uptrend, at High for downtrend */}
+                {ind.fib.trend === 'downtrend' ? (
+                  <div className="flex justify-between"><span className="text-[10px] text-muted-foreground">100% — High (100d)</span><span className="text-muted-foreground">{formatINR(ind.fib.high)}</span></div>
+                ) : (
+                  <div className="flex justify-between"><span className="text-[10px] text-muted-foreground">100% — Low (100d)</span><span className="text-muted-foreground">{formatINR(ind.fib.low)}</span></div>
+                )}
               </div>
             </div>
           )}
+
         </div>
 
         {/* Fibonacci Confluence Alert Box */}
