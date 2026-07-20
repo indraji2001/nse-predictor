@@ -104,7 +104,7 @@ export function StockChart({ candles, indicators, symbol }: Props) {
   const [showFib, setShowFib] = useState(false)    // Fibonacci retracement overlay
   const [showPivot, setShowPivot] = useState(false)  // Pivot levels overlay
   const [chartType, setChartType] = useState<'line' | 'candle'>('candle')
-  const [range, setRange] = useState<'1M' | '3M' | '6M' | '1Y' | '2Y' | '3Y' | '5Y' | '10Y'>('3M')
+  const [range, setRange] = useState<'1M' | '3M' | '6M' | '1Y' | '2Y' | '3Y' | '5Y' | '10Y' | 'MAX'>('3M')
   const [viewSource, setViewSource] = useState<'custom' | 'tradingview'>('custom')
 
   const baseSymbol = symbol.toUpperCase().replace('.NS', '').trim()
@@ -115,15 +115,16 @@ export function StockChart({ candles, indicators, symbol }: Props) {
     const n = candles.length
     let take = 66
     switch (range) {
-      case '1M': take = 22; break
-      case '3M': take = 66; break
-      case '6M': take = 132; break
-      case '1Y': take = 250; break
-      case '2Y': take = 500; break
-      case '3Y': take = 750; break
-      case '5Y': take = 1250; break
-      case '10Y': take = 2500; break
-      default: take = 66; break
+      case '1M':  take = 22;   break
+      case '3M':  take = 66;   break
+      case '6M':  take = 132;  break
+      case '1Y':  take = 250;  break
+      case '2Y':  take = 500;  break
+      case '3Y':  take = 750;  break
+      case '5Y':  take = 1300; break
+      case '10Y': take = 2600; break
+      case 'MAX': take = 99999; break
+      default:    take = 66;   break
     }
     return candles.slice(Math.max(0, n - take)).map((c) => {
       const close = c.close || 0
@@ -215,10 +216,11 @@ export function StockChart({ candles, indicators, symbol }: Props) {
                   <ToggleGroupItem value="3M" className="text-[10px] h-7 px-2">3M</ToggleGroupItem>
                   <ToggleGroupItem value="6M" className="text-[10px] h-7 px-2">6M</ToggleGroupItem>
                   <ToggleGroupItem value="1Y" className="text-[10px] h-7 px-2">1Y</ToggleGroupItem>
-                  {candles.length > 280 && <ToggleGroupItem value="2Y" className="text-[10px] h-7 px-2">2Y</ToggleGroupItem>}
-                  {candles.length > 530 && <ToggleGroupItem value="3Y" className="text-[10px] h-7 px-2">3Y</ToggleGroupItem>}
-                  {candles.length > 800 && <ToggleGroupItem value="5Y" className="text-[10px] h-7 px-2">5Y</ToggleGroupItem>}
-                  {candles.length > 1500 && <ToggleGroupItem value="10Y" className="text-[10px] h-7 px-2">10Y</ToggleGroupItem>}
+                  {candles.length > 280  && <ToggleGroupItem value="2Y"  className="text-[10px] h-7 px-2">2Y</ToggleGroupItem>}
+                  {candles.length > 530  && <ToggleGroupItem value="3Y"  className="text-[10px] h-7 px-2">3Y</ToggleGroupItem>}
+                  {candles.length > 800  && <ToggleGroupItem value="5Y"  className="text-[10px] h-7 px-2">5Y</ToggleGroupItem>}
+                  {candles.length > 1200 && <ToggleGroupItem value="10Y" className="text-[10px] h-7 px-2">10Y</ToggleGroupItem>}
+                  <ToggleGroupItem value="MAX" className="text-[10px] h-7 px-2">MAX</ToggleGroupItem>
                 </ToggleGroup>
               </>
             )}
@@ -435,9 +437,10 @@ export function StockChart({ candles, indicators, symbol }: Props) {
                   })()}
 
 
-                  {/* ── Brush / Zoom control ────────────────────────────────
-                      Drag the handles to zoom into any date range.
-                      Shows a mini-overview of the entire visible data.
+                  {/* ── Brush / Zoom navigator ──────────────────────────────
+                      Shows ALL candles for the selected range (startIndex=0).
+                      User drags handles to zoom into a sub-range.
+                      NOTE: Do NOT set startIndex here — it locks the view.
                   ─────────────────────────────────────────────────────────── */}
                   <Brush
                     dataKey="date"
@@ -445,7 +448,6 @@ export function StockChart({ candles, indicators, symbol }: Props) {
                     stroke="#6366f1"
                     fill="rgba(99,102,241,0.05)"
                     travellerWidth={8}
-                    startIndex={Math.max(0, chartData.length - 66)}
                     tickFormatter={(v) => {
                       try { return new Date(v).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) } catch { return '' }
                     }}
