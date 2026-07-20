@@ -419,28 +419,31 @@ export function StockChart({ candles, indicators, symbol }: Props) {
                   ─────────────────────────────────────────────────────────── */}
                   {showPivot && indicators.pivots && (() => {
                     const pv = indicators.pivots
+                    // Alternate label position (top/bottom) for adjacent lines
+                    // so they never overlap even when prices are very close.
+                    // R-levels: labels on RIGHT, S-levels: labels on LEFT
                     const lines = [
-                      { label: 'R3', val: pv.r3, color: '#be123c', width: 1,   side: 'insideTopRight' as const },
-                      { label: 'R2', val: pv.r2, color: '#e11d48', width: 1,   side: 'insideTopRight' as const },
-                      { label: 'R1', val: pv.r1, color: '#fb7185', width: 1.5, side: 'insideTopRight' as const },
-                      { label: 'P',  val: pv.pivot, color: '#a855f7', width: 2.5, side: 'insideTopRight' as const },
-                      { label: 'S1', val: pv.s1, color: '#4ade80', width: 1.5, side: 'insideTopLeft'  as const },
-                      { label: 'S2', val: pv.s2, color: '#16a34a', width: 1,   side: 'insideTopLeft'  as const },
-                      { label: 'S3', val: pv.s3, color: '#14532d', width: 1,   side: 'insideTopLeft'  as const },
+                      { label: 'R3', val: pv.r3,    color: '#be123c', width: 1,   pos: 'insideBottomRight' as const },
+                      { label: 'R2', val: pv.r2,    color: '#e11d48', width: 1,   pos: 'insideTopRight'    as const },
+                      { label: 'R1', val: pv.r1,    color: '#fb7185', width: 1.5, pos: 'insideBottomRight' as const },
+                      { label: 'P',  val: pv.pivot,  color: '#a855f7', width: 2.5, pos: 'insideTopRight'    as const },
+                      { label: 'S1', val: pv.s1,    color: '#4ade80', width: 1.5, pos: 'insideBottomLeft'  as const },
+                      { label: 'S2', val: pv.s2,    color: '#16a34a', width: 1,   pos: 'insideTopLeft'     as const },
+                      { label: 'S3', val: pv.s3,    color: '#14532d', width: 1,   pos: 'insideBottomLeft'  as const },
                     ]
                     return lines.map((pl) => (
                       <ReferenceLine
                         key={pl.label}
                         y={pl.val}
                         stroke={pl.color}
-                        strokeDasharray={pl.label === 'P' ? '6 0' : '4 3'}
+                        strokeDasharray={pl.label === 'P' ? '0' : '5 3'}
                         strokeWidth={pl.width}
-                        strokeOpacity={0.9}
+                        strokeOpacity={0.85}
                         label={{
-                          value: `${pl.label}  ₹${pl.val.toFixed(0)}`,
-                          position: pl.side,
-                          offset: 4,
-                          fontSize: 10,
+                          value: `${pl.label} ₹${pl.val.toFixed(0)}`,
+                          position: pl.pos,
+                          offset: 3,
+                          fontSize: 9,
                           fill: pl.color,
                           fontWeight: pl.label === 'P' ? 700 : 600,
                         }}
