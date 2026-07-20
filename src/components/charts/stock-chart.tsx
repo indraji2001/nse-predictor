@@ -270,8 +270,8 @@ export function StockChart({ candles, indicators, symbol }: Props) {
           </div>
         ) : (
           <>
-            {/* Main chart — increased height (P2-8 fix: was 300px, now 340px to use space better) */}
-            <div className="h-[340px] w-full">
+            {/* Main chart — tall to fill the enlarged dialog */}
+            <div className="h-[460px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <ComposedChart data={chartData} margin={{ top: 5, right: 50, left: 0, bottom: 0 }}>
                   <defs>
@@ -367,21 +367,29 @@ export function StockChart({ candles, indicators, symbol }: Props) {
                   {/* Last close reference */}
                   <ReferenceLine y={lastClose} stroke={COLORS.close} strokeDasharray="4 2" />
 
-                  {/* ── Fibonacci Retracement Overlays ── */}
-                  {showFib && fibLevels && fibLevels.map((fl) => (
+                  {/* ── Fibonacci Retracement Overlays ─────────────────────
+                      Labels alternate Left/Right by index so they NEVER overlap:
+                        78.6% → Right   (index 0)
+                        61.8% → Left    (index 1, golden ratio — most important)
+                        50.0% → Right   (index 2)
+                        38.2% → Left    (index 3)
+                        23.6% → Right   (index 4)
+                  ─────────────────────────────────────────────────────────── */}
+                  {showFib && fibLevels && fibLevels.map((fl, idx) => (
                     <ReferenceLine
                       key={fl.label}
                       y={fl.val}
                       stroke={fl.color}
-                      strokeDasharray="5 3"
-                      strokeWidth={1.5}
-                      strokeOpacity={0.85}
+                      strokeDasharray={fl.label === '61.8%' ? '8 3' : '5 3'}
+                      strokeWidth={fl.label === '61.8%' ? 2 : 1.5}
+                      strokeOpacity={0.9}
                       label={{
                         value: `${fl.label}  ₹${fl.val.toFixed(0)}`,
-                        position: 'insideRight',
-                        fontSize: 9,
+                        position: idx % 2 === 0 ? 'insideTopRight' : 'insideTopLeft',
+                        offset: 4,
+                        fontSize: 10,
                         fill: fl.color,
-                        fontWeight: 600,
+                        fontWeight: fl.label === '61.8%' ? 700 : 600,
                       }}
                     />
                   ))}
