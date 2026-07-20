@@ -164,27 +164,34 @@ export function StockChart({ candles, indicators, symbol }: Props) {
       : null,
   }))
 
-  // Fibonacci Retracement — standard uptrend convention (draw from LOW → HIGH):
-  //   0%   = Swing Low  (bottom)
-  //   100% = Swing High (top)
-  // Retracement levels mark potential SUPPORT during pullback:
-  //   78.6% level = low + 0.786 × range  → near the HIGH  (shallow pullback support)
-  //   61.8% level = low + 0.618 × range  → golden ratio    (KEY support, most important)
-  //   50.0% level = low + 0.500 × range  → mid-point
-  //   38.2% level = low + 0.382 × range  → moderate support
-  //   23.6% level = low + 0.236 × range  → near the LOW   (deep retracement)
-  // This matches TradingView's default Fibonacci tool for bullish setups.
+  // ─────────────────────────────────────────────────────────────────────────
+  // Fibonacci Retracement — VERIFIED formula (StockCharts, Zerodha Varsity)
+  //
+  // UPTREND (this app shows BUY signals → uptrend context):
+  //   Tool is drawn: SWING LOW → SWING HIGH
+  //   Support levels during pullback = High − (Range × Ratio)
+  //
+  //   23.6% level = High − 0.236 × Range  → SHALLOWEST pullback (near High)
+  //   38.2% level = High − 0.382 × Range  → moderate support
+  //   50.0% level = High − 0.500 × Range  → mid-point (Dow Theory, not strict Fib)
+  //   61.8% level = High − 0.618 × Range  → GOLDEN RATIO — strongest support
+  //   78.6% level = High − 0.786 × Range  → DEEPEST pullback (near Low)
+  //
+  // Source: StockCharts ChartSchool, Zerodha Varsity Chapter 16
+  // ─────────────────────────────────────────────────────────────────────────
   const fibLevels = useMemo(() => {
     let high = -Infinity, low = Infinity
     for (const d of data) { if (d.high > high) high = d.high; if (d.low < low) low = d.low }
     if (high === -Infinity || high === low) return null
     const diff = high - low
     return [
-      { label: '78.6%', val: +(low + 0.786 * diff).toFixed(2), color: '#f43f5e' },   // rose   — near HIGH
-      { label: '61.8%', val: +(low + 0.618 * diff).toFixed(2), color: '#f97316' },   // orange — golden ratio KEY
-      { label: '50.0%', val: +(low + 0.500 * diff).toFixed(2), color: '#eab308' },   // yellow — midpoint
-      { label: '38.2%', val: +(low + 0.382 * diff).toFixed(2), color: '#22c55e' },   // green
-      { label: '23.6%', val: +(low + 0.236 * diff).toFixed(2), color: '#3b82f6' },   // blue   — near LOW
+      { label: '0%   (High)', val: +high.toFixed(2),                   color: '#94a3b8', dash: '2 4' as const },
+      { label: '23.6%',       val: +(high - 0.236 * diff).toFixed(2),  color: '#3b82f6', dash: '5 3' as const },  // blue  — shallow pullback
+      { label: '38.2%',       val: +(high - 0.382 * diff).toFixed(2),  color: '#22c55e', dash: '5 3' as const },  // green
+      { label: '50.0%',       val: +(high - 0.500 * diff).toFixed(2),  color: '#eab308', dash: '5 3' as const },  // yellow — midpoint
+      { label: '61.8% ★',    val: +(high - 0.618 * diff).toFixed(2),  color: '#f97316', dash: '8 3' as const },  // orange — GOLDEN RATIO (thickest)
+      { label: '78.6%',       val: +(high - 0.786 * diff).toFixed(2),  color: '#f43f5e', dash: '5 3' as const },  // rose  — deep retracement
+      { label: '100% (Low)',  val: +low.toFixed(2),                    color: '#94a3b8', dash: '2 4' as const },
     ]
   }, [data])
 
@@ -376,28 +383,27 @@ export function StockChart({ candles, indicators, symbol }: Props) {
                   <ReferenceLine y={lastClose} stroke={COLORS.close} strokeDasharray="4 2" />
 
                   {/* ── Fibonacci Retracement Overlays ─────────────────────
-                      Labels alternate Left/Right by index so they NEVER overlap:
-                        78.6% → Right   (index 0)
-                        61.8% → Left    (index 1, golden ratio — most important)
-                        50.0% → Right   (index 2)
-                        38.2% → Left    (index 3)
-                        23.6% → Right   (index 4)
+                      Formula (StockCharts verified, uptrend):
+                        Level = High − (Range × Ratio)
+                      0% = High (top), 100% = Low (bottom)
+                      Labels alternate Left/Right by index to prevent overlap.
+                      61.8% ★ = Golden Ratio = thickest, most important line.
                   ─────────────────────────────────────────────────────────── */}
                   {showFib && fibLevels && fibLevels.map((fl, idx) => (
                     <ReferenceLine
                       key={fl.label}
                       y={fl.val}
                       stroke={fl.color}
-                      strokeDasharray={fl.label === '61.8%' ? '8 3' : '5 3'}
-                      strokeWidth={fl.label === '61.8%' ? 2 : 1.5}
-                      strokeOpacity={0.9}
+                      strokeDasharray={fl.dash}
+                      strokeWidth={fl.label.includes('61.8%') ? 2.5 : fl.label.includes('0%') ? 1 : 1.5}
+                      strokeOpacity={fl.label.includes('0%') ? 0.4 : 0.9}
                       label={{
                         value: `${fl.label}  ₹${fl.val.toFixed(0)}`,
                         position: idx % 2 === 0 ? 'insideTopRight' : 'insideTopLeft',
                         offset: 4,
-                        fontSize: 10,
+                        fontSize: fl.label.includes('0%') ? 9 : 10,
                         fill: fl.color,
-                        fontWeight: fl.label === '61.8%' ? 700 : 600,
+                        fontWeight: fl.label.includes('61.8%') ? 700 : 600,
                       }}
                     />
                   ))}
