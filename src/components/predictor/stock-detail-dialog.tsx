@@ -111,16 +111,8 @@ export function StockDetailDialog({ symbol, onClose }: Props) {
   return (
     <Dialog open={symbol !== null} onOpenChange={(o) => !o && onClose()}>
       <DialogContent
-        className="overflow-auto p-0 gap-0"
-        style={{
-          width: 'calc(100vw - 48px)',
-          height: 'calc(100vh - 48px)',
-          maxWidth: 'calc(100vw - 48px)',
-          maxHeight: 'calc(100vh - 48px)',
-          minWidth: '520px',
-          minHeight: '440px',
-          resize: 'both',
-        }}
+        className="w-[96vw] h-[94vh] overflow-auto p-0 gap-0"
+        style={{ resize: 'both', minWidth: '520px', minHeight: '440px' }}
       >
         <DialogHeader className="p-4 pb-2 border-b border-border/60">
           <DialogTitle className="flex items-center gap-2 flex-wrap text-base">

@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect, useRef } from 'react'
 import {
-  ComposedChart, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Bar, BarChart, Cell,
+  ComposedChart, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Bar, BarChart, Cell, Brush,
 } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
@@ -450,6 +450,23 @@ export function StockChart({ candles, indicators, symbol }: Props) {
                       />
                     ))
                   })()}
+
+
+                  {/* ── Brush / Zoom control ────────────────────────────────
+                      Drag the handles to zoom into any date range.
+                      Shows a mini-overview of the entire visible data.
+                  ─────────────────────────────────────────────────────────── */}
+                  <Brush
+                    dataKey="date"
+                    height={34}
+                    stroke="#6366f1"
+                    fill="rgba(99,102,241,0.05)"
+                    travellerWidth={8}
+                    startIndex={Math.max(0, chartData.length - 66)}
+                    tickFormatter={(v) => {
+                      try { return new Date(v).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) } catch { return '' }
+                    }}
+                  />
                 </ComposedChart>
               </ResponsiveContainer>
             </div>
