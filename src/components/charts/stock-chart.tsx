@@ -101,7 +101,8 @@ export function StockChart({ candles, indicators, symbol }: Props) {
   const [showEMA, setShowEMA] = useState(true)
   const [showBB, setShowBB] = useState(true)
   const [showVolume, setShowVolume] = useState(true)
-  const [showFib, setShowFib] = useState(false)  // Fibonacci retracement overlay
+  const [showFib, setShowFib] = useState(false)    // Fibonacci retracement overlay
+  const [showPivot, setShowPivot] = useState(false)  // Pivot levels overlay
   const [chartType, setChartType] = useState<'line' | 'candle'>('candle')
   const [range, setRange] = useState<'1M' | '3M' | '6M' | '1Y' | '2Y' | '3Y' | '5Y' | '10Y'>('3M')
   const [viewSource, setViewSource] = useState<'custom' | 'tradingview'>('custom')
@@ -264,6 +265,16 @@ export function StockChart({ candles, indicators, symbol }: Props) {
                   >
                     Fib
                   </ToggleGroupItem>
+                  <ToggleGroupItem
+                    value="pivot"
+                    data-state={showPivot ? 'on' : 'off'}
+                    onClick={() => setShowPivot((v) => !v)}
+                    className="text-[10px] h-7 px-2"
+                    title="Pivot Levels: P, R1/R2/R3 (resistance) and S1/S2/S3 (support)"
+                    style={showPivot ? { color: '#a855f7', fontWeight: 700 } : {}}
+                  >
+                    Pivot
+                  </ToggleGroupItem>
                 </ToggleGroup>
               </>
             )}
@@ -399,6 +410,43 @@ export function StockChart({ candles, indicators, symbol }: Props) {
                       }}
                     />
                   ))}
+
+                  {/* ── Pivot Levels Overlays ───────────────────────────────
+                      Source: indicators.pivots (same as Pivot Levels panel)
+                      P  = Central Pivot (purple, solid, thickest)
+                      R1/R2/R3 = Resistance levels (red shades, right labels)
+                      S1/S2/S3 = Support levels    (green shades, left labels)
+                  ─────────────────────────────────────────────────────────── */}
+                  {showPivot && indicators.pivots && (() => {
+                    const pv = indicators.pivots
+                    const lines = [
+                      { label: 'R3', val: pv.r3, color: '#be123c', width: 1,   side: 'insideTopRight' as const },
+                      { label: 'R2', val: pv.r2, color: '#e11d48', width: 1,   side: 'insideTopRight' as const },
+                      { label: 'R1', val: pv.r1, color: '#fb7185', width: 1.5, side: 'insideTopRight' as const },
+                      { label: 'P',  val: pv.pivot, color: '#a855f7', width: 2.5, side: 'insideTopRight' as const },
+                      { label: 'S1', val: pv.s1, color: '#4ade80', width: 1.5, side: 'insideTopLeft'  as const },
+                      { label: 'S2', val: pv.s2, color: '#16a34a', width: 1,   side: 'insideTopLeft'  as const },
+                      { label: 'S3', val: pv.s3, color: '#14532d', width: 1,   side: 'insideTopLeft'  as const },
+                    ]
+                    return lines.map((pl) => (
+                      <ReferenceLine
+                        key={pl.label}
+                        y={pl.val}
+                        stroke={pl.color}
+                        strokeDasharray={pl.label === 'P' ? '6 0' : '4 3'}
+                        strokeWidth={pl.width}
+                        strokeOpacity={0.9}
+                        label={{
+                          value: `${pl.label}  ₹${pl.val.toFixed(0)}`,
+                          position: pl.side,
+                          offset: 4,
+                          fontSize: 10,
+                          fill: pl.color,
+                          fontWeight: pl.label === 'P' ? 700 : 600,
+                        }}
+                      />
+                    ))
+                  })()}
                 </ComposedChart>
               </ResponsiveContainer>
             </div>
