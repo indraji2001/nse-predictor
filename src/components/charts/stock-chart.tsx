@@ -164,19 +164,27 @@ export function StockChart({ candles, indicators, symbol }: Props) {
       : null,
   }))
 
-  // Fibonacci levels from the VISIBLE window's high/low range
-  // (matches how traders draw Fib retracements on screen — not all-time range)
+  // Fibonacci Retracement — standard uptrend convention (draw from LOW → HIGH):
+  //   0%   = Swing Low  (bottom)
+  //   100% = Swing High (top)
+  // Retracement levels mark potential SUPPORT during pullback:
+  //   78.6% level = low + 0.786 × range  → near the HIGH  (shallow pullback support)
+  //   61.8% level = low + 0.618 × range  → golden ratio    (KEY support, most important)
+  //   50.0% level = low + 0.500 × range  → mid-point
+  //   38.2% level = low + 0.382 × range  → moderate support
+  //   23.6% level = low + 0.236 × range  → near the LOW   (deep retracement)
+  // This matches TradingView's default Fibonacci tool for bullish setups.
   const fibLevels = useMemo(() => {
     let high = -Infinity, low = Infinity
     for (const d of data) { if (d.high > high) high = d.high; if (d.low < low) low = d.low }
     if (high === -Infinity || high === low) return null
     const diff = high - low
     return [
-      { label: '78.6%', val: +(high - 0.786 * diff).toFixed(2), color: '#f43f5e' },
-      { label: '61.8%', val: +(high - 0.618 * diff).toFixed(2), color: '#f97316' },
-      { label: '50.0%', val: +(high - 0.500 * diff).toFixed(2), color: '#eab308' },
-      { label: '38.2%', val: +(high - 0.382 * diff).toFixed(2), color: '#22c55e' },
-      { label: '23.6%', val: +(high - 0.236 * diff).toFixed(2), color: '#3b82f6' },
+      { label: '78.6%', val: +(low + 0.786 * diff).toFixed(2), color: '#f43f5e' },   // rose   — near HIGH
+      { label: '61.8%', val: +(low + 0.618 * diff).toFixed(2), color: '#f97316' },   // orange — golden ratio KEY
+      { label: '50.0%', val: +(low + 0.500 * diff).toFixed(2), color: '#eab308' },   // yellow — midpoint
+      { label: '38.2%', val: +(low + 0.382 * diff).toFixed(2), color: '#22c55e' },   // green
+      { label: '23.6%', val: +(low + 0.236 * diff).toFixed(2), color: '#3b82f6' },   // blue   — near LOW
     ]
   }, [data])
 
