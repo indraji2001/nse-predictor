@@ -68,7 +68,8 @@ export function StockDetailDialog({ symbol, onClose }: Props) {
         if (selectedProvider && selectedProvider !== 'DEFAULT') {
           params.set('provider', selectedProvider)
         }
-        params.set('range', selectedRange)
+        // Always fetch 5Y so chart range buttons (1Y/2Y/3Y/5Y) have enough data
+        params.set('range', '5y')
 
         const r = await fetch(`/api/stock/${encodeURIComponent(symbol)}?${params.toString()}`)
         if (!r.ok) throw new Error(`HTTP ${r.status}`)
@@ -81,7 +82,7 @@ export function StockDetailDialog({ symbol, onClose }: Props) {
     return () => {
       cancelled = true
     }
-  }, [symbol, selectedProvider, selectedRange])
+  }, [symbol, selectedProvider])
 
   const handleProviderChange = (p: string) => {
     setSelectedProvider(p)

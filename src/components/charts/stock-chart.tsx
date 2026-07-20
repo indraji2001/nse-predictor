@@ -202,96 +202,86 @@ export function StockChart({ candles, indicators, symbol }: Props) {
               <ToggleGroupItem value="tradingview" className="text-[10px] h-6 px-2 font-semibold" title="Interactive TradingView Chart">TradingView</ToggleGroupItem>
             </ToggleGroup>
 
-            {viewSource === 'custom' && (
-              <>
-                {/* P3-14: Chart type toggle (Line vs Candlestick) */}
-                <ToggleGroup type="single" value={chartType} onValueChange={(v) => v && setChartType(v as 'line' | 'candle')} size="sm">
-                  <ToggleGroupItem value="candle" className="text-[10px] h-7 px-2" title="Candlestick chart">Candle</ToggleGroupItem>
-                  <ToggleGroupItem value="line" className="text-[10px] h-7 px-2" title="Line chart">Line</ToggleGroupItem>
-                </ToggleGroup>
-                <ToggleGroup type="single" value={range} onValueChange={(v) => v && setRange(v as any)} size="sm">
-                  <ToggleGroupItem value="1M" className="text-[10px] h-7 px-2">1M</ToggleGroupItem>
-                  <ToggleGroupItem value="3M" className="text-[10px] h-7 px-2">3M</ToggleGroupItem>
-                  <ToggleGroupItem value="6M" className="text-[10px] h-7 px-2">6M</ToggleGroupItem>
-                  <ToggleGroupItem value="1Y" className="text-[10px] h-7 px-2">1Y</ToggleGroupItem>
-                  {candles.length > 280 && (
-                    <ToggleGroupItem value="2Y" className="text-[10px] h-7 px-2">2Y</ToggleGroupItem>
-                  )}
-                  {candles.length > 530 && (
-                    <ToggleGroupItem value="3Y" className="text-[10px] h-7 px-2">3Y</ToggleGroupItem>
-                  )}
-                  {candles.length > 800 && (
-                    <ToggleGroupItem value="5Y" className="text-[10px] h-7 px-2">5Y</ToggleGroupItem>
-                  )}
-                  {candles.length > 1500 && (
-                    <ToggleGroupItem value="10Y" className="text-[10px] h-7 px-2">10Y</ToggleGroupItem>
-                  )}
-                </ToggleGroup>
-                <ToggleGroup type="multiple" size="sm">
-                  <ToggleGroupItem
-                    value="ema"
-                    data-state={showEMA ? 'on' : 'off'}
-                    onClick={() => setShowEMA((v) => !v)}
-                    className="text-[10px] h-7 px-2"
-                    title="Exponential Moving Averages (9, 21, 50)"
-                  >
-                    EMA
-                  </ToggleGroupItem>
-                  <ToggleGroupItem
-                    value="bb"
-                    data-state={showBB ? 'on' : 'off'}
-                    onClick={() => setShowBB((v) => !v)}
-                    className="text-[10px] h-7 px-2"
-                    title="Bollinger Bands (20, 2σ)"
-                  >
-                    BB
-                  </ToggleGroupItem>
-                  <ToggleGroupItem
-                    value="vol"
-                    data-state={showVolume ? 'on' : 'off'}
-                    onClick={() => setShowVolume((v) => !v)}
-                    className="text-[10px] h-7 px-2"
-                    title="Volume bars"
-                  >
-                    Vol
-                  </ToggleGroupItem>
-                  <ToggleGroupItem
-                    value="fib"
-                    data-state={showFib ? 'on' : 'off'}
-                    onClick={() => setShowFib((v) => !v)}
-                    className="text-[10px] h-7 px-2"
-                    title="Fibonacci Retracement levels (23.6%, 38.2%, 50%, 61.8%, 78.6%) of visible range"
-                    style={showFib ? { color: '#f97316', fontWeight: 700 } : {}}
-                  >
-                    Fib
-                  </ToggleGroupItem>
-                  <ToggleGroupItem
-                    value="pivot"
-                    data-state={showPivot ? 'on' : 'off'}
-                    onClick={() => setShowPivot((v) => !v)}
-                    className="text-[10px] h-7 px-2"
-                    title="Pivot Levels: P, R1/R2/R3 (resistance) and S1/S2/S3 (support)"
-                    style={showPivot ? { color: '#a855f7', fontWeight: 700 } : {}}
-                  >
-                    Pivot
-                  </ToggleGroupItem>
-                </ToggleGroup>
-              </>
-            )}
+                {/* Range + chart-type toggles — stay at the top */}
+                <>
+                  {/* P3-14: Chart type toggle (Line vs Candlestick) */}
+                  <ToggleGroup type="single" value={chartType} onValueChange={(v) => v && setChartType(v as 'line' | 'candle')} size="sm">
+                    <ToggleGroupItem value="candle" className="text-[10px] h-7 px-2" title="Candlestick chart">Candle</ToggleGroupItem>
+                    <ToggleGroupItem value="line" className="text-[10px] h-7 px-2" title="Line chart">Line</ToggleGroupItem>
+                  </ToggleGroup>
+                  <ToggleGroup type="single" value={range} onValueChange={(v) => v && setRange(v as any)} size="sm">
+                    <ToggleGroupItem value="1M" className="text-[10px] h-7 px-2">1M</ToggleGroupItem>
+                    <ToggleGroupItem value="3M" className="text-[10px] h-7 px-2">3M</ToggleGroupItem>
+                    <ToggleGroupItem value="6M" className="text-[10px] h-7 px-2">6M</ToggleGroupItem>
+                    <ToggleGroupItem value="1Y" className="text-[10px] h-7 px-2">1Y</ToggleGroupItem>
+                    {candles.length > 280 && (
+                      <ToggleGroupItem value="2Y" className="text-[10px] h-7 px-2">2Y</ToggleGroupItem>
+                    )}
+                    {candles.length > 530 && (
+                      <ToggleGroupItem value="3Y" className="text-[10px] h-7 px-2">3Y</ToggleGroupItem>
+                    )}
+                    {candles.length > 800 && (
+                      <ToggleGroupItem value="5Y" className="text-[10px] h-7 px-2">5Y</ToggleGroupItem>
+                    )}
+                    {candles.length > 1500 && (
+                      <ToggleGroupItem value="10Y" className="text-[10px] h-7 px-2">10Y</ToggleGroupItem>
+                    )}
+                  </ToggleGroup>
+                </>
+              )}
           </div>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-0">
         {viewSource === 'tradingview' ? (
-          <div className="h-[440px] w-full">
+          <div className="h-[440px] w-full p-4">
             <TradingViewPortalCard symbol={symbol} />
           </div>
         ) : (
           <>
-            {/* Main chart — tall to fill the enlarged dialog */}
-            <div className="h-[460px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <ComposedChart data={chartData} margin={{ top: 5, right: 50, left: 0, bottom: 0 }}>
+            {/* ── Layout: [Left overlay panel] + [Chart area] ── */}
+            <div className="flex flex-row h-[500px]">
+
+              {/* Left-side overlay checkboxes */}
+              <div className="flex flex-col gap-2 justify-start pt-3 px-2 border-r border-border/40 bg-muted/10 min-w-[76px]"
+                   style={{ fontSize: '11px' }}>
+                <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wide pb-1">Overlays</span>
+                {[
+                  { id: 'ema',   label: 'EMA',   color: '#6366f1', val: showEMA,   set: setShowEMA,   title: 'EMA 9 / 21 / 50' },
+                  { id: 'bb',    label: 'BB',    color: '#a855f7', val: showBB,    set: setShowBB,    title: 'Bollinger Bands (20, 2σ)' },
+                  { id: 'vol',   label: 'Volume',color: '#64748b', val: showVolume,set: setShowVolume, title: 'Volume bars' },
+                  { id: 'fib',   label: 'Fib',   color: '#f97316', val: showFib,   set: setShowFib,   title: 'Fibonacci Retracement' },
+                  { id: 'pivot', label: 'Pivot', color: '#a855f7', val: showPivot, set: setShowPivot, title: 'Pivot Levels (P, R1-3, S1-3)' },
+                ].map((item) => (
+                  <label
+                    key={item.id}
+                    className="flex items-center gap-1.5 cursor-pointer select-none group"
+                    title={item.title}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={item.val}
+                      onChange={() => item.set((v) => !v)}
+                      className="w-3 h-3 cursor-pointer accent-indigo-500"
+                    />
+                    <span
+                      className="w-2 h-2 rounded-full flex-shrink-0"
+                      style={{ backgroundColor: item.color }}
+                    />
+                    <span
+                      className="text-[10px] font-medium leading-none"
+                      style={{ color: item.val ? item.color : undefined }}
+                    >
+                      {item.label}
+                    </span>
+                  </label>
+                ))}
+              </div>
+
+              {/* Main chart — fills remaining width */}
+              <div className="flex-1 h-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <ComposedChart data={chartData} margin={{ top: 5, right: 50, left: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id="priceFill" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor={COLORS.close} stopOpacity={0.18} />
@@ -469,11 +459,12 @@ export function StockChart({ candles, indicators, symbol }: Props) {
                   />
                 </ComposedChart>
               </ResponsiveContainer>
-            </div>
+            </div>{/* end flex-1 chart */}
+          </div>{/* end flex-row */}
 
-            {/* Volume strip — increased height (P2-9 fix: was 80px, now 100px) */}
+            {/* Volume strip */}
             {showVolume && (
-              <div className="h-[100px] w-full mt-2">
+              <div className="h-[80px] w-full mt-1 pl-[76px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={chartData} margin={{ top: 0, right: 50, left: 0, bottom: 0 }}>
                     <XAxis
