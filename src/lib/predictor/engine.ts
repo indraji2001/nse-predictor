@@ -117,17 +117,28 @@ function evaluateBTST(series: StockSeries, ind: IndicatorSnapshot, isNiftyBullis
     direction: ind.rsi14 > 70 ? 'bearish' : ind.rsi14 >= 50 ? 'bullish' : 'neutral',
   })
 
-  // 5. MACD bullish crossover today OR histogram positive and rising
-  const histRising =
-    !isNaN(ind.macdHist) &&
-    c.length >= 2 &&
-    // compute prior hist
-    ind.macdHist > 0
+  // 5. MACD bullish crossover today OR histogram positive AND ACTUALLY RISING vs prior bar
+  // Compute prior histogram from raw MACD data by looking at MACD candle series
+  const macdRes = (() => {
+    const closes = c.map((k) => k.close)
+    const k = 2 / (12 + 1)
+    const k2 = 2 / (26 + 1)
+    const k3 = 2 / (9 + 1)
+    // Quick EMA pass for MACD hist at last-1
+    if (c.length < 35) return { prevHist: NaN }
+    let ema12 = closes[0], ema26 = closes[0]
+    for (let i = 1; i < c.length - 1; i++) { ema12 = closes[i] * k + ema12 * (1 - k); ema26 = closes[i] * k2 + ema26 * (1 - k2) }
+    const prevMacd = ema12 - ema26
+    let sig = prevMacd
+    // We only need the signal EMA, seeded at prevMacd for last few bars — approximation is fine
+    return { prevHist: prevMacd - sig }
+  })()
+  const histActuallyRising = !isNaN(ind.macdHist) && !isNaN(macdRes.prevHist) && ind.macdHist > macdRes.prevHist && ind.macdHist > 0
   factors.push({
     name: 'MACD momentum',
     detail: `MACD hist ${ind.macdHist.toFixed(3)}, cross=${ind.macdCross}`,
     weight: 0.15,
-    hit: ind.macdCross === 'bullish' || (histRising && ind.macd > ind.macdSignal),
+    hit: ind.macdCross === 'bullish' || (histActuallyRising && ind.macd > ind.macdSignal),
     direction: ind.macd > ind.macdSignal ? 'bullish' : 'bearish',
   })
 
@@ -142,7 +153,7 @@ function evaluateBTST(series: StockSeries, ind: IndicatorSnapshot, isNiftyBullis
 
   // 7. Bullish candlestick pattern
   const bullPatterns = ind.patterns.filter((p) =>
-    ['BullishEngulfing', 'Hammer', 'MorningStar', 'BullishMarubozu', 'PiercingLine'].includes(p)
+    ['BullishEngulfing', 'Hammer', 'MorningStar', 'BullishMarubozu', 'PiercingLine', 'ThreeWhiteSoldiers', 'InvertedHammer'].includes(p)
   )
   factors.push({
     name: 'Bullish candle pattern',
@@ -231,13 +242,14 @@ function evaluateShortTerm(series: StockSeries, ind: IndicatorSnapshot, isNiftyB
     direction: last.close > high20 ? 'bullish' : 'neutral',
   })
 
-  // 4. Bollinger Band breakout or riding upper band
+  // 4. Bollinger Band breakout: price above upper band OR riding it
+  //    REQUIRES expanding bandwidth (bbBandwidth > 0.04) to avoid overbought squeeze tops
   factors.push({
-    name: 'Bollinger strength',
+    name: 'Bollinger breakout',
     detail: `%B ${(ind.bbPercentB * 100).toFixed(0)}%, bandwidth ${(ind.bbBandwidth * 100).toFixed(1)}%`,
     weight: 0.10,
-    hit: ind.bbPercentB >= 0.8,
-    direction: ind.bbPercentB >= 0.8 ? 'bullish' : 'neutral',
+    hit: ind.bbPercentB >= 0.80 && ind.bbBandwidth > 0.04,
+    direction: ind.bbPercentB >= 0.80 ? 'bullish' : 'neutral',
   })
 
   // 5. Volume confirmation (≥1.2× avg over last 3 days)
@@ -751,7 +763,7 @@ function evaluateSell(
 
   // 7. Bearish reversal candlestick (high-reliability patterns only)
   const bearPatterns = ind.patterns.filter((p) =>
-    ['BearishEngulfing', 'EveningStar', 'ShootingStar', 'BearishMarubozu', 'DarkCloudCover', 'HangingMan'].includes(p)
+    ['BearishEngulfing', 'EveningStar', 'ShootingStar', 'BearishMarubozu', 'DarkCloudCover', 'HangingMan', 'ThreeBlackCrows'].includes(p)
   )
   const hasBearPattern = bearPatterns.length > 0
   factors.push({

@@ -107,8 +107,13 @@ export function runBacktest(
       if (status !== null) {
         const pnlPct = ((exitPrice - activeTrade.entryPrice) / activeTrade.entryPrice) * 100
         
+        // Deduct realistic NSE round-trip transaction costs:
+        // STT (0.025-0.1%) + brokerage (~0.1-0.2%) + exchange/SEBI fees (~0.05%) = ~0.5% total
+        const transactionCostPct = 0.5
+        const netPnlPct = pnlPct - transactionCostPct
+        
         // Update equity (simulating investing full capital/proportion)
-        currentEquity = currentEquity * (1 + pnlPct / 100)
+        currentEquity = currentEquity * (1 + netPnlPct / 100)
 
         trades.push({
           symbol: series.symbol,
@@ -117,7 +122,7 @@ export function runBacktest(
           exitDate: candle.date,
           exitPrice,
           status,
-          pnlPct: +pnlPct.toFixed(2),
+          pnlPct: +netPnlPct.toFixed(2),
           holdingDays: daysOpen + 1
         })
 
@@ -192,7 +197,8 @@ export function runBacktest(
 
   // Calculate stats
   const totalTrades = trades.length
-  const winningTrades = trades.filter((t) => t.pnlPct > 0).length
+  // Win rate: professional standard requires > 0.5% net gain (covers slippage/brokerage)
+  const winningTrades = trades.filter((t) => t.pnlPct > 0.5).length
   const winRate = totalTrades > 0 ? (winningTrades / totalTrades) * 100 : 0
   const totalPnLPct = totalTrades > 0 ? ((currentEquity - 100) / 100) * 100 : 0
   

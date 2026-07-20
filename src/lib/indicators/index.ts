@@ -357,6 +357,10 @@ export type Pattern =
   | 'BearishMarubozu'
   | 'PiercingLine'
   | 'DarkCloudCover'
+  | 'ThreeWhiteSoldiers'
+  | 'ThreeBlackCrows'
+  | 'InvertedHammer'
+  | 'HangingMan'
 
 export function detectPatterns(candles: Candle[]): Pattern[] {
   const found: Pattern[] = []
@@ -372,15 +376,28 @@ export function detectPatterns(candles: Candle[]): Pattern[] {
   const isBull = (c: Candle) => c.close > c.open
   const isBear = (c: Candle) => c.close < c.open
 
+  // 5-day context: prior trend for reversal pattern validation
+  const priorClose5 = n >= 6 ? candles[n - 6].close : candles[0].close
+  const priorDowntrend = c3.close < priorClose5 * 0.97  // down >=3% in 5 days
+  const priorUptrend = c3.close > priorClose5 * 1.03    // up >=3% in 5 days
+
   // Bullish Engulfing: prior bearish, current bullish, body engulfs prior body
   if (isBear(c2) && isBull(c3) && c3.open <= c2.close && c3.close >= c2.open) found.push('BullishEngulfing')
   if (isBull(c2) && isBear(c3) && c3.open >= c2.close && c3.close <= c2.open) found.push('BearishEngulfing')
 
-  // Hammer: small body at top, long lower wick (≥ 2× body)
-  if (lowerWick(c3) >= 2 * body(c3) && upperWick(c3) < body(c3) && body(c3) / range(c3) < 0.4) found.push('Hammer')
-  if (upperWick(c3) >= 2 * body(c3) && lowerWick(c3) < body(c3) && body(c3) / range(c3) < 0.4) found.push('ShootingStar')
+  // Hammer: small body at top, long lower wick (>=2x body), after downtrend
+  if (lowerWick(c3) >= 2 * body(c3) && upperWick(c3) < body(c3) && body(c3) / range(c3) < 0.4 && priorDowntrend) found.push('Hammer')
 
-  // Doji: body ≤ 10% of range
+  // Shooting Star: small body at bottom, long upper wick, after uptrend
+  if (upperWick(c3) >= 2 * body(c3) && lowerWick(c3) < body(c3) && body(c3) / range(c3) < 0.4 && priorUptrend) found.push('ShootingStar')
+
+  // Inverted Hammer: like shooting star shape but after downtrend (bullish reversal)
+  if (upperWick(c3) >= 2 * body(c3) && lowerWick(c3) < body(c3) && body(c3) / range(c3) < 0.4 && priorDowntrend && isBull(c3)) found.push('InvertedHammer')
+
+  // Hanging Man: like hammer shape but after uptrend (bearish reversal)
+  if (lowerWick(c3) >= 2 * body(c3) && upperWick(c3) < body(c3) && body(c3) / range(c3) < 0.4 && priorUptrend && isBear(c3)) found.push('HangingMan')
+
+  // Doji: body <= 10% of range
   if (range(c3) > 0 && body(c3) / range(c3) < 0.1) found.push('Doji')
 
   // Morning Star: bearish, small body, bullish with close above midpoint of first
@@ -397,7 +414,7 @@ export function detectPatterns(candles: Candle[]): Pattern[] {
     c3.close < (c1.open + c1.close) / 2
   ) found.push('EveningStar')
 
-  // Marubozu: very small wicks (≤ 5% of range)
+  // Marubozu: very small wicks (<=5% of range)
   if (isBull(c3) && upperWick(c3) < 0.05 * range(c3) && lowerWick(c3) < 0.05 * range(c3)) found.push('BullishMarubozu')
   if (isBear(c3) && upperWick(c3) < 0.05 * range(c3) && lowerWick(c3) < 0.05 * range(c3)) found.push('BearishMarubozu')
 
@@ -418,6 +435,20 @@ export function detectPatterns(candles: Candle[]): Pattern[] {
     c3.close < (c2.open + c2.close) / 2 &&
     c3.close > c2.open
   ) found.push('DarkCloudCover')
+
+  // Three White Soldiers: 3 consecutive bullish candles with higher closes, small upper wicks
+  if (n >= 3 && isBull(c1) && isBull(c2) && isBull(c3) &&
+      c2.close > c1.close && c3.close > c2.close &&
+      c2.open > c1.open && c3.open > c2.open &&
+      upperWick(c1) < body(c1) * 0.3 && upperWick(c2) < body(c2) * 0.3 && upperWick(c3) < body(c3) * 0.3
+  ) found.push('ThreeWhiteSoldiers')
+
+  // Three Black Crows: 3 consecutive bearish candles with lower closes, small lower wicks
+  if (n >= 3 && isBear(c1) && isBear(c2) && isBear(c3) &&
+      c2.close < c1.close && c3.close < c2.close &&
+      c2.open < c1.open && c3.open < c2.open &&
+      lowerWick(c1) < body(c1) * 0.3 && lowerWick(c2) < body(c2) * 0.3 && lowerWick(c3) < body(c3) * 0.3
+  ) found.push('ThreeBlackCrows')
 
   return found
 }
