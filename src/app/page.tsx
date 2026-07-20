@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback, useMemo } from 'react'
+import { useEffect, useState, useCallback, useMemo, useTransition, useDeferredValue } from 'react'
 import { RefreshCw, Search, TrendingUp, Sparkles, ShieldCheck, AlertTriangle, X, Flame, Clock, Database, Zap, Activity, Award } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -58,6 +58,10 @@ export default function Home() {
   const [upstoxConfigured, setUpstoxConfigured] = useState(false)
   const [healthOpen, setHealthOpen] = useState(false)
   const [signalDirection, setSignalDirection] = useState<'BUY' | 'SELL'>('BUY')
+  const [, startTransition] = useTransition()
+  // deferredDirection: the grid uses this — stays on old value until React is idle,
+  // keeping the radio-button toggle instant while cards update in background.
+  const deferredDirection = useDeferredValue(signalDirection)
 
   const loadIntraday = useCallback(async (showToast = true) => {
     setIntradayLoading(true)
@@ -341,7 +345,7 @@ export default function Home() {
 
   const signalsForTab: Signal[] = useMemo(() => {
     if (!result) return []
-    if (signalDirection === 'SELL') {
+    if (deferredDirection === 'SELL') {
       if (activeTab === 'BTST') return result.btstSell ?? []
       if (activeTab === 'SHORT_TERM') return result.shortTermSell ?? []
       if (activeTab === 'MIDTERM') return result.midtermSell ?? []
@@ -353,7 +357,7 @@ export default function Home() {
       if (activeTab === 'LONG_TERM') return result.longTerm
     }
     return [] // INTRADAY handled separately
-  }, [result, activeTab, signalDirection])
+  }, [result, activeTab, deferredDirection])
 
   const intradayFiltered = useMemo(() => {
     if (!intradayResult) return []
@@ -385,7 +389,7 @@ export default function Home() {
     }
     if (onlyTripleBuy && result) {
       // A signal is "all-timeframe" if its symbol appears in all 4 lists for the current direction
-      const src = signalDirection === 'SELL'
+      const src = deferredDirection === 'SELL'
         ? { b: result.btstSell ?? [], s: result.shortTermSell ?? [], m: result.midtermSell ?? [], l: result.longTermSell ?? [] }
         : { b: result.btst, s: result.shortTerm, m: result.midterm, l: result.longTerm }
       const btstSyms = new Set(src.b.map((s) => s.symbol))
@@ -395,17 +399,17 @@ export default function Home() {
       list = list.filter((s) => btstSyms.has(s.symbol) && stSyms.has(s.symbol) && mtSyms.has(s.symbol) && ltSyms.has(s.symbol))
     }
     return list
-  }, [signalsForTab, search, sectorFilter, minConfidence, onlyTripleBuy, result])
+  }, [signalsForTab, search, sectorFilter, minConfidence, onlyTripleBuy, result, deferredDirection])
 
   const sectorOptions = useMemo(() => {
     if (!result) return ['ALL']
     const set = new Set<string>()
-    const allSignals = signalDirection === 'SELL'
+    const allSignals = deferredDirection === 'SELL'
       ? [...(result.btstSell ?? []), ...(result.shortTermSell ?? []), ...(result.midtermSell ?? [])]
       : [...result.btst, ...result.shortTerm, ...result.midterm]
     allSignals.forEach((s) => set.add(s.sector))
     return ['ALL', ...Array.from(set).sort()]
-  }, [result, signalDirection])
+  }, [result, deferredDirection])
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -632,7 +636,7 @@ export default function Home() {
                     <button
                       key={dir}
                       id={`dir-${dir.toLowerCase()}`}
-                      onClick={() => setSignalDirection(dir)}
+                      onClick={() => startTransition(() => setSignalDirection(dir))}
                       className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-150 ${
                         isActive
                           ? isBuy
@@ -894,13 +898,13 @@ export default function Home() {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                       {filtered.map((sig, i) => (
                         <SignalCard
-                          key={`${sig.symbol}-${sig.timeframe}-${signalDirection}`}
+                          key={`${sig.symbol}-${sig.timeframe}`}
                           signal={sig}
                           rank={i + 1}
                           onOpen={() => setDetailSymbol(sig.symbol)}
                           onTrack={trackSignal}
                           isTracked={trackedKeys.has(`${sig.symbol}-${sig.timeframe}`)}
-                          direction={signalDirection}
+                          direction={deferredDirection}
                         />
                       ))}
                     </div>
