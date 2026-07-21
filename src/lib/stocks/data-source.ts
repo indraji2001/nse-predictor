@@ -202,10 +202,11 @@ export async function fetchUnifiedUniverse(
           // individual DB roundtrips and avoids re-downloading the 10 MB
           // instrument master for every missing symbol.
           const allSymbols = failed.map((item) => item.meta.symbol)
+          const oneYearAgoStr = new Date(Date.now() - 385 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
           const [upstoxToken, instrumentKeys, bulkCandlesMap] = await Promise.all([
             getUpstoxToken(),
             bulkGetInstrumentKeys(allSymbols),
-            bulkGetCachedCandles(allSymbols, 'day', 'UPSTOX'),
+            bulkGetCachedCandles(allSymbols, 'day', 'UPSTOX', oneYearAgoStr),
           ])
           if (!upstoxToken) {
             console.warn('Upstox: no access token, skipping')
@@ -257,7 +258,8 @@ export async function fetchUnifiedUniverse(
     } else if (prov === 'YAHOO') {
       try {
         const failedSymbols = failed.map((item) => item.meta.symbol)
-        const yahooCandlesMap = await bulkGetCachedCandles(failedSymbols, 'day', 'YAHOO')
+        const oneYearAgoStr = new Date(Date.now() - 385 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
+        const yahooCandlesMap = await bulkGetCachedCandles(failedSymbols, 'day', 'YAHOO', oneYearAgoStr)
         const yahooResults = await mapWithConcurrency(failed, 8, async (item) => {
           const cachedCandles = yahooCandlesMap.get(item.meta.symbol.toUpperCase())
           const y = await fetchYahooStock(item.meta.symbol, asOf, range, cachedCandles)
