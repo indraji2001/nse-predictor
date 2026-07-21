@@ -357,17 +357,6 @@ export async function getInstrumentKey(symbol: string): Promise<string | null> {
     _keyCache.set(symbol, cached.instrumentKey)
     return cached.instrumentKey
   }
-  // Refresh the master ONLY ONCE per invocation to avoid downloading
-  // the 10MB file for every missing stock symbol.
-  if (!_masterRefreshedThisInvocation) {
-    _masterRefreshedThisInvocation = true
-    await refreshInstrumentMaster()
-  }
-  const fresh = await db.upstoxInstrument.findUnique({ where: { symbol } })
-  if (fresh) {
-    _keyCache.set(symbol, fresh.instrumentKey)
-    return fresh.instrumentKey
-  }
   return null
 }
 
@@ -395,20 +384,6 @@ export async function bulkGetInstrumentKeys(
     _keyCache.set(row.symbol, row.instrumentKey)
   }
 
-  // If still missing, refresh master once
-  const stillMissing = missing.filter((s) => !result[s])
-  if (stillMissing.length > 0 && !_masterRefreshedThisInvocation) {
-    _masterRefreshedThisInvocation = true
-    await refreshInstrumentMaster()
-    const fresh = await db.upstoxInstrument.findMany({
-      where: { symbol: { in: stillMissing } },
-      select: { symbol: true, instrumentKey: true },
-    })
-    for (const row of fresh) {
-      result[row.symbol] = row.instrumentKey
-      _keyCache.set(row.symbol, row.instrumentKey)
-    }
-  }
   return result
 }
 
