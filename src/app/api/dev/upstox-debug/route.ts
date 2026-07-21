@@ -20,7 +20,7 @@ export async function GET(req: Request) {
   const url = new URL(req.url)
   const forceRefresh = url.searchParams.get('refresh') === '1'
 
-  const report: Record<string, unknown> = { _version: 'v5_direct_api', _ts: new Date().toISOString() }
+  const report: Record<string, unknown> = { _version: 'v6_hyphen_fix', _ts: new Date().toISOString() }
 
   // ── Step 1: OAuth status from DB ────────────────────────────────────────
   try {
@@ -174,9 +174,11 @@ export async function GET(req: Request) {
     fromDate.setDate(fromDate.getDate() - 378) // ~1Y
     const toStr = now.toISOString().slice(0, 10)
     const fromStr = fromDate.toISOString().slice(0, 10)
-
-    const urlWith1d  = `https://api.upstox.com/v2/historical/candle/${encodedKey}/1d/${toStr}/${fromStr}`
-    const urlWithDay = `https://api.upstox.com/v2/historical/candle/${encodedKey}/day/${toStr}/${fromStr}`
+    // CORRECTED: Upstox v2 uses 'historical-candle' (hyphen) not 'historical/candle'
+    const urlHyphen1d  = `https://api.upstox.com/v2/historical-candle/${encodedKey}/1d/${toStr}/${fromStr}`
+    const urlHyphenDay = `https://api.upstox.com/v2/historical-candle/${encodedKey}/day/${toStr}/${fromStr}`
+    const urlWith1d    = urlHyphen1d   // keep compat names
+    const urlWithDay   = urlHyphenDay  // keep compat names
 
     if (token) {
       // Test /1d/ interval
