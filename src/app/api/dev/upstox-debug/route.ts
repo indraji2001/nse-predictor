@@ -20,7 +20,7 @@ export async function GET(req: Request) {
   const url = new URL(req.url)
   const forceRefresh = url.searchParams.get('refresh') === '1'
 
-  const report: Record<string, unknown> = { _version: 'v7_final', _ts: new Date().toISOString() }
+  const report: Record<string, unknown> = { _version: 'v8_ratelimit_test', _ts: new Date().toISOString() }
 
   // ── Step 1: OAuth status from DB ────────────────────────────────────────
   try {
@@ -142,25 +142,38 @@ export async function GET(req: Request) {
     report.step6_known_symbols_keys = { error: String(e) }
   }
 
-  // ── Step 7: Fetch 1Y historical for RELIANCE via fetchHistorical() ─────────
+  // ── Step 7: Fetch 1Y + 5Y for RELIANCE, plus parallel 5-stock test ─────────
+  const testStocks = ['RELIANCE', 'TCS', 'INFY', 'HDFCBANK', 'ICICIBANK']
   try {
+    const t0 = Date.now()
+    const parallelResults = await Promise.all(
+      testStocks.map(async (sym) => {
+        const meta = NSE_UNIVERSE.find(m => m.symbol === sym)
+        if (!meta) return { sym, success: false, error: 'not in universe' }
+        const result = await fetchHistorical(meta, '1y')
+        return result
+          ? { sym, success: true, candleCount: result.candles.length, firstDate: result.candles[0]?.date, lastClose: result.candles[result.candles.length - 1]?.close }
+          : { sym, success: false, error: 'no data' }
+      })
+    )
+    const elapsed1y = Date.now() - t0
+    report.step7_parallel_1y = { stocks: parallelResults, successCount: parallelResults.filter(r => r.success).length, elapsedMs: elapsed1y }
+  } catch (e) {
+    report.step7_parallel_1y = { error: String(e) }
+  }
+
+  // 5Y test for RELIANCE only
+  try {
+    const t0 = Date.now()
     const meta = NSE_UNIVERSE.find(m => m.symbol === 'RELIANCE')
     if (meta) {
-      const result = await fetchHistorical(meta, '1y')
-      report.step7_reliance_1y = result
-        ? {
-            success: true,
-            candleCount: result.candles.length,
-            firstDate: result.candles[0]?.date,
-            lastDate: result.candles[result.candles.length - 1]?.date,
-            lastClose: result.candles[result.candles.length - 1]?.close,
-          }
-        : { success: false, result: null }
-    } else {
-      report.step7_reliance_1y = { error: 'RELIANCE not found in NSE_UNIVERSE' }
+      const result = await fetchHistorical(meta, '5y')
+      report.step7_reliance_5y = result
+        ? { success: true, candleCount: result.candles.length, firstDate: result.candles[0]?.date, lastDate: result.candles[result.candles.length - 1]?.date, elapsedMs: Date.now() - t0 }
+        : { success: false, error: 'no data', elapsedMs: Date.now() - t0 }
     }
   } catch (e) {
-    report.step7_reliance_1y = { error: String(e) }
+    report.step7_reliance_5y = { error: String(e) }
   }
 
   // ── Step 7b: DIRECT raw Upstox API call for RELIANCE (bypass wrapper) ─────
