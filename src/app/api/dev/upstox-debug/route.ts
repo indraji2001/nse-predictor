@@ -20,7 +20,7 @@ export async function GET(req: Request) {
   const url = new URL(req.url)
   const forceRefresh = url.searchParams.get('refresh') === '1'
 
-  const report: Record<string, unknown> = {}
+  const report: Record<string, unknown> = { _version: 'v5_direct_api', _ts: new Date().toISOString() }
 
   // ── Step 1: OAuth status from DB ────────────────────────────────────────
   try {
