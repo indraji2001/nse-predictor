@@ -187,9 +187,10 @@ export async function fetchUnifiedUniverse(
           if (!upstoxToken) {
             console.warn('Upstox: no access token, skipping')
           } else {
-            // Concurrency 12 — Upstox rate-limit is generous, and each call
-            // is a simple REST GET that benefits from parallelism.
-            const upstoxResults = await mapWithConcurrency(failed, 12, async (item) => {
+            // Concurrency 8 — combined with the 5 req/sec rate limiter in upstox.ts
+            // this ensures we never exceed Upstox's historical-candle API rate limit.
+            // At 5 req/s: 441 stocks × ~1s = ~88s total — fits in maxDuration=300s.
+            const upstoxResults = await mapWithConcurrency(failed, 8, async (item) => {
               const key = instrumentKeys[item.meta.symbol]
               if (!key) return { idx: item.idx, meta: item.meta, s: null }
               const s = await fetchFromUpstox(item.meta, range, upstoxToken, key)

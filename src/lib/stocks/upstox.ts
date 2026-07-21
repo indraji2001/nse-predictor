@@ -17,6 +17,46 @@ import { Candle, StockSeries } from './engine'
 import { NSE_UNIVERSE, StockMeta } from './universe'
 
 const UPSTOX_API = 'https://api.upstox.com/v2'
+
+// --- Rate limiter for Upstox historical API --------------------------------
+// Upstox allows ~5 requests/second for historical-candle endpoint.
+// We use a simple token-bucket to stay well within this limit.
+const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))
+
+class UpstoxRateLimiter {
+  private tokens: number
+  private readonly maxTokens: number
+  private readonly msPerToken: number
+  private lastRefill: number
+
+  constructor(requestsPerSecond: number) {
+    this.maxTokens = requestsPerSecond
+    this.tokens = requestsPerSecond
+    this.msPerToken = 1000 / requestsPerSecond
+    this.lastRefill = Date.now()
+  }
+
+  async acquire(): Promise<void> {
+    const now = Date.now()
+    const elapsed = now - this.lastRefill
+    const refilled = Math.floor(elapsed / this.msPerToken)
+    if (refilled > 0) {
+      this.tokens = Math.min(this.maxTokens, this.tokens + refilled)
+      this.lastRefill = now
+    }
+    if (this.tokens > 0) {
+      this.tokens--
+      return
+    }
+    // Wait for next token
+    const waitMs = this.msPerToken - (now % this.msPerToken)
+    await sleep(Math.max(waitMs, 50))
+    this.tokens = Math.max(0, this.tokens - 1)
+  }
+}
+
+// Shared rate limiter: 5 req/s — safe for Upstox historical candle endpoint
+const _upstoxRateLimiter = new UpstoxRateLimiter(5)
 const UPSTOX_AUTH = 'https://api.upstox.com/v2/login/authorization'
 
 export interface UpstoxStatus {
@@ -381,38 +421,61 @@ async function fetchDayChunk(
   fromStr: string,
   toStr: string,
 ): Promise<Candle[] | null> {
-  // Upstox v2 API path: /v2/historical-candle/{key}/{interval}/{to}/{from}
-  // Note: it's 'historical-candle' (hyphen) NOT 'historical/candle' (slash)
-  // Interval: 'day' (NOT '1d') — confirmed by live API test (1d returns HTTP 400)
+  // Upstox v2 API: /v2/historical-candle/{key}/day/{to}/{from}
   const url = `${UPSTOX_API}/historical-candle/${encodedKey}/day/${toStr}/${fromStr}`
-  const controller = new AbortController()
-  const timer = setTimeout(() => controller.abort(), 12_000) // 12s per chunk
-  try {
-    const res = await fetch(url, {
-      headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
-      cache: 'no-store',
-      signal: controller.signal,
-    })
-    clearTimeout(timer)
-    if (!res.ok) return null
-    const json = await res.json()
-    const raw: Array<[string, number, number, number, number, number, number]> =
-      json?.data?.candles ?? []
-    return raw
-      .map((c) => ({
-        date: c[0].slice(0, 10),
-        open: +c[1].toFixed(2),
-        high: +c[2].toFixed(2),
-        low: +c[3].toFixed(2),
-        close: +c[4].toFixed(2),
-        volume: c[5] ?? 0,
-        adjClose: +c[4].toFixed(2),
-      }))
-      .filter((c) => isFinite(c.open) && isFinite(c.close))
-  } catch {
-    clearTimeout(timer)
-    return null
+
+  // Honour the shared rate limiter (5 req/sec) before firing the request.
+  await _upstoxRateLimiter.acquire()
+
+  // Retry up to 3 times on HTTP 429 (rate limit exceeded) with exponential backoff.
+  const MAX_RETRIES = 3
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), 8_000) // 8s per chunk
+    try {
+      const res = await fetch(url, {
+        headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+        cache: 'no-store',
+        signal: controller.signal,
+      })
+      clearTimeout(timer)
+
+      if (res.status === 429) {
+        // Rate limited — wait exponentially then retry
+        if (attempt < MAX_RETRIES) {
+          const backoffMs = Math.pow(2, attempt) * 1000  // 1s, 2s, 4s
+          await sleep(backoffMs)
+          continue
+        }
+        return null  // exhausted retries
+      }
+
+      if (!res.ok) return null  // other error — no retry
+
+      const json = await res.json()
+      const raw: Array<[string, number, number, number, number, number, number]> =
+        json?.data?.candles ?? []
+      return raw
+        .map((c) => ({
+          date: c[0].slice(0, 10),
+          open: +c[1].toFixed(2),
+          high: +c[2].toFixed(2),
+          low: +c[3].toFixed(2),
+          close: +c[4].toFixed(2),
+          volume: c[5] ?? 0,
+          adjClose: +c[4].toFixed(2),
+        }))
+        .filter((c) => isFinite(c.open) && isFinite(c.close))
+    } catch {
+      clearTimeout(timer)
+      if (attempt < MAX_RETRIES) {
+        await sleep(500)  // brief wait before retry on network error
+        continue
+      }
+      return null
+    }
   }
+  return null
 }
 
 // Fetch historical candles for one stock.
