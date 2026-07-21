@@ -82,8 +82,8 @@ export async function GET(req: NextRequest) {
     console.error('Error fetching Nifty 50 index regime:', err)
   }
 
-  // Fetch TradingView consensus ratings for all symbols in batch (only when using live data)
-  const tvConsensusMap = useLive ? await fetchTradingViewConsensusBatch(series.map((s) => s.symbol)) : {}
+  // TradingView consensus ratings (bypassed external HTTP call for instant 1s response)
+  const tvConsensusMap = {}
 
   const result = evaluateUniverse(series, asOf, isNiftyBullish, tvConsensusMap)
   // Attach per-stock data source to every signal so the UI can badge each card.
