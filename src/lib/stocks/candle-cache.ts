@@ -68,32 +68,49 @@ export async function saveCandlesToCache(
 
   try {
     let savedCount = 0
-    // To make this efficient on Turso, we do chunks of 200 inserts
-    const chunkSize = 200
+    const chunkSize = 50 // smaller chunk size for transactional safety
     for (let i = 0; i < candles.length; i += chunkSize) {
       const chunk = candles.slice(i, i + chunkSize)
       
-      // We use createMany with skipDuplicates which is standard in Prisma
-      // for SQLite/libSQL.
-      const result = await db.stockCandle.createMany({
-        data: chunk.map(c => ({
-          symbol,
-          date: c.date,
-          open: c.open,
-          high: c.high,
-          low: c.low,
-          close: c.close,
-          volume: c.volume,
-          interval,
-          source,
-        })),
-        skipDuplicates: true,
+      // Perform database upsert in a single transaction
+      const operations = chunk.map(c => {
+        const uniqueKey = `${symbol}_${c.date}_${interval}_${source}`
+        return db.stockCandle.upsert({
+          where: {
+            symbol_date_interval_source: {
+              symbol,
+              date: c.date,
+              interval,
+              source
+            }
+          },
+          update: {
+            open: c.open,
+            high: c.high,
+            low: c.low,
+            close: c.close,
+            volume: c.volume
+          },
+          create: {
+            symbol,
+            date: c.date,
+            open: c.open,
+            high: c.high,
+            low: c.low,
+            close: c.close,
+            volume: c.volume,
+            interval,
+            source
+          }
+        })
       })
-      savedCount += result.count
+
+      await db.$transaction(operations)
+      savedCount += chunk.length
     }
     
     if (savedCount > 0) {
-      console.log(`[candle-cache] Saved ${savedCount} new candles to cache for ${symbol} (${interval}) from ${source}`)
+      console.log(`[candle-cache] Cached ${savedCount} candles for ${symbol} (${interval}) via transaction`)
     }
     return savedCount
   } catch (err) {
