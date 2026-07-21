@@ -7,22 +7,33 @@ import { computeIndicators } from '@/lib/indicators'
 export const dynamic = 'force-dynamic'
 export const maxDuration = 300 // 300s = Vercel Pro max — needed for 512-stock Upstox batch
 
+interface PredictionCache {
+  data: any
+  key: string
+  cachedAt: number
+}
+let _predictionCache: PredictionCache | null = null
+const PREDICT_CACHE_TTL = 30 * 60 * 1000 // 30 minutes in-memory cache
+
 // GET /api/predict
 // Returns the full prediction result for all four timeframes:
 //   BTST · SHORT_TERM · MIDTERM · LONG_TERM
-//
-// Optional query:
-//   ?live=false  → force synthetic data (skip all live providers)
-//   ?asOf=YYYY-MM-DD
 export async function GET(req: NextRequest) {
   const asOfParam = req.nextUrl.searchParams.get('asOf')
   const useLive = req.nextUrl.searchParams.get('live') !== 'false'
   const providerParam = req.nextUrl.searchParams.get('provider')
   const provider = (providerParam === 'UPSTOX' || providerParam === 'YAHOO' || providerParam === 'NSE') ? providerParam : undefined
   const range = req.nextUrl.searchParams.get('range') || '1y'
+  const forceRefresh = req.nextUrl.searchParams.get('refresh') === 'true'
   const asOf = asOfParam ? new Date(asOfParam) : new Date()
   if (isNaN(asOf.getTime())) {
     return NextResponse.json({ error: 'Invalid asOf date' }, { status: 400 })
+  }
+
+  const cacheKey = `${provider || 'AUTO'}_${range}_${asOfParam || 'today'}`
+  if (!forceRefresh && _predictionCache && _predictionCache.key === cacheKey && (Date.now() - _predictionCache.cachedAt < PREDICT_CACHE_TTL)) {
+    console.log(`[predict] In-memory prediction cache HIT (${cacheKey}) — returning in 10ms`)
+    return NextResponse.json(_predictionCache.data)
   }
 
   let series
@@ -77,7 +88,8 @@ export async function GET(req: NextRequest) {
   const result = evaluateUniverse(series, asOf, isNiftyBullish, tvConsensusMap)
   // Attach per-stock data source to every signal so the UI can badge each card.
   tagSignalSources(result, sources)
-  return NextResponse.json({
+
+  const payload = {
     ...result,
     dataSource: {
       nseActive,
@@ -90,7 +102,10 @@ export async function GET(req: NextRequest) {
       sources,
       fetchedAt,
     },
-  })
+  }
+
+  _predictionCache = { data: payload, key: cacheKey, cachedAt: Date.now() }
+  return NextResponse.json(payload)
 }
 
 const TV_MAPPINGS: Record<string, string> = {
