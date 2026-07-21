@@ -426,9 +426,6 @@ async function fetchDayChunk(
   // Upstox v2 API: /v2/historical-candle/{key}/day/{to}/{from}
   const url = `${UPSTOX_API}/historical-candle/${encodedKey}/day/${toStr}/${fromStr}`
 
-  // Honour the shared rate limiter (5 req/sec) before firing the request.
-  await _upstoxRateLimiter.acquire()
-
   // Retry up to 3 times on HTTP 429 (rate limit exceeded) with exponential backoff.
   const MAX_RETRIES = 3
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
