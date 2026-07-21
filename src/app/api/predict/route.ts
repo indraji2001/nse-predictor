@@ -31,7 +31,9 @@ export async function GET(req: NextRequest) {
   }
 
   const cacheKey = `${provider || 'AUTO'}_${range}_${asOfParam || 'today'}`
-  if (!forceRefresh && _predictionCache && _predictionCache.key === cacheKey && (Date.now() - _predictionCache.cachedAt < PREDICT_CACHE_TTL)) {
+  if (forceRefresh) {
+    _predictionCache = null
+  } else if (_predictionCache && _predictionCache.key === cacheKey && (Date.now() - _predictionCache.cachedAt < PREDICT_CACHE_TTL)) {
     console.log(`[predict] In-memory prediction cache HIT (${cacheKey}) — returning in 10ms`)
     return NextResponse.json(_predictionCache.data)
   }

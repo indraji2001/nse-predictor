@@ -208,7 +208,7 @@ export default function Home() {
     }
   }, [loadPaperTrades])
 
-  const load = useCallback(async (showToast = true) => {
+  const load = useCallback(async (showToast = true, forceRefresh = false) => {
     setLoading(true)
     setError(null)
     try {
@@ -217,6 +217,7 @@ export default function Home() {
       const params = new URLSearchParams()
       if (provider !== 'DEFAULT') params.set('provider', provider)
       params.set('range', range)
+      if (forceRefresh) params.set('refresh', 'true')
 
       const res = await fetch(`/api/predict?${params.toString()}`, { cache: 'no-store' })
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
@@ -494,7 +495,7 @@ export default function Home() {
               <ShieldCheck className="h-3.5 w-3.5 text-emerald-500 fill-emerald-500" />
               <span className="hidden sm:inline">Health Check</span>
             </Button>
-            <Button onClick={() => load(true)} disabled={loading} size="sm" className="gap-1.5">
+            <Button onClick={() => load(true, true)} disabled={loading} size="sm" className="gap-1.5">
               <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
               {loading ? 'Fetching live data…' : 'Refresh'}
             </Button>
