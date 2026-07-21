@@ -328,8 +328,53 @@ export async function bulkGetInstrumentKeys(
 // Export getAccessToken for use by data-source bulk prefetch
 export { getAccessToken }
 
-// Fetch historical candles for one stock. Accepts optional pre-fetched token
-// and instrumentKey to avoid redundant DB lookups when called in bulk.
+// --- Single-chunk Upstox daily candle fetch (max 2 years per call) --------
+// Upstox API limit: ~730 calendar days per call for daily interval.
+// Returns raw candles array or null on failure.
+async function fetchDayChunk(
+  encodedKey: string,
+  token: string,
+  fromStr: string,
+  toStr: string,
+): Promise<Candle[] | null> {
+  const url = `${UPSTOX_API}/historical/candle/${encodedKey}/day/${toStr}/${fromStr}`
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), 12_000) // 12s per chunk
+  try {
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+      cache: 'no-store',
+      signal: controller.signal,
+    })
+    clearTimeout(timer)
+    if (!res.ok) return null
+    const json = await res.json()
+    const raw: Array<[string, number, number, number, number, number, number]> =
+      json?.data?.candles ?? []
+    return raw
+      .map((c) => ({
+        date: c[0].slice(0, 10),
+        open: +c[1].toFixed(2),
+        high: +c[2].toFixed(2),
+        low: +c[3].toFixed(2),
+        close: +c[4].toFixed(2),
+        volume: c[5] ?? 0,
+        adjClose: +c[4].toFixed(2),
+      }))
+      .filter((c) => isFinite(c.open) && isFinite(c.close))
+  } catch {
+    clearTimeout(timer)
+    return null
+  }
+}
+
+// Fetch historical candles for one stock.
+// Upstox supports a maximum of ~2 years (730 calendar days) per daily-candle
+// API call. For longer ranges (3Y / 5Y / 10Y) we split into 2-year chunks,
+// fetch each sequentially, then concatenate + deduplicate.
+//
+// Accepts optional pre-fetched token and instrumentKey to avoid redundant DB
+// lookups when called in a bulk loop (see data-source.ts).
 export async function fetchHistorical(
   meta: StockMeta,
   rangeOrDays: string | number = 130,
@@ -342,81 +387,78 @@ export async function fetchHistorical(
   const instrumentKey = prefetchedKey ?? await getInstrumentKey(meta.symbol)
   if (!instrumentKey) return null
 
-  let days = 130
+  // Resolve requested range to calendar days (padded 1.5× for weekends + holidays)
+  let tradingDays = 130
   if (typeof rangeOrDays === 'number') {
-    days = rangeOrDays
+    tradingDays = rangeOrDays
   } else {
     switch (rangeOrDays) {
-      case '1y': days = 252; break
-      case '2y': days = 504; break
-      case '3y': days = 756; break
-      case '4y': days = 1008; break
-      case '5y': days = 1260; break
-      case '10y': days = 2520; break
-      default: days = 252; break
+      case '1y':  tradingDays = 252;  break
+      case '2y':  tradingDays = 504;  break
+      case '3y':  tradingDays = 756;  break
+      case '4y':  tradingDays = 1008; break
+      case '5y':  tradingDays = 1260; break
+      case '10y': tradingDays = 2520; break
+      default:    tradingDays = 252;  break
     }
   }
+  const totalCalendarDays = Math.ceil(tradingDays * 1.5) // pad for weekends/holidays
 
   const encodedKey = encodeURIComponent(instrumentKey)
-  const toDate = new Date()
-  const fromDate = new Date()
-  fromDate.setDate(fromDate.getDate() - Math.ceil(days * 1.5))
-  const toStr = toDate.toISOString().slice(0, 10)
-  const fromStr = fromDate.toISOString().slice(0, 10)
-  const url = `${UPSTOX_API}/historical/candle/${encodedKey}/day/${toStr}/${fromStr}`
 
-  // Per-call 10-second timeout so one slow stock doesn’t block the whole batch
-  const controller = new AbortController()
-  const timer = setTimeout(() => controller.abort(), 10_000)
+  // Upstox max per call = 730 calendar days (≈ 2 years).
+  // Split the total range into non-overlapping 700-day chunks so each stays
+  // safely under the limit. We fetch oldest-to-newest.
+  const CHUNK_DAYS = 700
+  const now = new Date()
+  const chunks: Array<{ fromStr: string; toStr: string }> = []
 
-  try {
-    const res = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/json',
-      },
-      cache: 'no-store',
-      signal: controller.signal,
+  let chunkEnd = new Date(now)
+  while (true) {
+    const chunkStart = new Date(chunkEnd)
+    chunkStart.setDate(chunkStart.getDate() - CHUNK_DAYS)
+
+    // Don't go further back than totalCalendarDays from today
+    const absoluteStart = new Date(now)
+    absoluteStart.setDate(absoluteStart.getDate() - totalCalendarDays)
+    if (chunkStart < absoluteStart) {
+      chunkStart.setTime(absoluteStart.getTime())
+    }
+
+    chunks.unshift({
+      fromStr: chunkStart.toISOString().slice(0, 10),
+      toStr:   chunkEnd.toISOString().slice(0, 10),
     })
-    clearTimeout(timer)
-    if (res.status === 401) {
-      // Token expired mid-call — try refresh once then give up (don’t retry in bulk)
-      const refreshed = await refreshAccessToken()
-      if (!refreshed) return null
-      return fetchHistorical(meta, rangeOrDays) // retry without prefetched token
-    }
-    if (!res.ok) return null
-    const json = await res.json()
-    const candlesRaw: Array<[string, number, number, number, number, number, number]> =
-      json?.data?.candles ?? []
-    if (candlesRaw.length === 0) return null
 
-    const candles: Candle[] = candlesRaw
-      .map((c) => ({
-        date: c[0].slice(0, 10),
-        open: +c[1].toFixed(2),
-        high: +c[2].toFixed(2),
-        low: +c[3].toFixed(2),
-        close: +c[4].toFixed(2),
-        volume: c[5] ?? 0,
-        adjClose: +c[4].toFixed(2),
-      }))
-      .filter((c) => isFinite(c.open) && isFinite(c.close))
-      .sort((a, b) => a.date.localeCompare(b.date))
+    if (chunkStart.getTime() <= absoluteStart.getTime()) break
+    chunkEnd = new Date(chunkStart)
+    chunkEnd.setDate(chunkEnd.getDate() - 1) // day before this chunk's start
+  }
 
-    if (candles.length < 30) return null
+  // Fetch all chunks (sequentially to avoid rate-limiting)
+  const allCandles: Candle[] = []
+  for (const chunk of chunks) {
+    const batch = await fetchDayChunk(encodedKey, token, chunk.fromStr, chunk.toStr)
+    if (batch) allCandles.push(...batch)
+  }
 
-    await markUsed()
-    return {
-      symbol: meta.symbol,
-      name: meta.name,
-      sector: meta.sector,
-      candles,
-      lastIdx: candles.length - 1,
-    }
-  } catch {
-    clearTimeout(timer)
-    return null
+  if (allCandles.length === 0) return null
+
+  // Deduplicate by date and sort oldest-first
+  const seen = new Set<string>()
+  const candles = allCandles
+    .filter((c) => { if (seen.has(c.date)) return false; seen.add(c.date); return true })
+    .sort((a, b) => a.date.localeCompare(b.date))
+
+  if (candles.length < 30) return null
+
+  await markUsed()
+  return {
+    symbol: meta.symbol,
+    name: meta.name,
+    sector: meta.sector,
+    candles,
+    lastIdx: candles.length - 1,
   }
 }
 

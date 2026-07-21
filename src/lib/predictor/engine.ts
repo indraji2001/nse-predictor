@@ -1235,10 +1235,10 @@ export interface UniverseResult {
 }
 
 // Tag each signal with the per-stock data source so the UI can show a
-// LIVE / DEMO badge on every card.
+// NSE / YAHOO / UPSTOX / DEMO badge on every card.
 export function tagSignalSources(
   result: UniverseResult,
-  sources: Record<string, 'LIVE' | 'DEMO'>,
+  sources: Record<string, 'NSE' | 'YAHOO' | 'UPSTOX' | 'DEMO' | 'LIVE'>,
 ): void {
   for (const s of [...result.btst, ...result.shortTerm, ...result.midterm, ...result.longTerm]) {
     s.dataSource = sources[s.symbol] ?? 'DEMO'

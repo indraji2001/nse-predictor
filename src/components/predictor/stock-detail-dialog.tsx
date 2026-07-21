@@ -68,8 +68,12 @@ export function StockDetailDialog({ symbol, onClose }: Props) {
         if (selectedProvider && selectedProvider !== 'DEFAULT') {
           params.set('provider', selectedProvider)
         }
-        // Always fetch 5Y so chart range buttons (1Y/2Y/3Y/5Y) have enough data
-        params.set('range', '5y')
+        // For Upstox: use the user's selected range (chunked fetch supports 10Y).
+        // For Yahoo/NSE: clamp to 5Y max since Yahoo doesn't reliably go beyond that.
+        const effectiveRange = selectedProvider === 'UPSTOX'
+          ? selectedRange
+          : (['10y', 'MAX'].includes(selectedRange) ? '5y' : selectedRange)
+        params.set('range', effectiveRange)
 
         const r = await fetch(`/api/stock/${encodeURIComponent(symbol)}?${params.toString()}`)
         if (!r.ok) throw new Error(`HTTP ${r.status}`)

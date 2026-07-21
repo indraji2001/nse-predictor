@@ -73,7 +73,7 @@ export async function GET(req: NextRequest) {
 
   const result = evaluateUniverse(series, asOf, isNiftyBullish, tvConsensusMap)
   // Attach per-stock data source to every signal so the UI can badge each card.
-  tagSignalSources(result, sources as Record<string, 'LIVE' | 'DEMO'>)
+  tagSignalSources(result, sources)
   return NextResponse.json({
     ...result,
     dataSource: {
