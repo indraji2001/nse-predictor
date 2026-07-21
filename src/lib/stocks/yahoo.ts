@@ -57,7 +57,7 @@ interface YahooResponse {
   }
 }
 
-async function fetchOne(meta: StockMeta, range = '1y', interval = '1d', retries = 2): Promise<StockSeries | null> {
+async function fetchOne(meta: StockMeta, range = '1y', interval = '1d', retries = 2, prefetchedCandles?: Candle[]): Promise<StockSeries | null> {
   const isShortRange = range === '1mo' || range === '3mo' || range === '6mo'
   const apiRange = isShortRange ? '1y' : ((range === '3y' || range === '4y') ? '5y' : range)
   
@@ -82,7 +82,7 @@ async function fetchOne(meta: StockMeta, range = '1y', interval = '1d', retries 
   const wantedFromStr = absoluteStart.toISOString().slice(0, 10)
 
   // 1. Check local DB cache first
-  const cached = await getCachedCandles(meta.symbol, 'day', 'YAHOO')
+  const cached = prefetchedCandles ?? await getCachedCandles(meta.symbol, 'day', 'YAHOO')
 
   let candles: Candle[] = []
   let apiFetchRequired = false
@@ -348,10 +348,10 @@ export interface LiveStockResult {
   source: 'LIVE' | 'DEMO'
 }
 
-export async function fetchLiveStock(symbol: string, asOf: Date, range = '1y'): Promise<LiveStockResult | null> {
+export async function fetchLiveStock(symbol: string, asOf: Date, range = '1y', prefetchedCandles?: Candle[]): Promise<LiveStockResult | null> {
   const meta = NSE_UNIVERSE.find((m) => m.symbol === symbol.toUpperCase())
   if (!meta) return null
-  const s = await fetchOne(meta, range, '1d')
+  const s = await fetchOne(meta, range, '1d', 2, prefetchedCandles)
   if (s) return { series: s, source: 'LIVE' }
   // Fallback to synthetic
   return { series: await synthFor(meta, asOf), source: 'DEMO' }

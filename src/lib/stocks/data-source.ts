@@ -256,9 +256,11 @@ export async function fetchUnifiedUniverse(
       }
     } else if (prov === 'YAHOO') {
       try {
-        // Concurrently fetch failed stocks using fetchYahooStock to utilize cache
-        const yahooResults = await mapWithConcurrency(failed, 4, async (item) => {
-          const y = await fetchYahooStock(item.meta.symbol, asOf, range)
+        const failedSymbols = failed.map((item) => item.meta.symbol)
+        const yahooCandlesMap = await bulkGetCachedCandles(failedSymbols, 'day', 'YAHOO')
+        const yahooResults = await mapWithConcurrency(failed, 8, async (item) => {
+          const cachedCandles = yahooCandlesMap.get(item.meta.symbol.toUpperCase())
+          const y = await fetchYahooStock(item.meta.symbol, asOf, range, cachedCandles)
           return { idx: item.idx, meta: item.meta, s: y && y.source === 'LIVE' ? y.series : null }
         })
         const nextFailed = []
