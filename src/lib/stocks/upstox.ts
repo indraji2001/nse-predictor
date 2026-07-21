@@ -381,7 +381,7 @@ async function fetchDayChunk(
   fromStr: string,
   toStr: string,
 ): Promise<Candle[] | null> {
-  const url = `${UPSTOX_API}/historical/candle/${encodedKey}/day/${toStr}/${fromStr}`
+  const url = `${UPSTOX_API}/historical/candle/${encodedKey}/1d/${toStr}/${fromStr}`
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), 12_000) // 12s per chunk
   try {
