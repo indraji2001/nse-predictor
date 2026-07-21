@@ -16,7 +16,7 @@ export const maxDuration = 60 // Vercel max duration limit
 // Batch 1: stocks 100-200 (~15 seconds)
 // Batch 2: stocks 200-300 (~15 seconds)
 // Batch 3: stocks 300-400 (~15 seconds)
-// Batch 4: stocks 400-503 (~15 seconds)
+// Batch 4: stocks 400-500 (~15 seconds)
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
   const provider = searchParams.get('provider') || 'UPSTOX'

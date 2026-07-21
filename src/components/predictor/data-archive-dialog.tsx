@@ -540,11 +540,11 @@ export function DataArchiveDialog({ open, onClose }: Props) {
                   {/* Tool 0: One-Click Cache Warmup */}
                   <div className="border border-violet-300/80 dark:border-violet-800 rounded-lg p-3 space-y-2 bg-violet-50/40 dark:bg-violet-950/20 text-xs">
                     <div className="font-semibold text-violet-800 dark:text-violet-300 flex justify-between items-center">
-                      <span className="flex items-center gap-1.5"><HardDrive className="h-4 w-4 text-violet-600" /> One-Click 503 Stock Upstox Cache Warmup</span>
+                      <span className="flex items-center gap-1.5"><HardDrive className="h-4 w-4 text-violet-600" /> One-Click 500 Stock Upstox Cache Warmup</span>
                       <Badge className="bg-violet-100 text-violet-800 dark:bg-violet-900 dark:text-violet-200">Recommended</Badge>
                     </div>
                     <p className="text-[10px] text-violet-700 dark:text-violet-400">
-                      Warm-caches all 503 NSE stocks into your database in 5 quick batch steps (~15s each). Runs safely without hitting server timeouts. Once complete, future app refreshes will be instant (&lt;1s).
+                      Warm-caches all 500 NSE stocks into your database in 5 quick batch steps (~15s each). Runs safely without hitting server timeouts. Once complete, future app refreshes will be instant (&lt;1s).
                     </p>
 
                     {initializing && initProgress && (
@@ -570,7 +570,7 @@ export function DataArchiveDialog({ open, onClose }: Props) {
                         className="text-xs bg-violet-600 hover:bg-violet-700 text-white font-medium flex items-center gap-1.5"
                       >
                         {initializing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <HardDrive className="h-3.5 w-3.5" />}
-                        {initializing ? 'Warming up cache...' : 'Initialize Upstox Cache (503 Stocks)'}
+                        {initializing ? 'Warming up cache...' : 'Initialize Upstox Cache (500 Stocks)'}
                       </Button>
                     </div>
                   </div>

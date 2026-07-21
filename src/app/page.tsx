@@ -521,7 +521,7 @@ export default function Home() {
           <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
           <AlertTitle className="text-amber-800 dark:text-amber-300 text-sm">Educational tool — not investment advice</AlertTitle>
           <AlertDescription className="text-xs text-amber-700 dark:text-amber-400">
-            Scanning <strong>{result?.dataSource?.total ?? 512} stocks</strong> across 15 sectors · 4 timeframes + intraday.
+            Scanning <strong>{result?.dataSource?.total ?? 500} stocks</strong> across 15 sectors · 4 timeframes + intraday.
             Data priority: <strong>NSE bhavcopy</strong> → <strong>Yahoo Finance</strong> → synthetic.
             Always confirm with your broker's research before placing trades. Capital is at risk.
           </AlertDescription>
