@@ -244,27 +244,21 @@ export async function refreshInstrumentMaster(): Promise<{ count: number; error?
 
     if (!Array.isArray(json)) return { count: 0, error: `Unexpected response shape: ${typeof json}` }
 
-    // Upstox changed their instrument file format in 2025:
-    //   OLD: exchange='NSE_EQ', segment='EQ',    field='tradingsymbol'
-    //   NEW: exchange='NSE',    segment='NSE_EQ', field='trading_symbol' (underscore!)
+    // The Upstox instrument file contains ALL exchanges (NSE, BSE, MCX, NCD, etc).
+    // We only want NSE equity cash-segment instruments (which we trade).
     //
-    // We now filter on segment='NSE_EQ' + instrument_type='EQ' which works for
-    // both old and new formats. We also handle both field name variants.
+    // The ONLY field that has remained stable across ALL Upstox file format changes
+    // is `instrument_key`, which always starts with "NSE_EQ|" for NSE cash equity.
+    //
+    // We intentionally do NOT filter by instrument_type or segment, because Upstox
+    // changes those field values (e.g. 'EQ' → 'X' → 'BE') without notice.
+    // Filtering only by instrument_key prefix is the most robust approach.
     type RawInst = Record<string, unknown>
     const instruments = json as RawInst[]
 
     const nseEquities = instruments.filter((inst) => {
-      const seg  = inst.segment as string | undefined
-      const itype = inst.instrument_type as string | undefined
-      const key  = inst.instrument_key as string | undefined
-      // New format: segment='NSE_EQ', instrument_type='EQ'
-      // Old format: exchange='NSE_EQ', segment='EQ', instrument_type='EQ'
-      // Fallback:   instrument_key starts with 'NSE_EQ|'
-      return (
-        (seg === 'NSE_EQ' && itype === 'EQ') ||
-        (inst.exchange === 'NSE_EQ' && itype === 'EQ') ||
-        (key?.startsWith('NSE_EQ|') && itype === 'EQ')
-      )
+      const key = inst.instrument_key as string | undefined
+      return key?.startsWith('NSE_EQ|') ?? false
     })
 
     // Build upserts — only for symbols in our universe to keep DB lean.
