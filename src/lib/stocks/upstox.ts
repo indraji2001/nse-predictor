@@ -360,6 +360,62 @@ export async function getInstrumentKey(symbol: string): Promise<string | null> {
   return null
 }
 
+const SYMBOL_ALIASES: Record<string, string> = {
+  'BAJFINSV': 'BAJAJFINSV',
+  'ZEEENT': 'ZEEL',
+  'ZOMATO': 'ETERNAL',
+  'ECLOTS': 'ECLERX',
+  'REPCAPITAL': 'REPCOHOME',
+  'IIFLFIN': 'IIFL',
+  'KOKUYO': 'KOKUYOCMLN',
+  'ARE_M': 'ARE&M',
+  'INAQPORT': 'ADANIPORTS',
+  'GMDC': 'GMDCLTD',
+  'NALCO': 'NATIONALUM',
+  'HGICL': 'HGINFRA',
+  'NALWA': 'NSIL',
+  'INDUSIND-BK': 'INDUSINDBK',
+  'HINDMEDIA': 'HTMEDIA',
+  'CARBORUNDUM': 'CARBORUNIV',
+  'MAHINDRAEST': 'MAHLIFE',
+  'IBREALEST': 'EQUINOX',
+  'BLUE DART': 'BLUEDART',
+  'GE SHIPPING': 'GESHIP',
+  'SHIPCORP': 'SCI',
+  'WELSIND': 'WELSPUNLIV',
+  'KITEXGAR': 'KITEX',
+  'GOKALDAS': 'GOKEX',
+  'ARVINDFAB': 'ARVIND',
+  'WELSILK': 'WELSPUNLIV',
+  'KALPATARA': 'KPIL',
+  'HSIL': 'AGI',
+  'BOROLTK': 'BORORENEW',
+  'BANNARI': 'BANARISUG',
+  'SHREERENUKA': 'RENUKA',
+  'CCLPRODUCT': 'CCL',
+  'TRENTLTD': 'TRENT',
+  'ZUARIGLOB': 'ZUARI',
+  'AVENTIS': 'SANAGRI',
+  'FCSOFTWARE': 'FCSSOFT',
+  'GLOBALHOSP': 'GLOBALHEALTH',
+  'KARNATAKA': 'KTKBANK',
+  'SHILPA': 'SHILPAMED',
+  'ATALAUTO': 'ATULAUTO',
+  'CIGNITI': 'COFORGE',
+  'INNOVATIVE': 'INNOVACAP',
+  'PATPRJ': 'PATELENG',
+  'LAXMIORG': 'LXCHEM',
+  'ANUPAM': 'ANURAS',
+  'CHEMPLAN': 'CHEMCON',
+  'NEULAND': 'NEULANDLAB',
+  'NRBHAND': 'NRBBEARING',
+  'CONTAINER': 'CONCOR',
+  'TATATELE': 'TTML',
+  'GOKALDAS-2': 'GOKEX',
+  'ARVINDF-2': 'ARVIND',
+  'MAHSCOOT': 'MAHSCOOTER',
+}
+
 // Bulk-fetch instrument keys in a SINGLE DB query (used by data-source to
 // avoid 512 individual DB roundtrips before the Upstox API call loop).
 export async function bulkGetInstrumentKeys(
@@ -374,14 +430,30 @@ export async function bulkGetInstrumentKeys(
   }
   if (missing.length === 0) return result
 
-  // Single DB query for all missing symbols
+  // Build query symbols list including aliases
+  const querySymbols = Array.from(new Set([
+    ...missing,
+    ...missing.map(s => SYMBOL_ALIASES[s.toUpperCase()]).filter(Boolean)
+  ]))
+
+  // Single DB query for missing symbols & aliases
   const rows = await db.upstoxInstrument.findMany({
-    where: { symbol: { in: missing } },
+    where: { symbol: { in: querySymbols } },
     select: { symbol: true, instrumentKey: true },
   })
+
+  const rowMap = new Map<string, string>()
   for (const row of rows) {
-    result[row.symbol] = row.instrumentKey
-    _keyCache.set(row.symbol, row.instrumentKey)
+    rowMap.set(row.symbol.toUpperCase(), row.instrumentKey)
+  }
+
+  for (const sym of missing) {
+    const alias = SYMBOL_ALIASES[sym.toUpperCase()] || sym.toUpperCase()
+    const key = rowMap.get(sym.toUpperCase()) || rowMap.get(alias)
+    if (key) {
+      result[sym] = key
+      _keyCache.set(sym, key)
+    }
   }
 
   return result
