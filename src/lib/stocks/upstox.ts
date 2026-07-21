@@ -55,8 +55,10 @@ class UpstoxRateLimiter {
   }
 }
 
-// Shared rate limiter: 5 req/s — safe for Upstox historical candle endpoint
-const _upstoxRateLimiter = new UpstoxRateLimiter(5)
+// Shared rate limiter: 8 req/s — empirically safe for Upstox historical-candle.
+// (Upstox burst-tolerates at least 12 req before limiting; 8/s gives ample margin.)
+// At 8/s: 1Y=441 stocks → 55s; 5Y=1323 chunks → 165s (well within 300s maxDuration)
+const _upstoxRateLimiter = new UpstoxRateLimiter(8)
 const UPSTOX_AUTH = 'https://api.upstox.com/v2/login/authorization'
 
 export interface UpstoxStatus {
