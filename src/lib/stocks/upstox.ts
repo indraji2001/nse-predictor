@@ -244,39 +244,62 @@ export async function refreshInstrumentMaster(): Promise<{ count: number; error?
 
     if (!Array.isArray(json)) return { count: 0, error: `Unexpected response shape: ${typeof json}` }
 
-    // Filter to NSE_EQ (equities) only — that's what we trade.
-    const nseEquities = (json as Array<{ exchange?: string; instrument_type?: string; segment?: string }>)
-      .filter((inst) =>
-        inst.exchange === 'NSE_EQ' &&
-        inst.instrument_type === 'EQ' &&
-        inst.segment === 'EQ'
+    // Upstox changed their instrument file format in 2025:
+    //   OLD: exchange='NSE_EQ', segment='EQ',    field='tradingsymbol'
+    //   NEW: exchange='NSE',    segment='NSE_EQ', field='trading_symbol' (underscore!)
+    //
+    // We now filter on segment='NSE_EQ' + instrument_type='EQ' which works for
+    // both old and new formats. We also handle both field name variants.
+    type RawInst = Record<string, unknown>
+    const instruments = json as RawInst[]
+
+    const nseEquities = instruments.filter((inst) => {
+      const seg  = inst.segment as string | undefined
+      const itype = inst.instrument_type as string | undefined
+      const key  = inst.instrument_key as string | undefined
+      // New format: segment='NSE_EQ', instrument_type='EQ'
+      // Old format: exchange='NSE_EQ', segment='EQ', instrument_type='EQ'
+      // Fallback:   instrument_key starts with 'NSE_EQ|'
+      return (
+        (seg === 'NSE_EQ' && itype === 'EQ') ||
+        (inst.exchange === 'NSE_EQ' && itype === 'EQ') ||
+        (key?.startsWith('NSE_EQ|') && itype === 'EQ')
       )
+    })
 
-    // Build upserts — only for symbols in our universe to keep DB lean
+    // Build upserts — only for symbols in our universe to keep DB lean.
+    // Handle both field name variants: 'trading_symbol' (new) and 'tradingsymbol' (old).
     const universeSymbols = new Set(NSE_UNIVERSE.map((s) => s.symbol))
-    const toUpsert = (nseEquities as Array<{ tradingsymbol?: string; instrument_key?: string; name?: string; exchange?: string; isin?: string; lot_size?: number }>)
-      .filter((inst) => inst.tradingsymbol && universeSymbols.has(inst.tradingsymbol))
+    const toUpsert = nseEquities.filter((inst) => {
+      const sym = (inst.trading_symbol ?? inst.tradingsymbol) as string | undefined
+      return sym && universeSymbols.has(sym)
+    })
 
-    // Delete all existing then bulk insert (simpler than per-row upsert)
+    // Delete all existing then bulk insert
     await db.upstoxInstrument.deleteMany({})
+    let inserted = 0
     for (const inst of toUpsert) {
+      const sym = (inst.trading_symbol ?? inst.tradingsymbol) as string
+      const key = inst.instrument_key as string
+      if (!sym || !key) continue
       try {
         await db.upstoxInstrument.create({
           data: {
-            symbol: inst.tradingsymbol!,
-            instrumentKey: inst.instrument_key!,
-            name: inst.name ?? null,
-            exchange: inst.exchange ?? 'NSE_EQ',
-            isin: inst.isin ?? null,
-            lotSize: inst.lot_size ?? null,
+            symbol: sym,
+            instrumentKey: key,
+            name: (inst.name as string) ?? null,
+            exchange: (inst.exchange as string) ?? 'NSE',
+            isin: (inst.isin as string) ?? null,
+            lotSize: (inst.lot_size as number) ?? null,
             updatedAt: new Date(),
           },
         })
+        inserted++
       } catch {
         // duplicate key — skip
       }
     }
-    return { count: toUpsert.length }
+    return { count: inserted }
   } catch (e) {
     return { count: 0, error: e instanceof Error ? e.message : 'Unknown error' }
   }
