@@ -59,108 +59,167 @@ interface YahooResponse {
 async function fetchOne(meta: StockMeta, range = '1y', interval = '1d', retries = 2): Promise<StockSeries | null> {
   const isShortRange = range === '1mo' || range === '3mo' || range === '6mo'
   const apiRange = isShortRange ? '1y' : ((range === '3y' || range === '4y') ? '5y' : range)
-  const key = `${meta.symbol}-${apiRange}`
-  const cached = cache.get(key)
-  if (cacheFresh(cached)) {
-    return cached!.series
+  
+  // Resolve range or days to total calendar days to calculate start date
+  let tradingDays = 252
+  switch (apiRange) {
+    case '1mo':  tradingDays = 21;   break
+    case '3mo':  tradingDays = 63;   break
+    case '6mo':  tradingDays = 126;  break
+    case '1y':   tradingDays = 252;  break
+    case '2y':   tradingDays = 504;  break
+    case '3y':   tradingDays = 756;  break
+    case '5y':   tradingDays = 1260; break
+    case '10y':  tradingDays = 2520; break
+  }
+  const totalCalendarDays = Math.ceil(tradingDays * 1.5)
+  const now = new Date()
+  const todayStr = now.toISOString().slice(0, 10)
+  
+  const absoluteStart = new Date(now)
+  absoluteStart.setDate(absoluteStart.getDate() - totalCalendarDays)
+  const wantedFromStr = absoluteStart.toISOString().slice(0, 10)
+
+  // 1. Check local DB cache first
+  const { getCachedCandles, saveCandlesToCache } = require('./candle-cache')
+  const cached = await getCachedCandles(meta.symbol, 'day', 'YAHOO')
+
+  let candles: Candle[] = []
+  let apiFetchRequired = false
+  let fetchRange = apiRange
+
+  if (cached.length > 0) {
+    const cacheFirstDate = cached[0].date
+    const cacheLastDate = cached[cached.length - 1].date
+
+    const newCandlesMap = new Map<string, Candle>()
+    for (const c of cached) {
+      newCandlesMap.set(c.date, c)
+    }
+
+    // A. Check if we need to backfill older historical data
+    if (cacheFirstDate > wantedFromStr) {
+      apiFetchRequired = true
+      fetchRange = '5y' // Fetch larger range to fill historical gaps
+    }
+
+    // B. Check if we need to fetch updates up to today
+    if (cacheLastDate < todayStr) {
+      apiFetchRequired = true
+    }
+
+    if (!apiFetchRequired) {
+      candles = Array.from(newCandlesMap.values()).sort((a, b) => a.date.localeCompare(b.date))
+    }
+  } else {
+    apiFetchRequired = true
   }
 
-  const yahooSym = meta.yahooSymbol ?? `${meta.symbol}.NS`
-  // Round-robin between query1 and query2 hosts to halve per-host request rate.
-  const host = YAHOO_HOSTS[hostIdx++ % YAHOO_HOSTS.length]
-  const url = `https://${host}/v8/finance/chart/${encodeURIComponent(yahooSym)}?range=${apiRange}&interval=${interval}&includeAdjustedClose=true`
+  if (apiFetchRequired) {
+    const yahooSym = meta.yahooSymbol ?? `${meta.symbol}.NS`
+    const host = YAHOO_HOSTS[hostIdx++ % YAHOO_HOSTS.length]
+    const url = `https://${host}/v8/finance/chart/${encodeURIComponent(yahooSym)}?range=${fetchRange}&interval=${interval}&includeAdjustedClose=true`
 
-  // Retry with exponential backoff on 429 (rate limit) or transient network errors.
-  // Yahoo typically allows ~2 req/sec per host; we use 2-concurrency cap upstream
-  // and round-robin between query1/query2 to effectively get 4 req/sec capacity.
-  const maxRetries = retries
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
-    try {
-      const controller = new AbortController()
-      const timeout = setTimeout(() => controller.abort(), 10000)
-      const res = await fetch(url, {
-        headers: {
-          'User-Agent': UA,
-          Accept: 'application/json',
-        },
-        signal: controller.signal,
-        // Prevent Next.js from caching the fetch — we want fresh data each call.
-        cache: 'no-store',
-      } as RequestInit)
-      clearTimeout(timeout)
+    const maxRetries = retries
+    let apiCandles: Candle[] = []
+    let fetchSuccess = false
 
-      if (res.status === 429) {
-        // Rate limited — wait and retry with exponential backoff
-        if (attempt < maxRetries) {
-          const waitMs = 2000 * Math.pow(2, attempt) + Math.random() * 1000
-          await new Promise((r) => setTimeout(r, waitMs))
-          continue
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        const controller = new AbortController()
+        const timeout = setTimeout(() => controller.abort(), 10000)
+        const res = await fetch(url, {
+          headers: { 'User-Agent': UA, Accept: 'application/json' },
+          signal: controller.signal,
+          cache: 'no-store',
+        } as RequestInit)
+        clearTimeout(timeout)
+
+        if (res.status === 429) {
+          if (attempt < maxRetries) {
+            const waitMs = 2000 * Math.pow(2, attempt) + Math.random() * 1000
+            await new Promise((r) => setTimeout(r, waitMs))
+            continue
+          }
+          break
         }
-        cache.set(key, { ts: Date.now(), series: null })
-        return null
-      }
 
-      if (!res.ok) {
-        if (attempt < maxRetries && res.status >= 500) {
+        if (!res.ok) {
+          if (attempt < maxRetries && res.status >= 500) {
+            await new Promise((r) => setTimeout(r, 800 * (attempt + 1)))
+            continue
+          }
+          break
+        }
+
+        const json: YahooResponse = await res.json()
+        const result = json.chart?.result?.[0]
+        if (!result || !result.timestamp || !result.indicators?.quote?.[0]) {
+          break
+        }
+        const ts = result.timestamp
+        const q = result.indicators.quote[0]
+        const adj = result.indicators.adjclose?.[0]?.adjclose
+        
+        for (let i = 0; i < ts.length; i++) {
+          const o = q.open?.[i]
+          const h = q.high?.[i]
+          const l = q.low?.[i]
+          const c = q.close?.[i]
+          const v = q.volume?.[i]
+          if (o == null || h == null || l == null || c == null) continue
+          const d = new Date(ts[i] * 1000)
+          apiCandles.push({
+            date: d.toISOString().slice(0, 10),
+            open: +o.toFixed(2),
+            high: +h.toFixed(2),
+            low: +l.toFixed(2),
+            close: +c.toFixed(2),
+            volume: v ?? 0,
+            adjClose: adj?.[i] != null ? +adj[i]!.toFixed(2) : +c.toFixed(2),
+          })
+        }
+        fetchSuccess = true
+        break
+      } catch (e) {
+        if (attempt < maxRetries) {
           await new Promise((r) => setTimeout(r, 800 * (attempt + 1)))
           continue
         }
-        // 404 (ticker not found on Yahoo) is permanent — no retry
-        cache.set(key, { ts: Date.now(), series: null })
-        return null
+        break
       }
+    }
 
-      const json: YahooResponse = await res.json()
-      const result = json.chart?.result?.[0]
-      if (!result || !result.timestamp || !result.indicators?.quote?.[0]) {
-        cache.set(key, { ts: Date.now(), series: null })
-        return null
-      }
-      const ts = result.timestamp
-      const q = result.indicators.quote[0]
-      const adj = result.indicators.adjclose?.[0]?.adjclose
-      const candles: Candle[] = []
-      for (let i = 0; i < ts.length; i++) {
-        const o = q.open?.[i]
-        const h = q.high?.[i]
-        const l = q.low?.[i]
-        const c = q.close?.[i]
-        const v = q.volume?.[i]
-        if (o == null || h == null || l == null || c == null) continue
-        const d = new Date(ts[i] * 1000)
-        candles.push({
-          date: d.toISOString().slice(0, 10),
-          open: +o.toFixed(2),
-          high: +h.toFixed(2),
-          low: +l.toFixed(2),
-          close: +c.toFixed(2),
-          volume: v ?? 0,
-          adjClose: adj?.[i] != null ? +adj[i]!.toFixed(2) : +c.toFixed(2),
-        })
-      }
-      if (candles.length < 30) {
-        cache.set(key, { ts: Date.now(), series: null })
-        return null
-      }
-      const series: StockSeries = {
-        symbol: meta.symbol,
-        name: result.meta?.longName || result.meta?.shortName || meta.name,
-        sector: meta.sector,
-        candles,
-        lastIdx: candles.length - 1,
-      }
-      cache.set(key, { ts: Date.now(), series })
-      return series
-    } catch (e) {
-      if (attempt < maxRetries) {
-        await new Promise((r) => setTimeout(r, 800 * (attempt + 1)))
-        continue
-      }
-      cache.set(key, { ts: Date.now(), series: null })
+    if (fetchSuccess && apiCandles.length >= 30) {
+      // Merge with cache or save fresh
+      const newCandlesMap = new Map<string, Candle>()
+      for (const c of cached) newCandlesMap.set(c.date, c)
+      for (const c of apiCandles) newCandlesMap.set(c.date, c)
+
+      candles = Array.from(newCandlesMap.values()).sort((a, b) => a.date.localeCompare(b.date))
+      
+      // Save new ones to cache
+      await saveCandlesToCache(meta.symbol, 'day', 'YAHOO', apiCandles)
+    } else if (cached.length > 0) {
+      // Fallback to cache if Yahoo API failed but we have cached data
+      candles = cached
+    } else {
       return null
     }
   }
-  return null
+
+  // Filter to the requested range
+  candles = candles.filter(c => c.date >= wantedFromStr)
+
+  if (candles.length < 30) return null
+
+  return {
+    symbol: meta.symbol,
+    name: meta.name,
+    sector: meta.sector,
+    candles,
+    lastIdx: candles.length - 1,
+  }
 }
 
 // Run async tasks with a concurrency cap. Preserves input order in output.

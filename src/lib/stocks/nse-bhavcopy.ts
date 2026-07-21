@@ -380,26 +380,52 @@ export async function findLatestBhavcopyForSymbol(symbol: string, endDate: Date 
 // Build a list of all archived dates that contain data for a given symbol.
 // Returns candles oldest-first.
 export async function buildHistoryFromArchive(symbol: string, minCandles = 30): Promise<Candle[] | null> {
+  const { getCachedCandles, saveCandlesToCache } = require('./candle-cache')
+  
+  // 1. Check local DB cache first
+  const cached = await getCachedCandles(symbol.toUpperCase(), 'day', 'NSE')
+
   const archive = await listArchive()
-  if (archive.length === 0) return null
+  if (archive.length === 0) {
+    return cached.length >= minCandles ? cached : null
+  }
+
   // Sort oldest first
   const sorted = [...archive].sort((a, b) => a.date.localeCompare(b.date))
-  const candles: Candle[] = []
-  for (const f of sorted) {
-    const csv = await getArchivedFile(f.date)
-    if (!csv) continue
-    const rows = parseBhavcopyCSV(csv)
-    const row = rows.find((r) => r.symbol === symbol.toUpperCase())
-    if (!row) continue
-    candles.push({
-      date: f.date,
-      open: row.open,
-      high: row.high,
-      low: row.low,
-      close: row.close,
-      volume: row.volume,
-      adjClose: row.close,
-    })
+  const newCandlesMap = new Map<string, Candle>()
+  for (const c of cached) {
+    newCandlesMap.set(c.date, c)
   }
+
+  const cacheLastDate = cached.length > 0 ? cached[cached.length - 1].date : ''
+  const filesToParse = sorted.filter(f => f.date > cacheLastDate)
+
+  if (filesToParse.length > 0) {
+    const newlyParsed: Candle[] = []
+    for (const f of filesToParse) {
+      const csv = await getArchivedFile(f.date)
+      if (!csv) continue
+      const rows = parseBhavcopyCSV(csv)
+      const row = rows.find((r) => r.symbol === symbol.toUpperCase())
+      if (!row) continue
+      const candle = {
+        date: f.date,
+        open: row.open,
+        high: row.high,
+        low: row.low,
+        close: row.close,
+        volume: row.volume,
+        adjClose: row.close,
+      }
+      newCandlesMap.set(f.date, candle)
+      newlyParsed.push(candle)
+    }
+
+    if (newlyParsed.length > 0) {
+      await saveCandlesToCache(symbol.toUpperCase(), 'day', 'NSE', newlyParsed)
+    }
+  }
+
+  const candles = Array.from(newCandlesMap.values()).sort((a, b) => a.date.localeCompare(b.date))
   return candles.length >= minCandles ? candles : null
 }

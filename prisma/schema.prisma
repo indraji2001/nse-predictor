@@ -101,3 +101,25 @@ model UpstoxInstrument {
 
   @@index([exchange])
 }
+
+// ------------------------------------------------------------------
+//  Persistent Candle Cache
+// ------------------------------------------------------------------
+model StockCandle {
+  id        Int      @id @default(autoincrement())
+  symbol    String
+  date      String   // ISO date string e.g. "2026-07-21" or "2026-07-21T09:15:00"
+  open      Float
+  high      Float
+  low       Float
+  close     Float
+  volume    Float
+  interval  String   // "day" | "5m" | "15m" | "1d"
+  source    String   // "UPSTOX" | "YAHOO" | "NSE"
+  createdAt DateTime @default(now())
+
+  @@unique([symbol, date, interval, source])
+  @@index([symbol, interval, source])
+  @@index([date])
+}
+
