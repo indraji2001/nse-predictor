@@ -11,6 +11,7 @@
 
 import { Candle, StockSeries } from './engine'
 import { NSE_UNIVERSE, StockMeta } from './universe'
+import { getCachedCandles, saveCandlesToCache } from './candle-cache'
 
 const YAHOO_HOSTS = ['query1.finance.yahoo.com', 'query2.finance.yahoo.com']
 // Yahoo rate-limits the full Chrome UA aggressively. A minimal "Mozilla/5.0"
@@ -81,7 +82,6 @@ async function fetchOne(meta: StockMeta, range = '1y', interval = '1d', retries 
   const wantedFromStr = absoluteStart.toISOString().slice(0, 10)
 
   // 1. Check local DB cache first
-  const { getCachedCandles, saveCandlesToCache } = require('./candle-cache')
   const cached = await getCachedCandles(meta.symbol, 'day', 'YAHOO')
 
   let candles: Candle[] = []

@@ -37,6 +37,7 @@
 import { promises as fs } from 'fs'
 import path from 'path'
 import { Candle } from './engine'
+import { getCachedCandles, saveCandlesToCache } from './candle-cache'
 
 // Detect Vercel serverless environment — its filesystem is read-only.
 const IS_VERCEL = process.env.VERCEL === '1'
@@ -380,8 +381,6 @@ export async function findLatestBhavcopyForSymbol(symbol: string, endDate: Date 
 // Build a list of all archived dates that contain data for a given symbol.
 // Returns candles oldest-first.
 export async function buildHistoryFromArchive(symbol: string, minCandles = 30): Promise<Candle[] | null> {
-  const { getCachedCandles, saveCandlesToCache } = require('./candle-cache')
-  
   // 1. Check local DB cache first
   const cached = await getCachedCandles(symbol.toUpperCase(), 'day', 'NSE')
 

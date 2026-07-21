@@ -15,6 +15,7 @@
 import { db } from '@/lib/db'
 import { Candle, StockSeries } from './engine'
 import { NSE_UNIVERSE, StockMeta } from './universe'
+import { getCachedCandles, saveCandlesToCache } from './candle-cache'
 
 const UPSTOX_API = 'https://api.upstox.com/v2'
 
@@ -510,7 +511,6 @@ export async function fetchHistorical(
   const wantedFromStr = absoluteStart.toISOString().slice(0, 10)
 
   // 1. Check local DB cache first
-  const { getCachedCandles, saveCandlesToCache } = require('./candle-cache')
   const cached = await getCachedCandles(meta.symbol, 'day', 'UPSTOX')
 
   let candles: Candle[] = []
