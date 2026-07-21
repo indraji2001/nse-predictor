@@ -142,7 +142,7 @@ export async function GET(req: Request) {
     report.step6_known_symbols_keys = { error: String(e) }
   }
 
-  // ── Step 7: Fetch 1Y historical for RELIANCE ─────────────────────────────
+  // ── Step 7: Fetch 1Y historical for RELIANCE via fetchHistorical() ─────────
   try {
     const meta = NSE_UNIVERSE.find(m => m.symbol === 'RELIANCE')
     if (meta) {
@@ -161,6 +161,56 @@ export async function GET(req: Request) {
     }
   } catch (e) {
     report.step7_reliance_1y = { error: String(e) }
+  }
+
+  // ── Step 7b: DIRECT raw Upstox API call for RELIANCE (bypass wrapper) ─────
+  // Shows exact URL, HTTP status, and first 1000 chars of the response body.
+  try {
+    const token = await getAccessToken()
+    const relianceKey = 'NSE_EQ|INE002A01018'
+    const encodedKey = encodeURIComponent(relianceKey)
+    const now = new Date()
+    const fromDate = new Date(now)
+    fromDate.setDate(fromDate.getDate() - 378) // ~1Y
+    const toStr = now.toISOString().slice(0, 10)
+    const fromStr = fromDate.toISOString().slice(0, 10)
+
+    const urlWith1d  = `https://api.upstox.com/v2/historical/candle/${encodedKey}/1d/${toStr}/${fromStr}`
+    const urlWithDay = `https://api.upstox.com/v2/historical/candle/${encodedKey}/day/${toStr}/${fromStr}`
+
+    if (token) {
+      // Test /1d/ interval
+      const res1d = await fetch(urlWith1d, {
+        headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+        cache: 'no-store',
+      })
+      const body1d = await res1d.text()
+      report.step7b_direct_api_1d = {
+        url: urlWith1d,
+        httpStatus: res1d.status,
+        ok: res1d.ok,
+        bodyFirst1000: body1d.slice(0, 1000),
+        candleCount: (() => { try { return JSON.parse(body1d)?.data?.candles?.length ?? 0 } catch { return 'parse error' } })(),
+      }
+
+      // Test /day/ interval
+      const resDay = await fetch(urlWithDay, {
+        headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+        cache: 'no-store',
+      })
+      const bodyDay = await resDay.text()
+      report.step7b_direct_api_day = {
+        url: urlWithDay,
+        httpStatus: resDay.status,
+        ok: resDay.ok,
+        bodyFirst1000: bodyDay.slice(0, 1000),
+        candleCount: (() => { try { return JSON.parse(bodyDay)?.data?.candles?.length ?? 0 } catch { return 'parse error' } })(),
+      }
+    } else {
+      report.step7b_direct_api = { error: 'No token available' }
+    }
+  } catch (e) {
+    report.step7b_direct_api = { error: String(e) }
   }
 
   // ── Step 8: Direct Upstox API call (raw) ─────────────────────────────────
