@@ -342,7 +342,8 @@ import { fetchNiftyIndex as fetchYahooNifty } from './yahoo'
 
 export async function fetchNiftyIndex(): Promise<StockSeries | null> {
   try {
-    return await fetchYahooNifty()
+    const timeout = new Promise<null>((r) => setTimeout(() => r(null), 1500))
+    return await Promise.race([fetchYahooNifty(), timeout])
   } catch {
     return null
   }
