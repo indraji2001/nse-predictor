@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { gunzipSync } from 'zlib'
 import {
   getStatus,
   refreshInstrumentMaster,
@@ -71,6 +72,52 @@ export async function GET(req: Request) {
     }
   } catch (e) {
     report.step4_instrument_db_count = { error: String(e) }
+  }
+
+  // ── Step 4b: Raw instrument file sample — see EXACT field values ─────────
+  // This reveals the actual 'exchange', 'instrument_type', 'segment' values
+  // so we can verify our filter conditions are correct.
+  try {
+    const INSTRUMENT_URL = 'https://assets.upstox.com/market-quote/instruments/exchange/complete.json.gz'
+    const res = await fetch(INSTRUMENT_URL, { cache: 'no-store' })
+    if (res.ok) {
+      const buffer = await res.arrayBuffer()
+      const decompressed = gunzipSync(Buffer.from(buffer))
+      const allInstruments: unknown[] = JSON.parse(decompressed.toString('utf-8'))
+      const totalCount = allInstruments.length
+
+      // Sample first 3 any instruments to see format
+      const first3 = allInstruments.slice(0, 3)
+
+      // Find instruments where exchange = NSE_EQ
+      const nseEqAll = (allInstruments as Array<Record<string, unknown>>)
+        .filter(i => i.exchange === 'NSE_EQ')
+      
+      // Find instruments where exchange = NSE_EQ AND instrument_type = EQ
+      const nseEqEquity = nseEqAll.filter(i => i.instrument_type === 'EQ')
+
+      // Unique segment values among NSE_EQ+EQ instruments
+      const segmentValues = [...new Set(nseEqEquity.map(i => i.segment))].slice(0, 10)
+
+      // Sample 3 NSE_EQ+EQ instruments to see their exact field values
+      const nseEqSample = nseEqEquity.slice(0, 3)
+
+      // Check for RELIANCE specifically
+      const reliance = (allInstruments as Array<Record<string, unknown>>)
+        .find(i => i.tradingsymbol === 'RELIANCE' || (i as Record<string, unknown>).tradingsymbol === 'RELIANCE')
+
+      report.step4b_raw_file_analysis = {
+        totalInstrumentsInFile: totalCount,
+        first3RawEntries: first3,
+        nseEqCount: nseEqAll.length,
+        nseEqEquityCount: nseEqEquity.length,
+        uniqueSegmentValuesInNseEqEquity: segmentValues,
+        nseEqEquitySample3: nseEqSample,
+        relianceEntry: reliance ?? 'NOT FOUND',
+      }
+    }
+  } catch (e) {
+    report.step4b_raw_file_analysis = { error: String(e) }
   }
 
   // ── Step 5: Bulk key lookup for first 5 universe symbols ─────────────────
