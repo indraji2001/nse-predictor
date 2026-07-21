@@ -211,24 +211,51 @@ const INSTRUMENT_URL = 'https://assets.upstox.com/market-quote/instruments/excha
 
 export async function refreshInstrumentMaster(): Promise<{ count: number; error?: string }> {
   try {
-    // Fetch the gzipped JSON. Bun's fetch handles gzip transparently.
-    const res = await fetch(INSTRUMENT_URL, { cache: 'no-store' })
-    if (!res.ok) return { count: 0, error: `HTTP ${res.status}` }
-    const json = await res.json()
-    if (!Array.isArray(json)) return { count: 0, error: 'Unexpected response shape' }
+    // Upstox publishes the instrument master as a gzip-compressed JSON file.
+    // Node.js fetch() does NOT auto-decompress gzip (unlike Bun), so we must:
+    //   1. Download as raw binary (ArrayBuffer)
+    //   2. Decompress with zlib.gunzipSync()
+    //   3. JSON.parse() the decompressed UTF-8 string
+    const { gunzipSync } = await import('zlib')
+
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), 60_000) // 60s — file is 3.6MB
+
+    let json: unknown
+    try {
+      const res = await fetch(INSTRUMENT_URL, { cache: 'no-store', signal: controller.signal })
+      clearTimeout(timer)
+      if (!res.ok) return { count: 0, error: `HTTP ${res.status}` }
+
+      const contentType = res.headers.get('content-type') ?? ''
+      if (contentType.includes('gzip') || contentType.includes('application/octet-stream') || !contentType.includes('json')) {
+        // Binary gzip → decompress first
+        const buffer = await res.arrayBuffer()
+        const decompressed = gunzipSync(Buffer.from(buffer))
+        json = JSON.parse(decompressed.toString('utf-8'))
+      } else {
+        // Already plain JSON (shouldn't happen with .json.gz URL but handle gracefully)
+        json = await res.json()
+      }
+    } catch (fetchErr) {
+      clearTimeout(timer)
+      return { count: 0, error: `Fetch/decompress failed: ${fetchErr instanceof Error ? fetchErr.message : String(fetchErr)}` }
+    }
+
+    if (!Array.isArray(json)) return { count: 0, error: `Unexpected response shape: ${typeof json}` }
 
     // Filter to NSE_EQ (equities) only — that's what we trade.
-    const nseEquities = json.filter((inst: { exchange?: string; instrument_type?: string; segment?: string }) =>
-      inst.exchange === 'NSE_EQ' &&
-      inst.instrument_type === 'EQ' &&
-      inst.segment === 'EQ'
-    )
+    const nseEquities = (json as Array<{ exchange?: string; instrument_type?: string; segment?: string }>)
+      .filter((inst) =>
+        inst.exchange === 'NSE_EQ' &&
+        inst.instrument_type === 'EQ' &&
+        inst.segment === 'EQ'
+      )
 
     // Build upserts — only for symbols in our universe to keep DB lean
     const universeSymbols = new Set(NSE_UNIVERSE.map((s) => s.symbol))
-    const toUpsert = nseEquities.filter((inst: { tradingsymbol?: string }) =>
-      inst.tradingsymbol && universeSymbols.has(inst.tradingsymbol)
-    )
+    const toUpsert = (nseEquities as Array<{ tradingsymbol?: string; instrument_key?: string; name?: string; exchange?: string; isin?: string; lot_size?: number }>)
+      .filter((inst) => inst.tradingsymbol && universeSymbols.has(inst.tradingsymbol))
 
     // Delete all existing then bulk insert (simpler than per-row upsert)
     await db.upstoxInstrument.deleteMany({})
@@ -236,8 +263,8 @@ export async function refreshInstrumentMaster(): Promise<{ count: number; error?
       try {
         await db.upstoxInstrument.create({
           data: {
-            symbol: inst.tradingsymbol,
-            instrumentKey: inst.instrument_key,
+            symbol: inst.tradingsymbol!,
+            instrumentKey: inst.instrument_key!,
             name: inst.name ?? null,
             exchange: inst.exchange ?? 'NSE_EQ',
             isin: inst.isin ?? null,
