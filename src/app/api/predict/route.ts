@@ -132,48 +132,61 @@ async function fetchTradingViewConsensusBatch(symbols: string[]) {
 
   try {
     const url = "https://scanner.tradingview.com/india/scan"
-    
+    const chunks: string[][] = []
     for (let i = 0; i < tickers.length; i += chunkSize) {
-      const chunk = tickers.slice(i, i + chunkSize)
-      const payload = {
-        symbols: {
-          tickers: chunk,
-          query: { types: [] }
-        },
-        columns: [
-          "Recommend.All",
-          "Recommend.MA",
-          "Recommend.Other"
-        ]
-      }
+      chunks.push(tickers.slice(i, i + chunkSize))
+    }
 
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'User-Agent': 'Mozilla/5.0'
-        },
-        body: JSON.stringify(payload),
-        next: { revalidate: 3600 }
-      })
+    // Run all chunks in parallel with a strict 1.5s timeout per request
+    await Promise.all(chunks.map(async (chunk) => {
+      try {
+        const payload = {
+          symbols: {
+            tickers: chunk,
+            query: { types: [] }
+          },
+          columns: [
+            "Recommend.All",
+            "Recommend.MA",
+            "Recommend.Other"
+          ]
+        }
 
-      if (res.ok) {
-        const json = await res.json()
-        const rows = json?.data ?? []
-        for (const row of rows) {
-          const ticker = row.s
-          const d = row.d
-          const origSymbol = symbolToTickerMap[ticker]
-          if (origSymbol && d && d.length >= 3) {
-            map[origSymbol] = {
-              summaryScore: d[0] ?? 0,
-              maScore: d[1] ?? 0,
-              oscScore: d[2] ?? 0
+        const controller = new AbortController()
+        const timer = setTimeout(() => controller.abort(), 1500) // 1.5s hard timeout
+
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'User-Agent': 'Mozilla/5.0'
+          },
+          body: JSON.stringify(payload),
+          signal: controller.signal,
+          next: { revalidate: 3600 }
+        })
+        clearTimeout(timer)
+
+        if (res.ok) {
+          const json = await res.json()
+          const rows = json?.data ?? []
+          for (const row of rows) {
+            const ticker = row.s
+            const d = row.d
+            const origSymbol = symbolToTickerMap[ticker]
+            if (origSymbol && d && d.length >= 3) {
+              map[origSymbol] = {
+                summaryScore: d[0] ?? 0,
+                maScore: d[1] ?? 0,
+                oscScore: d[2] ?? 0
+              }
             }
           }
         }
+      } catch {
+        // Suppress external TradingView timeouts — predictor works independently
       }
-    }
+    }))
   } catch (e) {
     console.error('TradingView batch scanner error:', e)
   }
