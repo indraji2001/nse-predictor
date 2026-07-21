@@ -483,6 +483,7 @@ export async function fetchHistorical(
   rangeOrDays: string | number = 130,
   prefetchedToken?: string,
   prefetchedKey?: string,
+  prefetchedCandles?: Candle[],
 ): Promise<StockSeries | null> {
   const CHUNK_DAYS = 700
   const now = new Date()
@@ -511,7 +512,7 @@ export async function fetchHistorical(
   const wantedFromStr = absoluteStart.toISOString().slice(0, 10)
 
   // 1. Check local DB cache first
-  const cached = await getCachedCandles(meta.symbol, 'day', 'UPSTOX')
+  const cached = prefetchedCandles ?? await getCachedCandles(meta.symbol, 'day', 'UPSTOX')
 
   let candles: Candle[] = []
   let token: string | null = null

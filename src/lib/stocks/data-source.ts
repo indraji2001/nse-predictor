@@ -23,6 +23,7 @@ import {
   bulkGetInstrumentKeys,
   getAccessToken as getUpstoxToken,
 } from './upstox'
+import { bulkGetCachedCandles } from './candle-cache'
 
 export type DataSource = 'NSE' | 'YAHOO' | 'DEMO' | 'UPSTOX'
 
@@ -201,19 +202,20 @@ export async function fetchUnifiedUniverse(
           // individual DB roundtrips and avoids re-downloading the 10 MB
           // instrument master for every missing symbol.
           const allSymbols = failed.map((item) => item.meta.symbol)
-          const [upstoxToken, instrumentKeys] = await Promise.all([
+          const [upstoxToken, instrumentKeys, bulkCandlesMap] = await Promise.all([
             getUpstoxToken(),
             bulkGetInstrumentKeys(allSymbols),
+            bulkGetCachedCandles(allSymbols, 'day', 'UPSTOX'),
           ])
           if (!upstoxToken) {
             console.warn('Upstox: no access token, skipping')
           } else {
             // Concurrency 10 — proven safe: 440/441 stocks succeed at this level.
-            // Concurrency 20 caused 429 cascades (backoff delays = 2+ min total).
             const upstoxResults = await mapWithConcurrency(failed, 10, async (item) => {
               const key = instrumentKeys[item.meta.symbol]
               if (!key) return { idx: item.idx, meta: item.meta, s: null }
-              const s = await fetchFromUpstox(item.meta, range, upstoxToken, key)
+              const cachedCandles = bulkCandlesMap.get(item.meta.symbol.toUpperCase())
+              const s = await fetchFromUpstox(item.meta, range, upstoxToken, key, cachedCandles)
               return { idx: item.idx, meta: item.meta, s }
             })
             const nextFailed = []

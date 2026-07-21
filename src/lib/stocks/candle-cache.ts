@@ -12,8 +12,57 @@ export interface CachedCandle {
 }
 
 /**
- * Reads cached EOD or Intraday candles from the database.
- * Returns sorted candles by date ascending.
+ * Reads cached EOD or Intraday candles for an ENTIRE universe of symbols in ONE single DB query.
+ * Returns a map of symbol -> Candle[].
+ */
+export async function bulkGetCachedCandles(
+  symbols: string[],
+  interval: string,
+  source: string,
+  fromDate?: string
+): Promise<Map<string, Candle[]>> {
+  const result = new Map<string, Candle[]>()
+  if (!symbols || symbols.length === 0) return result
+
+  try {
+    const where: any = {
+      symbol: { in: symbols.map(s => s.toUpperCase()) },
+      interval,
+      source,
+    }
+    if (fromDate) {
+      where.date = { gte: fromDate }
+    }
+
+    const rows = await db.stockCandle.findMany({
+      where,
+      orderBy: { date: 'asc' },
+    })
+
+    for (const r of rows) {
+      const sym = r.symbol.toUpperCase()
+      if (!result.has(sym)) {
+        result.set(sym, [])
+      }
+      result.get(sym)!.push({
+        date: r.date,
+        open: r.open,
+        high: r.high,
+        low: r.low,
+        close: r.close,
+        volume: r.volume,
+      })
+    }
+
+    return result
+  } catch (err) {
+    console.error(`[candle-cache] Error in bulkGetCachedCandles:`, err)
+    return result
+  }
+}
+
+/**
+ * Reads cached EOD or Intraday candles for a single symbol.
  */
 export async function getCachedCandles(
   symbol: string,
@@ -24,7 +73,7 @@ export async function getCachedCandles(
 ): Promise<Candle[]> {
   try {
     const where: any = {
-      symbol,
+      symbol: symbol.toUpperCase(),
       interval,
       source,
     }
