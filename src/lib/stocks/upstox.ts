@@ -255,30 +255,91 @@ export async function refreshInstrumentMaster(): Promise<{ count: number; error?
   }
 }
 
-// Look up the instrument key for a symbol. If not in DB, refresh master and retry.
+// --- Instrument key in-process cache ------------------------------------
+// Prevent downloading the 10MB instrument master multiple times in one
+// serverless invocation when the DB is empty (first-time use).
+let _masterRefreshedThisInvocation = false
+const _keyCache: Map<string, string> = new Map()
+
+// Look up the instrument key for a symbol. If not in DB, refresh master ONCE
+// per serverless invocation and retry. Never re-download mid-flight.
 export async function getInstrumentKey(symbol: string): Promise<string | null> {
+  if (_keyCache.has(symbol)) return _keyCache.get(symbol)!
   const cached = await db.upstoxInstrument.findUnique({ where: { symbol } })
-  if (cached) return cached.instrumentKey
-  // Try refreshing the master once
-  await refreshInstrumentMaster()
+  if (cached) {
+    _keyCache.set(symbol, cached.instrumentKey)
+    return cached.instrumentKey
+  }
+  // Refresh the master ONLY ONCE per invocation to avoid downloading
+  // the 10MB file for every missing stock symbol.
+  if (!_masterRefreshedThisInvocation) {
+    _masterRefreshedThisInvocation = true
+    await refreshInstrumentMaster()
+  }
   const fresh = await db.upstoxInstrument.findUnique({ where: { symbol } })
-  return fresh?.instrumentKey ?? null
+  if (fresh) {
+    _keyCache.set(symbol, fresh.instrumentKey)
+    return fresh.instrumentKey
+  }
+  return null
 }
 
-// --- Historical candles ---------------------------------------------------
-// Upstox endpoint: GET /historical/candle/{instrument_key}/{interval}/{to_date}/{from_date}
-//   interval: 1minute | 30minute | day | week
-//   dates: YYYY-MM-DD
-//   Max range per call: depends on interval. For `day`, you can fetch up to ~1 year.
-// Returns candles oldest-first.
+// Bulk-fetch instrument keys in a SINGLE DB query (used by data-source to
+// avoid 512 individual DB roundtrips before the Upstox API call loop).
+export async function bulkGetInstrumentKeys(
+  symbols: string[]
+): Promise<Record<string, string>> {
+  const result: Record<string, string> = {}
+  // First pass: serve from in-process cache
+  const missing: string[] = []
+  for (const sym of symbols) {
+    if (_keyCache.has(sym)) result[sym] = _keyCache.get(sym)!
+    else missing.push(sym)
+  }
+  if (missing.length === 0) return result
+
+  // Single DB query for all missing symbols
+  const rows = await db.upstoxInstrument.findMany({
+    where: { symbol: { in: missing } },
+    select: { symbol: true, instrumentKey: true },
+  })
+  for (const row of rows) {
+    result[row.symbol] = row.instrumentKey
+    _keyCache.set(row.symbol, row.instrumentKey)
+  }
+
+  // If still missing, refresh master once
+  const stillMissing = missing.filter((s) => !result[s])
+  if (stillMissing.length > 0 && !_masterRefreshedThisInvocation) {
+    _masterRefreshedThisInvocation = true
+    await refreshInstrumentMaster()
+    const fresh = await db.upstoxInstrument.findMany({
+      where: { symbol: { in: stillMissing } },
+      select: { symbol: true, instrumentKey: true },
+    })
+    for (const row of fresh) {
+      result[row.symbol] = row.instrumentKey
+      _keyCache.set(row.symbol, row.instrumentKey)
+    }
+  }
+  return result
+}
+
+// Export getAccessToken for use by data-source bulk prefetch
+export { getAccessToken }
+
+// Fetch historical candles for one stock. Accepts optional pre-fetched token
+// and instrumentKey to avoid redundant DB lookups when called in bulk.
 export async function fetchHistorical(
   meta: StockMeta,
   rangeOrDays: string | number = 130,
+  prefetchedToken?: string,
+  prefetchedKey?: string,
 ): Promise<StockSeries | null> {
-  const token = await getAccessToken()
+  const token = prefetchedToken ?? await getAccessToken()
   if (!token) return null
 
-  const instrumentKey = await getInstrumentKey(meta.symbol)
+  const instrumentKey = prefetchedKey ?? await getInstrumentKey(meta.symbol)
   if (!instrumentKey) return null
 
   let days = 130
@@ -296,14 +357,17 @@ export async function fetchHistorical(
     }
   }
 
-  // Encode the instrument key (it contains a pipe) for URL
   const encodedKey = encodeURIComponent(instrumentKey)
   const toDate = new Date()
   const fromDate = new Date()
-  fromDate.setDate(fromDate.getDate() - Math.ceil(days * 1.5)) // pad for weekends/holidays
+  fromDate.setDate(fromDate.getDate() - Math.ceil(days * 1.5))
   const toStr = toDate.toISOString().slice(0, 10)
   const fromStr = fromDate.toISOString().slice(0, 10)
   const url = `${UPSTOX_API}/historical/candle/${encodedKey}/day/${toStr}/${fromStr}`
+
+  // Per-call 10-second timeout so one slow stock doesn’t block the whole batch
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), 10_000)
 
   try {
     const res = await fetch(url, {
@@ -312,16 +376,17 @@ export async function fetchHistorical(
         Accept: 'application/json',
       },
       cache: 'no-store',
+      signal: controller.signal,
     })
+    clearTimeout(timer)
     if (res.status === 401) {
-      // Token expired mid-call — try refresh once
+      // Token expired mid-call — try refresh once then give up (don’t retry in bulk)
       const refreshed = await refreshAccessToken()
       if (!refreshed) return null
-      return fetchHistorical(meta, days) // retry
+      return fetchHistorical(meta, rangeOrDays) // retry without prefetched token
     }
     if (!res.ok) return null
     const json = await res.json()
-    // Response shape: { status: 'success', data: { candles: [[ts, o, h, l, c, v, oi], ...] } }
     const candlesRaw: Array<[string, number, number, number, number, number, number]> =
       json?.data?.candles ?? []
     if (candlesRaw.length === 0) return null
@@ -337,7 +402,6 @@ export async function fetchHistorical(
         adjClose: +c[4].toFixed(2),
       }))
       .filter((c) => isFinite(c.open) && isFinite(c.close))
-      // Sort oldest first
       .sort((a, b) => a.date.localeCompare(b.date))
 
     if (candles.length < 30) return null
@@ -351,6 +415,7 @@ export async function fetchHistorical(
       lastIdx: candles.length - 1,
     }
   } catch {
+    clearTimeout(timer)
     return null
   }
 }

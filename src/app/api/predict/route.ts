@@ -5,7 +5,7 @@ import { generateUniverse } from '@/lib/stocks/engine'
 import { computeIndicators } from '@/lib/indicators'
 
 export const dynamic = 'force-dynamic'
-export const maxDuration = 60
+export const maxDuration = 300 // 300s = Vercel Pro max — needed for 512-stock Upstox batch
 
 // GET /api/predict
 // Returns the full prediction result for all four timeframes:

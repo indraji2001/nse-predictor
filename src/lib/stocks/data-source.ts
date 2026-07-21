@@ -17,7 +17,12 @@ import {
   type UniverseResult,
 } from './yahoo'
 import { buildHistoryFromArchive, listArchive } from './nse-bhavcopy'
-import { isReady as isUpstoxReady, fetchHistorical as fetchFromUpstox } from './upstox'
+import {
+  isReady as isUpstoxReady,
+  fetchHistorical as fetchFromUpstox,
+  bulkGetInstrumentKeys,
+  getAccessToken as getUpstoxToken,
+} from './upstox'
 
 export type DataSource = 'NSE' | 'YAHOO' | 'DEMO' | 'UPSTOX'
 
@@ -169,21 +174,39 @@ export async function fetchUnifiedUniverse(
     if (prov === 'UPSTOX') {
       try {
         if (await isUpstoxReady()) {
-          const upstoxResults = await mapWithConcurrency(failed, 4, async (item) => {
-            const s = await fetchFromUpstox(item.meta, range)
-            return { idx: item.idx, meta: item.meta, s }
-          })
-          const nextFailed = []
-          for (const r of upstoxResults) {
-            if (r.s) {
-              series[r.idx] = r.s
-              sources[r.meta.symbol] = 'UPSTOX'
-              upstoxCount++
-            } else {
-              nextFailed.push({ meta: r.meta, idx: r.idx })
+          // --- Bulk optimisation ------------------------------------------
+          // Pre-fetch access token ONCE and all instrument keys in ONE DB
+          // query before starting the per-stock loop. This prevents 512
+          // individual DB roundtrips and avoids re-downloading the 10 MB
+          // instrument master for every missing symbol.
+          const allSymbols = failed.map((item) => item.meta.symbol)
+          const [upstoxToken, instrumentKeys] = await Promise.all([
+            getUpstoxToken(),
+            bulkGetInstrumentKeys(allSymbols),
+          ])
+          if (!upstoxToken) {
+            console.warn('Upstox: no access token, skipping')
+          } else {
+            // Concurrency 12 — Upstox rate-limit is generous, and each call
+            // is a simple REST GET that benefits from parallelism.
+            const upstoxResults = await mapWithConcurrency(failed, 12, async (item) => {
+              const key = instrumentKeys[item.meta.symbol]
+              if (!key) return { idx: item.idx, meta: item.meta, s: null }
+              const s = await fetchFromUpstox(item.meta, range, upstoxToken, key)
+              return { idx: item.idx, meta: item.meta, s }
+            })
+            const nextFailed = []
+            for (const r of upstoxResults) {
+              if (r.s) {
+                series[r.idx] = r.s
+                sources[r.meta.symbol] = 'UPSTOX'
+                upstoxCount++
+              } else {
+                nextFailed.push({ meta: r.meta, idx: r.idx })
+              }
             }
+            failed = nextFailed
           }
-          failed = nextFailed
         }
       } catch (err) {
         console.error('Error fetching batch from Upstox:', err)

@@ -5,7 +5,7 @@ import { evaluateStock } from '@/lib/predictor/engine'
 import { computeIndicators } from '@/lib/indicators'
 
 export const dynamic = 'force-dynamic'
-export const maxDuration = 30
+export const maxDuration = 60  // single stock Upstox fetch can be slow on cold start
 
 // GET /api/stock/[symbol]
 // Returns full detail for one symbol: candles + indicators + 4 timeframe signals.
