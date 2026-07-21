@@ -49,6 +49,49 @@ export function DataArchiveDialog({ open, onClose }: Props) {
   const [dbLoading, setDbLoading] = useState(false)
   const [pruneDays, setPruneDays] = useState(90)
   const [pruneEodYear, setPruneEodYear] = useState('2020')
+  const [initializing, setInitializing] = useState(false)
+  const [initProgress, setInitProgress] = useState<{ batchIdx: number; progressPercent: number; message: string } | null>(null)
+
+  const handleInitializeCache = async () => {
+    setInitializing(true)
+    setInitProgress({ batchIdx: 0, progressPercent: 0, message: 'Starting Upstox Cache Batch 1 of 5...' })
+    
+    let currentBatch = 0
+    let isDone = false
+
+    try {
+      while (!isDone && currentBatch < 10) {
+        const r = await fetch(`/api/admin/initialize-cache?provider=UPSTOX&batch=${currentBatch}&batchSize=100`, { cache: 'no-store' })
+        const j = await r.json()
+        if (!r.ok || j.error) {
+          toast.error('Initialization error', { description: j.error || 'Failed batch load' })
+          break
+        }
+
+        setInitProgress({
+          batchIdx: currentBatch,
+          progressPercent: j.progressPercent || Math.round(((currentBatch + 1) / 5) * 100),
+          message: `Processed stocks ${j.startIdx}–${j.endIdx} (${j.successCount} saved)`
+        })
+
+        await refreshDbStats()
+
+        if (j.done || j.nextBatch === null) {
+          isDone = true
+          toast.success('Upstox Cache Initialization Complete!', {
+            description: `All 503 stocks cached in Turso DB. Future refreshes will be instant!`
+          })
+          break
+        }
+
+        currentBatch = j.nextBatch
+      }
+    } catch (e) {
+      toast.error('Network error during cache initialization')
+    } finally {
+      setInitializing(false)
+    }
+  }
 
   const refresh = async () => {
     setLoading(true)
@@ -494,7 +537,45 @@ export function DataArchiveDialog({ open, onClose }: Props) {
                 </div>
 
                 <div className="space-y-3">
-                  <div className="text-xs font-semibold flex items-center gap-1.5">
+                  {/* Tool 0: One-Click Cache Warmup */}
+                  <div className="border border-violet-300/80 dark:border-violet-800 rounded-lg p-3 space-y-2 bg-violet-50/40 dark:bg-violet-950/20 text-xs">
+                    <div className="font-semibold text-violet-800 dark:text-violet-300 flex justify-between items-center">
+                      <span className="flex items-center gap-1.5"><HardDrive className="h-4 w-4 text-violet-600" /> One-Click 503 Stock Upstox Cache Warmup</span>
+                      <Badge className="bg-violet-100 text-violet-800 dark:bg-violet-900 dark:text-violet-200">Recommended</Badge>
+                    </div>
+                    <p className="text-[10px] text-violet-700 dark:text-violet-400">
+                      Warm-caches all 503 NSE stocks into your database in 5 quick batch steps (~15s each). Runs safely without hitting server timeouts. Once complete, future app refreshes will be instant (&lt;1s).
+                    </p>
+
+                    {initializing && initProgress && (
+                      <div className="space-y-1.5 pt-1">
+                        <div className="flex justify-between text-[11px] font-medium text-violet-900 dark:text-violet-200">
+                          <span>{initProgress.message}</span>
+                          <span>{initProgress.progressPercent}%</span>
+                        </div>
+                        <div className="w-full h-2 bg-violet-200 dark:bg-violet-900 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-violet-600 transition-all duration-300"
+                            style={{ width: `${initProgress.progressPercent}%` }}
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="pt-1">
+                      <Button
+                        onClick={handleInitializeCache}
+                        disabled={initializing}
+                        size="sm"
+                        className="text-xs bg-violet-600 hover:bg-violet-700 text-white font-medium flex items-center gap-1.5"
+                      >
+                        {initializing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <HardDrive className="h-3.5 w-3.5" />}
+                        {initializing ? 'Warming up cache...' : 'Initialize Upstox Cache (503 Stocks)'}
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="text-xs font-semibold flex items-center gap-1.5 pt-1">
                     <Trash2 className="h-3.5 w-3.5 text-muted-foreground" /> Pruning & Maintenance Tools
                   </div>
 
