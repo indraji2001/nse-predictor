@@ -6,33 +6,45 @@ import { computeIndicators } from '@/lib/indicators'
 export const dynamic = 'force-dynamic'
 
 export async function GET(req: NextRequest) {
-  const timings: Record<string, number> = {}
+  const step = req.nextUrl.searchParams.get('step') || '1'
+  const t0 = Date.now()
 
-  let t0 = Date.now()
-  const live = await fetchUnifiedUniverseCached(new Date(), 'UPSTOX', '1y')
-  timings['1_fetchUnifiedUniverse'] = Date.now() - t0
+  if (step === '1') {
+    const live = await fetchUnifiedUniverseCached(new Date(), 'UPSTOX', '1y')
+    const timeMs = Date.now() - t0
+    return NextResponse.json({
+      step: '1_fetchUnifiedUniverseCached',
+      timeMs,
+      timeSec: (timeMs / 1000).toFixed(2),
+      stockCount: live.series.length,
+      upstoxCount: live.upstoxCount,
+      yahooCount: live.yahooCount,
+    })
+  }
 
-  t0 = Date.now()
-  let isNiftyBullish = true
-  try {
+  if (step === '2') {
     const nifty = await fetchNiftyIndex()
-    if (nifty && nifty.candles && nifty.candles.length >= 30) {
-      const niftyInd = computeIndicators(nifty.candles)
-      const lastNiftyClose = nifty.candles[nifty.candles.length - 1].close
-      const benchmarkEma = niftyInd.ema200 || niftyInd.ema50 || lastNiftyClose
-      isNiftyBullish = lastNiftyClose >= benchmarkEma
-    }
-  } catch (e) {}
-  timings['2_fetchNiftyIndex'] = Date.now() - t0
+    const timeMs = Date.now() - t0
+    return NextResponse.json({
+      step: '2_fetchNiftyIndex',
+      timeMs,
+      timeSec: (timeMs / 1000).toFixed(2),
+      hasNifty: !!nifty,
+    })
+  }
 
-  t0 = Date.now()
-  const result = evaluateUniverse(live.series, new Date(), isNiftyBullish, {})
-  timings['3_evaluateUniverse'] = Date.now() - t0
+  if (step === '3') {
+    const { generateUniverse } = await import('@/lib/stocks/engine')
+    const synthSeries = generateUniverse(new Date())
+    const result = evaluateUniverse(synthSeries, new Date(), true, {})
+    const timeMs = Date.now() - t0
+    return NextResponse.json({
+      step: '3_evaluateUniverse',
+      timeMs,
+      timeSec: (timeMs / 1000).toFixed(2),
+      btstCount: result.btst.length,
+    })
+  }
 
-  return NextResponse.json({
-    timings,
-    totalTimeSec: ((Object.values(timings).reduce((a, b) => a + b, 0)) / 1000).toFixed(2),
-    stockCount: live.series.length,
-    upstoxCount: live.upstoxCount,
-  })
+  return NextResponse.json({ error: 'Invalid step (use 1, 2, or 3)' })
 }
