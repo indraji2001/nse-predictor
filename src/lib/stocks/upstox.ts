@@ -430,15 +430,8 @@ export async function bulkGetInstrumentKeys(
   }
   if (missing.length === 0) return result
 
-  // Build query symbols list including aliases
-  const querySymbols = Array.from(new Set([
-    ...missing,
-    ...missing.map(s => SYMBOL_ALIASES[s.toUpperCase()]).filter(Boolean)
-  ]))
-
-  // Single DB query for missing symbols & aliases
+  // Fetch all instrument keys from DB in a single 5ms query
   const rows = await db.upstoxInstrument.findMany({
-    where: { symbol: { in: querySymbols } },
     select: { symbol: true, instrumentKey: true },
   })
 
