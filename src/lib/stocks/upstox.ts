@@ -383,7 +383,8 @@ async function fetchDayChunk(
 ): Promise<Candle[] | null> {
   // Upstox v2 API path: /v2/historical-candle/{key}/{interval}/{to}/{from}
   // Note: it's 'historical-candle' (hyphen) NOT 'historical/candle' (slash)
-  const url = `${UPSTOX_API}/historical-candle/${encodedKey}/1d/${toStr}/${fromStr}`
+  // Interval: 'day' (NOT '1d') — confirmed by live API test (1d returns HTTP 400)
+  const url = `${UPSTOX_API}/historical-candle/${encodedKey}/day/${toStr}/${fromStr}`
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), 12_000) // 12s per chunk
   try {
