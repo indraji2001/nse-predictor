@@ -35,7 +35,9 @@ export async function GET(req: NextRequest) {
 
   if (useLive) {
     try {
-      const universeRange = provider === 'UPSTOX' ? '1y' : range
+      // Universe screener signals only require 1Y of EOD candles (252 bars for EMA200).
+      // Single stock detail endpoints handle full 5Y/10Y historical charts independently.
+      const universeRange = '1y'
       const live = await fetchUnifiedUniverseCached(asOf, provider, universeRange)
       series = live.series
       sources = live.sources as Record<string, 'NSE' | 'YAHOO' | 'DEMO' | 'UPSTOX'>
