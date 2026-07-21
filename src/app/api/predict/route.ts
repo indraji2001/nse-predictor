@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { fetchUnifiedUniverse, fetchNiftyIndex } from '@/lib/stocks/data-source'
+import { fetchUnifiedUniverseCached, fetchNiftyIndex } from '@/lib/stocks/data-source'
 import { evaluateUniverse, tagSignalSources } from '@/lib/predictor/engine'
 import { generateUniverse } from '@/lib/stocks/engine'
 import { computeIndicators } from '@/lib/indicators'
@@ -35,12 +35,8 @@ export async function GET(req: NextRequest) {
 
   if (useLive) {
     try {
-      // For universe screener, always fetch 1Y from Upstox regardless of user selection.
-      // Signal generation (BTST/midterm/long-term) only needs ~252 candles max.
-      // Fetching 5Y (1323 API calls) would timeout — individual chart views
-      // handle long-range data separately via the single-stock endpoint.
       const universeRange = provider === 'UPSTOX' ? '1y' : range
-      const live = await fetchUnifiedUniverse(asOf, provider, universeRange)
+      const live = await fetchUnifiedUniverseCached(asOf, provider, universeRange)
       series = live.series
       sources = live.sources as Record<string, 'NSE' | 'YAHOO' | 'DEMO' | 'UPSTOX'>
       nseCount = live.nseCount

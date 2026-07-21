@@ -31,6 +31,25 @@ export interface FetchedSeries {
   source: DataSource
 }
 
+// --- Module-level universe cache ------------------------------------------
+// Stores the last-fetched universe result per provider.
+// Survives across requests in the SAME Lambda instance (warm periods).
+// TTL: 6 hours — EOD data doesn't change after market close (3:30pm IST).
+//
+// Cache key = `${provider}_${tradingDate}` so switching providers or date
+// changes always triggers a fresh fetch.
+interface CacheEntry {
+  result: UnifiedUniverseResult
+  key: string  // `{provider}_{YYYY-MM-DD}`
+  cachedAt: number
+}
+const CACHE_TTL_MS = 6 * 60 * 60 * 1000  // 6 hours
+let _universeCache: CacheEntry | null = null
+
+function getTradingDateIST(): string {
+  return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' })
+}
+
 // --- NSE archive lookup ---------------------------------------------------
 // Returns true if we have at least one bhavcopy file archived locally.
 let _hasArchiveCache: boolean | null = null
@@ -159,7 +178,9 @@ export async function fetchUnifiedUniverse(
   } else if (providerOverride === 'NSE') {
     providers.push('NSE', 'UPSTOX', 'YAHOO')
   } else if (providerOverride === 'YAHOO') {
-    providers.push('YAHOO', 'UPSTOX', 'NSE')
+    // Yahoo selected: only use Yahoo, no Upstox fallback.
+    // This prevents the 'jumbled' behaviour where Yahoo showed a few Upstox stocks.
+    providers.push('YAHOO')
   } else {
     // Default Auto priority
     providers.push('UPSTOX', 'NSE', 'YAHOO')
@@ -187,10 +208,9 @@ export async function fetchUnifiedUniverse(
           if (!upstoxToken) {
             console.warn('Upstox: no access token, skipping')
           } else {
-            // Concurrency 20 — Upstox handles concurrent connections fine (440/441
-            // stocks succeeded at concurrency 10). Doubling to 20 cuts refresh time
-            // from ~60s to ~30s. 429 retry logic handles any edge-case rate limits.
-            const upstoxResults = await mapWithConcurrency(failed, 20, async (item) => {
+            // Concurrency 10 — proven safe: 440/441 stocks succeed at this level.
+            // Concurrency 20 caused 429 cascades (backoff delays = 2+ min total).
+            const upstoxResults = await mapWithConcurrency(failed, 10, async (item) => {
               const key = instrumentKeys[item.meta.symbol]
               if (!key) return { idx: item.idx, meta: item.meta, s: null }
               const s = await fetchFromUpstox(item.meta, range, upstoxToken, key)
@@ -274,6 +294,42 @@ export async function fetchUnifiedUniverse(
     nseActive: nseCount > 0,
     fetchedAt: new Date().toISOString(),
   }
+}
+
+// Wrapper that adds in-memory caching to fetchUnifiedUniverse.
+// Use this in the predict route instead of calling fetchUnifiedUniverse directly.
+export async function fetchUnifiedUniverseCached(
+  asOf: Date,
+  providerOverride?: 'UPSTOX' | 'YAHOO' | 'NSE',
+  range = '1y',
+): Promise<UnifiedUniverseResult> {
+  const tradingDate = getTradingDateIST()
+  const cacheKey = `${providerOverride ?? 'AUTO'}_${tradingDate}`
+  const now = Date.now()
+
+  // Cache hit: same provider + same trading day + within TTL
+  if (
+    _universeCache &&
+    _universeCache.key === cacheKey &&
+    now - _universeCache.cachedAt < CACHE_TTL_MS
+  ) {
+    const ageMin = Math.round((now - _universeCache.cachedAt) / 60_000)
+    console.log(`Universe cache HIT [${cacheKey}] (cached ${ageMin}m ago) — serving instantly`)
+    return {
+      ..._universeCache.result,
+      fetchedAt: _universeCache.result.fetchedAt, // keep original fetchedAt so UI shows when data was fetched
+    }
+  }
+
+  // Cache miss: full fetch
+  console.log(`Universe cache MISS [${cacheKey}] — fetching from providers...`)
+  const result = await fetchUnifiedUniverse(asOf, providerOverride, range)
+
+  // Store in cache
+  _universeCache = { result, key: cacheKey, cachedAt: now }
+  console.log(`Universe cache STORED [${cacheKey}] — TTL 6h`)
+
+  return result
 }
 
 import { fetchNiftyIndex as fetchYahooNifty } from './yahoo'
