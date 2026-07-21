@@ -175,16 +175,16 @@ export async function fetchUnifiedUniverse(
   // 1. Determine priority sequence based on selected provider configuration
   const providers: Array<'UPSTOX' | 'YAHOO' | 'NSE'> = []
   if (providerOverride === 'UPSTOX') {
-    providers.push('UPSTOX', 'YAHOO', 'NSE')
+    // Upstox selected: serve all available Upstox stocks from DB cache (440 stocks).
+    // Remaining un-mapped items fall back to DEMO in 0ms (no slow internet calls).
+    providers.push('UPSTOX')
   } else if (providerOverride === 'NSE') {
     providers.push('NSE', 'UPSTOX', 'YAHOO')
   } else if (providerOverride === 'YAHOO') {
-    // Yahoo selected: only use Yahoo, no Upstox fallback.
-    // This prevents the 'jumbled' behaviour where Yahoo showed a few Upstox stocks.
     providers.push('YAHOO')
   } else {
     // Default Auto priority
-    providers.push('UPSTOX', 'NSE', 'YAHOO')
+    providers.push('UPSTOX', 'YAHOO')
   }
 
   // 2. Start with the entire universe as failed, and fill them in iteratively
