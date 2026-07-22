@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { ALL_STOCKS } from '@/lib/stocks/universe'
+import { NSE_UNIVERSE as ALL_STOCKS } from '@/lib/stocks/universe'
 import { fetchUnifiedUniverse } from '@/lib/stocks/data-source'
 import masterList from '@/lib/stocks/nifty500-master-list.json'
 
