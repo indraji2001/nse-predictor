@@ -1,50 +1,72 @@
-// Prisma client with libSQL driver adapter.
+// Database client — selects the right backend at runtime:
 //
-// This file works in BOTH environments:
-//   - Local dev  : DATABASE_URL="file:./db/custom.db"  → uses Prisma's default SQLite engine
-//   - Production : DATABASE_URL="libsql://<db>.turso.io" + TURSO_AUTH_TOKEN → uses @libsql/client
+//   PRODUCTION (Vercel + Cloudflare D1):
+//     CLOUDFLARE_ACCOUNT_ID + CLOUDFLARE_D1_DATABASE_ID + CLOUDFLARE_API_TOKEN
+//     → uses src/lib/d1-client.ts (pure-JS REST, no native binaries needed)
 //
-// The driver adapter is selected at runtime based on the URL scheme.
+//   LOCAL DEV (SQLite file, fallback):
+//     DATABASE_URL="file:./db/custom.db" → uses Prisma's default SQLite engine
+//     Useful for rapid local iteration without cloud credentials.
 //
-// Why a driver adapter instead of plain Prisma?
-//   Vercel's serverless functions run on Node.js, and Prisma's default
-//   SQLite engine ships a native binary that doesn't always play nicely
-//   with Vercel's Lambdas. The libSQL adapter is a pure-JS driver that
-//   works anywhere. Turso (https://turso.tech) is a hosted libSQL
-//   service with a generous free tier — perfect for personal projects.
+// All callers import `db` from this file. The interface is identical
+// regardless of which backend is active.
 
-import { PrismaClient } from '@prisma/client'
-import { PrismaLibSQL } from '@prisma/adapter-libsql'
+import { d1db } from './d1-client'
 
-// Detect runtime: are we on Vercel/production with a Turso URL?
-function createPrismaClient(): PrismaClient {
-  const databaseUrl = process.env.DATABASE_URL ?? ''
-  const isTurso = databaseUrl.startsWith('libsql://') || databaseUrl.startsWith('https://')
+// Check if Cloudflare D1 credentials are configured
+function isD1Configured(): boolean {
+  return !!(
+    process.env.CLOUDFLARE_ACCOUNT_ID &&
+    process.env.CLOUDFLARE_D1_DATABASE_ID &&
+    process.env.CLOUDFLARE_API_TOKEN
+  )
+}
 
-  if (isTurso) {
-    // Turso / libSQL remote — use the libSQL driver adapter (pure JS, serverless-friendly).
-    if (!process.env.TURSO_AUTH_TOKEN) {
-      console.warn('[db] WARNING: DATABASE_URL is a libsql:// URL but TURSO_AUTH_TOKEN is not set. Authentication will fail.')
-    }
-    const adapter = new PrismaLibSQL({
-      url: databaseUrl,
-      authToken: process.env.TURSO_AUTH_TOKEN,
-    })
-    return new PrismaClient({ adapter })
+// Lazy Prisma client for local dev SQLite (only imported when D1 is not configured)
+let _prismaClient: any = null
+async function getPrismaClient() {
+  if (_prismaClient) return _prismaClient
+  const { PrismaClient } = await import('@prisma/client')
+  _prismaClient = new PrismaClient({
+    log: process.env.NODE_ENV === 'development' ? ['warn', 'error'] : ['error'],
+  })
+  return _prismaClient
+}
+
+// Proxy that routes every db.xxx call to either D1 or Prisma
+function createDbProxy(): any {
+  if (isD1Configured()) {
+    // Production: use Cloudflare D1 REST client
+    return d1db
   }
 
-  // Local SQLite — use Prisma's default engine (no adapter needed).
-  // Prisma will read DATABASE_URL like "file:./db/custom.db" directly.
-  return new PrismaClient({
-    log: process.env.NODE_ENV === 'development' ? ['warn', 'error'] : ['error'],
+  // Local dev: use Prisma SQLite (lazy-loaded to avoid import cost in production)
+  return new Proxy({} as any, {
+    get(_target, prop: string) {
+      // Return a proxy for model-level operations (e.g. db.stockCandle.findMany)
+      if (['stockCandle', 'upstoxConfig', 'upstoxInstrument', 'paperTrade'].includes(prop)) {
+        return new Proxy({} as any, {
+          get(_modelTarget, methodName: string) {
+            return async (...args: any[]) => {
+              const client = await getPrismaClient()
+              return (client as any)[prop][methodName](...args)
+            }
+          },
+        })
+      }
+      // Raw SQL ($executeRawUnsafe, $queryRaw, etc.)
+      if (prop.startsWith('$')) {
+        return async (...args: any[]) => {
+          const client = await getPrismaClient()
+          return (client as any)[prop](...args)
+        }
+      }
+      return undefined
+    },
   })
 }
 
-// Cache the client on globalThis so HMR in dev doesn't open hundreds of connections.
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined
-}
-
-export const db = globalForPrisma.prisma ?? createPrismaClient()
-
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = db
+// Singleton — reused across warm Lambda invocations
+const globalForDb = globalThis as unknown as { _appDb: any }
+export const db: typeof d1db = globalForDb._appDb ?? createDbProxy()
+if (process.env.NODE_ENV !== 'production') globalForDb._appDb = db

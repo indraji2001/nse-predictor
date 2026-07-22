@@ -203,8 +203,8 @@ export async function getCacheStats() {
       eodCount,
       intradayCount,
       estimatedSizeMB,
-      maxLimitMB: 5000, // Turso 5GB free tier
-      percentUsed: Number(((estimatedSizeMB / 5000) * 100).toFixed(2)),
+      maxLimitMB: 10240, // Cloudflare D1 10GB free tier
+      percentUsed: Number(((estimatedSizeMB / 10240) * 100).toFixed(2)),
     }
   } catch (err) {
     console.error('[candle-cache] Error reading stats:', err)
