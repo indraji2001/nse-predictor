@@ -104,27 +104,104 @@ export function StockChart({ candles, indicators, symbol }: Props) {
   const [showFib, setShowFib] = useState(false)    // Fibonacci retracement overlay
   const [showPivot, setShowPivot] = useState(false)  // Pivot levels overlay
   const [chartType, setChartType] = useState<'line' | 'candle'>('candle')
-  const [range, setRange] = useState<'1M' | '3M' | '6M' | '1Y' | '2Y' | '3Y' | '5Y' | '10Y' | 'MAX'>('3M')
+  const [range, setRange] = useState<
+    '5m' | '15m' | '30m' | '1H' | '4H' | '1M' | '3M' | '6M' | '1Y' | '2Y' | '3Y' | '5Y' | '10Y' | 'MAX'
+  >('3M')
   const [viewSource, setViewSource] = useState<'custom' | 'tradingview'>('custom')
+  const [intradayCandles, setIntradayCandles] = useState<any[] | null>(null)
+  const [loadingIntraday, setLoadingIntraday] = useState(false)
 
   const baseSymbol = symbol.toUpperCase().replace('.NS', '').trim()
   const mappedSymbol = TV_MAPPINGS[baseSymbol] || baseSymbol.replace(/[&\-]/g, '_')
 
-  // Slice based on range
+  // Fetch intraday candles when an intraday timeframe is selected
+  useEffect(() => {
+    if (['5m', '15m', '30m', '1H', '4H'].includes(range)) {
+      setLoadingIntraday(true)
+      fetch(`/api/intraday/${encodeURIComponent(symbol)}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data && data.candles && Array.isArray(data.candles)) {
+            setIntradayCandles(data.candles)
+          } else {
+            setIntradayCandles(null)
+          }
+        })
+        .catch(() => setIntradayCandles(null))
+        .finally(() => setLoadingIntraday(false))
+    }
+  }, [symbol, range])
+
+  // Slice or aggregate candles based on range
   const data = useMemo(() => {
+    const isIntraday = ['5m', '15m', '30m', '1H', '4H'].includes(range)
+
+    if (isIntraday && intradayCandles && intradayCandles.length > 0) {
+      let groupSize = 1
+      switch (range) {
+        case '5m':  groupSize = 1;  break
+        case '15m': groupSize = 3;  break
+        case '30m': groupSize = 6;  break
+        case '1H':  groupSize = 12; break
+        case '4H':  groupSize = 48; break
+      }
+      const aggregated: Candle[] = []
+      for (let i = 0; i < intradayCandles.length; i += groupSize) {
+        const group = intradayCandles.slice(i, i + groupSize)
+        if (group.length === 0) continue
+        const open = group[0].open
+        const close = group[group.length - 1].close
+        const high = Math.max(...group.map((g) => g.high))
+        const low = Math.min(...group.map((g) => g.low))
+        const volume = group.reduce((sum, g) => sum + (g.volume || 0), 0)
+        const timeLabel = group[0].time || (group[0].date ? group[0].date.slice(5) : '')
+        const dateLabel = group[0].date ? `${group[0].date.slice(5)} ${timeLabel}` : timeLabel
+        aggregated.push({
+          date: dateLabel,
+          open,
+          high,
+          low,
+          close,
+          volume,
+        })
+      }
+      return aggregated.map((c) => {
+        const close = c.close || 0
+        const open = c.open || close
+        const high = c.high || close
+        const low = c.low || close
+        return {
+          date: c.date,
+          close,
+          open,
+          high,
+          low,
+          volume: c.volume || 0,
+          candleColor: close >= open ? COLORS.bullishCandle : COLORS.bearishCandle,
+          bodyRange: [Math.min(open, close), Math.max(open, close)] as [number, number],
+          isBullish: close >= open,
+        }
+      })
+    }
+
     const n = candles.length
     let take = 66
     switch (range) {
-      case '1M':  take = 22;   break
-      case '3M':  take = 66;   break
-      case '6M':  take = 132;  break
-      case '1Y':  take = 250;  break
-      case '2Y':  take = 500;  break
-      case '3Y':  take = 750;  break
+      case '5m':  take = 30;  break
+      case '15m': take = 45;  break
+      case '30m': take = 60;  break
+      case '1H':  take = 90;  break
+      case '4H':  take = 120; break
+      case '1M':  take = 22;  break
+      case '3M':  take = 66;  break
+      case '6M':  take = 132; break
+      case '1Y':  take = 250; break
+      case '2Y':  take = 500; break
+      case '3Y':  take = 750; break
       case '5Y':  take = 1300; break
       case '10Y': take = 2600; break
       case 'MAX': take = 99999; break
-      default:    take = 66;   break
+      default:    take = 66;  break
     }
     return candles.slice(Math.max(0, n - take)).map((c) => {
       const close = c.close || 0
@@ -145,7 +222,7 @@ export function StockChart({ candles, indicators, symbol }: Props) {
         isBullish: close >= open,
       }
     })
-  }, [candles, range])
+  }, [candles, intradayCandles, range])
 
   // Compute EMA series locally for the visible window
   const ema9Series = useMemo(() => computeEMA(data.map((d) => d.close), 9), [data])
@@ -234,17 +311,24 @@ export function StockChart({ candles, indicators, symbol }: Props) {
                   <ToggleGroupItem value="candle" className="text-[10px] h-7 px-2" title="Candlestick chart">Candle</ToggleGroupItem>
                   <ToggleGroupItem value="line" className="text-[10px] h-7 px-2" title="Line chart">Line</ToggleGroupItem>
                 </ToggleGroup>
-                {/* Time range toggle */}
-                <ToggleGroup type="single" value={range} onValueChange={(v) => v && setRange(v as any)} size="sm">
-                  <ToggleGroupItem value="1M" className="text-[10px] h-7 px-2">1M</ToggleGroupItem>
-                  <ToggleGroupItem value="3M" className="text-[10px] h-7 px-2">3M</ToggleGroupItem>
-                  <ToggleGroupItem value="6M" className="text-[10px] h-7 px-2">6M</ToggleGroupItem>
-                  <ToggleGroupItem value="1Y" className="text-[10px] h-7 px-2">1Y</ToggleGroupItem>
-                  {candles.length > 280  && <ToggleGroupItem value="2Y"  className="text-[10px] h-7 px-2">2Y</ToggleGroupItem>}
-                  {candles.length > 530  && <ToggleGroupItem value="3Y"  className="text-[10px] h-7 px-2">3Y</ToggleGroupItem>}
-                  {candles.length > 800  && <ToggleGroupItem value="5Y"  className="text-[10px] h-7 px-2">5Y</ToggleGroupItem>}
-                  {candles.length > 1200 && <ToggleGroupItem value="10Y" className="text-[10px] h-7 px-2">10Y</ToggleGroupItem>}
-                  <ToggleGroupItem value="MAX" className="text-[10px] h-7 px-2">MAX</ToggleGroupItem>
+                {/* Time range toggle — Intraday & Multi-Horizon */}
+                <ToggleGroup type="single" value={range} onValueChange={(v) => v && setRange(v as any)} size="sm" className="flex-wrap">
+                  {/* Intraday timeframes */}
+                  <ToggleGroupItem value="5m" className="text-[10px] h-7 px-1.5 font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-500/10" title="5-minute intraday chart">5m</ToggleGroupItem>
+                  <ToggleGroupItem value="15m" className="text-[10px] h-7 px-1.5 font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-500/10" title="15-minute intraday chart">15m</ToggleGroupItem>
+                  <ToggleGroupItem value="30m" className="text-[10px] h-7 px-1.5 font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-500/10" title="30-minute intraday chart">30m</ToggleGroupItem>
+                  <ToggleGroupItem value="1H" className="text-[10px] h-7 px-1.5 font-bold text-purple-600 dark:text-purple-400 bg-purple-500/10" title="1-hour chart">1H</ToggleGroupItem>
+                  <ToggleGroupItem value="4H" className="text-[10px] h-7 px-1.5 font-bold text-purple-600 dark:text-purple-400 bg-purple-500/10" title="4-hour chart">4H</ToggleGroupItem>
+                  {/* Daily & Historical timeframes */}
+                  <ToggleGroupItem value="1M" className="text-[10px] h-7 px-1.5">1M</ToggleGroupItem>
+                  <ToggleGroupItem value="3M" className="text-[10px] h-7 px-1.5">3M</ToggleGroupItem>
+                  <ToggleGroupItem value="6M" className="text-[10px] h-7 px-1.5">6M</ToggleGroupItem>
+                  <ToggleGroupItem value="1Y" className="text-[10px] h-7 px-1.5">1Y</ToggleGroupItem>
+                  {candles.length > 280  && <ToggleGroupItem value="2Y"  className="text-[10px] h-7 px-1.5">2Y</ToggleGroupItem>}
+                  {candles.length > 530  && <ToggleGroupItem value="3Y"  className="text-[10px] h-7 px-1.5">3Y</ToggleGroupItem>}
+                  {candles.length > 800  && <ToggleGroupItem value="5Y"  className="text-[10px] h-7 px-1.5">5Y</ToggleGroupItem>}
+                  {candles.length > 1200 && <ToggleGroupItem value="10Y" className="text-[10px] h-7 px-1.5">10Y</ToggleGroupItem>}
+                  <ToggleGroupItem value="MAX" className="text-[10px] h-7 px-1.5">MAX</ToggleGroupItem>
                 </ToggleGroup>
               </>
             )}
