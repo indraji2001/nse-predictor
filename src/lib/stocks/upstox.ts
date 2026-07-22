@@ -72,6 +72,17 @@ export interface UpstoxStatus {
 
 // --- Status ---------------------------------------------------------------
 export async function getStatus(): Promise<UpstoxStatus> {
+  // If static token is provided via env, we are always connected
+  if (process.env.UPSTOX_STATIC_TOKEN) {
+    return {
+      configured: true,
+      connected: true,
+      tokenExpiresAt: '2099-12-31T23:59:59.000Z', // Indicates static long-lived token
+      lastUsedAt: new Date().toISOString(),
+      redirectUri: null,
+    }
+  }
+
   const cfg = await db.upstoxConfig.findUnique({ where: { id: 1 } })
   if (!cfg) {
     return {
@@ -227,6 +238,11 @@ export async function disconnect(): Promise<void> {
 
 // --- Get a valid access token (refresh if needed) ------------------------
 async function getAccessToken(): Promise<string | null> {
+  // If user provided a long-lived static token in env, ALWAYS use it and bypass DB
+  if (process.env.UPSTOX_STATIC_TOKEN) {
+    return process.env.UPSTOX_STATIC_TOKEN
+  }
+
   const cfg = await db.upstoxConfig.findUnique({ where: { id: 1 } })
   if (!cfg || !cfg.accessToken) return null
   // If token expires within next 5 minutes, try to refresh
