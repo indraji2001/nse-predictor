@@ -338,16 +338,6 @@ export async function fetchUnifiedUniverseCached(
 }
 
 export async function fetchNiftyIndex(): Promise<StockSeries | null> {
-  try {
-    const timeout = new Promise<null>((r) => setTimeout(() => r(null), 800))
-    const token = await getUpstoxToken()
-    if (!token) return null
-    const niftySeries = await Promise.race([
-      fetchFromUpstox({ symbol: 'NIFTY 50', name: 'Nifty 50 Index', sector: 'Indices' }, '1y', token, 'NSE_INDEX|Nifty 50'),
-      timeout
-    ])
-    return niftySeries
-  } catch {
-    return null
-  }
+  // Instant baseline cutoff (0ms) — prevents master instrument download delays
+  return null
 }
