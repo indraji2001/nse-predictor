@@ -188,7 +188,7 @@ export function StockDetailDialog({ symbol, onClose }: Props) {
                 </div>
               </div>
 
-              <StockChart candles={data.candles} indicators={data.indicators} symbol={data.symbol} />
+              <StockChart candles={data.candles} indicators={data.indicators} symbol={data.symbol} provider={selectedProvider} />
 
               {/* Signals across all 4 timeframes */}
               <Tabs defaultValue="BTST" className="w-full">

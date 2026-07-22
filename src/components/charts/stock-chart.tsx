@@ -57,6 +57,7 @@ interface Props {
   candles: Candle[]
   indicators: IndicatorSnapshot
   symbol: string
+  provider?: string   // e.g. 'UPSTOX' | 'YAHOO' | 'NSE' | 'DEFAULT'
 }
 
 // Color palette (consistent across chart + legend)
@@ -115,7 +116,7 @@ function formatDateLabel(d: string | number, showYear = false): string {
   })
 }
 
-export function StockChart({ candles, indicators, symbol }: Props) {
+export function StockChart({ candles, indicators, symbol, provider }: Props) {
   const [showEMA, setShowEMA] = useState(true)
   const [showBB, setShowBB] = useState(true)
   const [showVolume, setShowVolume] = useState(true)
@@ -128,6 +129,9 @@ export function StockChart({ candles, indicators, symbol }: Props) {
   const [viewSource, setViewSource] = useState<'custom' | 'tradingview'>('custom')
   const [intradayCandles, setIntradayCandles] = useState<any[] | null>(null)
   const [loadingIntraday, setLoadingIntraday] = useState(false)
+  // Extended historical candles fetched on-demand when user selects 2Y / 3Y / 5Y / 10Y / MAX
+  const [historicalCandles, setHistoricalCandles] = useState<Candle[] | null>(null)
+  const [loadingHistorical, setLoadingHistorical] = useState(false)
 
   const baseSymbol = symbol.toUpperCase().replace('.NS', '').trim()
   const mappedSymbol = TV_MAPPINGS[baseSymbol] || baseSymbol.replace(/[&\-]/g, '_')
@@ -149,6 +153,35 @@ export function StockChart({ candles, indicators, symbol }: Props) {
         .finally(() => setLoadingIntraday(false))
     }
   }, [symbol, range])
+
+  // Fetch extended historical candles (up to 10Y) when a long range is selected
+  // and the currently-loaded candles are not sufficient.
+  useEffect(() => {
+    const LONG_RANGES = ['1D', '2Y', '3Y', '5Y', '10Y', 'MAX']
+    const NEEDED: Record<string, number> = {
+      '1D': 250, '2Y': 500, '3Y': 750, '5Y': 1300, '10Y': 2500, 'MAX': 2500,
+    }
+    if (!LONG_RANGES.includes(range)) return
+    const needed = NEEDED[range] ?? 250
+    // If already have enough candles from the prop, no need to re-fetch
+    if (historicalCandles && historicalCandles.length >= needed) return
+    if (candles.length >= needed) return   // prop already has enough
+    let cancelled = false
+    setLoadingHistorical(true)
+    const params = new URLSearchParams({ range: '10y' })
+    if (provider && provider !== 'DEFAULT') params.set('provider', provider)
+    fetch(`/api/stock/${encodeURIComponent(symbol)}?${params.toString()}`)
+      .then((res) => res.json())
+      .then((payload: { candles?: Candle[] }) => {
+        if (!cancelled && payload?.candles && Array.isArray(payload.candles)) {
+          setHistoricalCandles(payload.candles)
+        }
+      })
+      .catch(() => {})
+      .finally(() => { if (!cancelled) setLoadingHistorical(false) })
+    return () => { cancelled = true }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [symbol, range, provider])
 
   // Slice or aggregate candles based on range
   const data = useMemo(() => {
@@ -202,7 +235,12 @@ export function StockChart({ candles, indicators, symbol }: Props) {
       })
     }
 
-    const n = candles.length
+    // For long-range views, prefer the extended historicalCandles if available
+    const LONG_RANGES = ['1D', '2Y', '3Y', '5Y', '10Y', 'MAX']
+    const sourceCandles = LONG_RANGES.includes(range) && historicalCandles && historicalCandles.length > candles.length
+      ? historicalCandles
+      : candles
+    const n = sourceCandles.length
     let take = 66
     switch (range) {
       case '5m':  take = 30;  break
@@ -210,7 +248,7 @@ export function StockChart({ candles, indicators, symbol }: Props) {
       case '30m': take = 60;  break
       case '1H':  take = 90;  break
       case '4H':  take = 120; break
-      case '1D':  take = 22;  break
+      case '1D':  take = 250; break   // 1D = daily candles for ~1 year
       case '1M':  take = 22;  break
       case '3M':  take = 66;  break
       case '6M':  take = 132; break
@@ -222,7 +260,7 @@ export function StockChart({ candles, indicators, symbol }: Props) {
       case 'MAX': take = 99999; break
       default:    take = 66;  break
     }
-    return candles.slice(Math.max(0, n - take)).map((c) => {
+    return sourceCandles.slice(Math.max(0, n - take)).map((c) => {
       const close = c.close || 0
       const open = c.open || close
       const high = c.high || close
@@ -241,7 +279,7 @@ export function StockChart({ candles, indicators, symbol }: Props) {
         isBullish: close >= open,
       }
     })
-  }, [candles, intradayCandles, range])
+  }, [candles, historicalCandles, intradayCandles, range])
 
   // Compute EMA series locally for the visible window
   const ema9Series = useMemo(() => computeEMA(data.map((d) => d.close), 9), [data])
@@ -338,16 +376,16 @@ export function StockChart({ candles, indicators, symbol }: Props) {
                   <ToggleGroupItem value="30m" className="text-[10px] h-7 px-1.5 font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-500/10" title="30-minute intraday chart">30m</ToggleGroupItem>
                   <ToggleGroupItem value="1H" className="text-[10px] h-7 px-1.5 font-bold text-purple-600 dark:text-purple-400 bg-purple-500/10" title="1-hour chart">1H</ToggleGroupItem>
                   <ToggleGroupItem value="4H" className="text-[10px] h-7 px-1.5 font-bold text-purple-600 dark:text-purple-400 bg-purple-500/10" title="4-hour chart">4H</ToggleGroupItem>
-                  {/* Daily & Historical timeframes */}
-                  <ToggleGroupItem value="1D" className="text-[10px] h-7 px-1.5 font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10" title="1-Day Daily candles chart">1D</ToggleGroupItem>
+                  {/* Daily & Historical timeframes — always shown, fetch on demand */}
+                  <ToggleGroupItem value="1D" className="text-[10px] h-7 px-1.5 font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10" title="Daily (D) candles — 1 year view">1D</ToggleGroupItem>
                   <ToggleGroupItem value="1M" className="text-[10px] h-7 px-1.5">1M</ToggleGroupItem>
                   <ToggleGroupItem value="3M" className="text-[10px] h-7 px-1.5">3M</ToggleGroupItem>
                   <ToggleGroupItem value="6M" className="text-[10px] h-7 px-1.5">6M</ToggleGroupItem>
                   <ToggleGroupItem value="1Y" className="text-[10px] h-7 px-1.5">1Y</ToggleGroupItem>
-                  {candles.length > 280  && <ToggleGroupItem value="2Y"  className="text-[10px] h-7 px-1.5">2Y</ToggleGroupItem>}
-                  {candles.length > 530  && <ToggleGroupItem value="3Y"  className="text-[10px] h-7 px-1.5">3Y</ToggleGroupItem>}
-                  {candles.length > 800  && <ToggleGroupItem value="5Y"  className="text-[10px] h-7 px-1.5">5Y</ToggleGroupItem>}
-                  {candles.length > 1200 && <ToggleGroupItem value="10Y" className="text-[10px] h-7 px-1.5">10Y</ToggleGroupItem>}
+                  <ToggleGroupItem value="2Y"  className="text-[10px] h-7 px-1.5">2Y</ToggleGroupItem>
+                  <ToggleGroupItem value="3Y"  className="text-[10px] h-7 px-1.5">3Y</ToggleGroupItem>
+                  <ToggleGroupItem value="5Y"  className="text-[10px] h-7 px-1.5">5Y</ToggleGroupItem>
+                  <ToggleGroupItem value="10Y" className="text-[10px] h-7 px-1.5">10Y</ToggleGroupItem>
                   <ToggleGroupItem value="MAX" className="text-[10px] h-7 px-1.5">MAX</ToggleGroupItem>
                 </ToggleGroup>
               </>
@@ -402,7 +440,16 @@ export function StockChart({ candles, indicators, symbol }: Props) {
               </div>
 
               {/* Main chart — fills remaining width */}
-              <div className="flex-1 h-full">
+              <div className="flex-1 h-full relative">
+                {loadingHistorical && (
+                  <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-background/70 rounded-r-lg backdrop-blur-[2px]">
+                    <svg className="animate-spin h-7 w-7 text-indigo-500 mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                    </svg>
+                    <span className="text-[11px] text-muted-foreground font-medium">Loading {range} historical data…</span>
+                  </div>
+                )}
                 <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart data={chartData} margin={{ top: 5, right: 50, left: 0, bottom: 0 }}>
                   <defs>
