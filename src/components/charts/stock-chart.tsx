@@ -123,7 +123,7 @@ export function StockChart({ candles, indicators, symbol }: Props) {
   const [showPivot, setShowPivot] = useState(false)  // Pivot levels overlay
   const [chartType, setChartType] = useState<'line' | 'candle'>('candle')
   const [range, setRange] = useState<
-    '5m' | '15m' | '30m' | '1H' | '4H' | '1M' | '3M' | '6M' | '1Y' | '2Y' | '3Y' | '5Y' | '10Y' | 'MAX'
+    '5m' | '15m' | '30m' | '1H' | '4H' | '1D' | '1M' | '3M' | '6M' | '1Y' | '2Y' | '3Y' | '5Y' | '10Y' | 'MAX'
   >('3M')
   const [viewSource, setViewSource] = useState<'custom' | 'tradingview'>('custom')
   const [intradayCandles, setIntradayCandles] = useState<any[] | null>(null)
@@ -210,6 +210,7 @@ export function StockChart({ candles, indicators, symbol }: Props) {
       case '30m': take = 60;  break
       case '1H':  take = 90;  break
       case '4H':  take = 120; break
+      case '1D':  take = 22;  break
       case '1M':  take = 22;  break
       case '3M':  take = 66;  break
       case '6M':  take = 132; break
@@ -338,6 +339,7 @@ export function StockChart({ candles, indicators, symbol }: Props) {
                   <ToggleGroupItem value="1H" className="text-[10px] h-7 px-1.5 font-bold text-purple-600 dark:text-purple-400 bg-purple-500/10" title="1-hour chart">1H</ToggleGroupItem>
                   <ToggleGroupItem value="4H" className="text-[10px] h-7 px-1.5 font-bold text-purple-600 dark:text-purple-400 bg-purple-500/10" title="4-hour chart">4H</ToggleGroupItem>
                   {/* Daily & Historical timeframes */}
+                  <ToggleGroupItem value="1D" className="text-[10px] h-7 px-1.5 font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10" title="1-Day Daily candles chart">1D</ToggleGroupItem>
                   <ToggleGroupItem value="1M" className="text-[10px] h-7 px-1.5">1M</ToggleGroupItem>
                   <ToggleGroupItem value="3M" className="text-[10px] h-7 px-1.5">3M</ToggleGroupItem>
                   <ToggleGroupItem value="6M" className="text-[10px] h-7 px-1.5">6M</ToggleGroupItem>
