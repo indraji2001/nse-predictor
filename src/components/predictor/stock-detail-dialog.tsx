@@ -131,7 +131,7 @@ export function StockDetailDialog({ symbol, onClose }: Props) {
                   className={`text-[9px] font-mono ${ds.className}`}
                   title={ds.title}
                 >
-                  {ds.label}{data.dataSource === 'NSE' ? ' — NSE Bhavcopy' : data.dataSource === 'YAHOO' ? ' — Yahoo Finance' : ' — synthetic data'}
+                  {ds.label}{data.dataSource === 'NSE' ? ' — NSE Bhavcopy' : data.dataSource === 'YAHOO' ? ' — Yahoo Finance' : data.dataSource === 'UPSTOX' ? ' — Upstox API (Live EOD + Intraday)' : ' — synthetic data'}
                 </Badge>
               )
             })()}
