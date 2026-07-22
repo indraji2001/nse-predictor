@@ -578,22 +578,23 @@ export async function fetchHistorical(
     }
 
     // A. Check if we need to backfill older historical data
-    if (cacheFirstDate > wantedFromStr) {
+    // Only attempt backfill if cached candles are insufficient (<220 bars) and cacheFirstDate > wantedFromStr
+    if (cached.length < 220 && cacheFirstDate > wantedFromStr) {
       console.log(`[Upstox Cache] Backfilling older data for ${meta.symbol}: ${wantedFromStr} to ${cacheFirstDate}`)
       await getKeys()
       if (token && encodedKey) {
         // Fetch older chunk
         const batch = await fetchDayChunk(encodedKey, token, wantedFromStr, cacheFirstDate)
-        if (batch) {
+        if (batch && batch.length > 0) {
           for (const c of batch) newCandlesMap.set(c.date, c)
           await saveCandlesToCache(meta.symbol, 'day', 'UPSTOX', batch)
         }
       }
     }
 
-    // B. Check if we need to fetch updates up to today
-    if (cacheLastDate < todayStr) {
-      // Only fetch if last cache date is different from today
+    // B. Check if we need to fetch updates up to today (only if last candle is > 1 calendar day old)
+    const daysSinceLastCandle = Math.floor((now.getTime() - new Date(cacheLastDate).getTime()) / (1000 * 60 * 60 * 24))
+    if (daysSinceLastCandle >= 1) {
       await getKeys()
       if (token && encodedKey) {
         const batch = await fetchDayChunk(encodedKey, token, cacheLastDate, todayStr)
