@@ -337,12 +337,16 @@ export async function fetchUnifiedUniverseCached(
   return result
 }
 
-import { fetchNiftyIndex as fetchYahooNifty } from './yahoo'
-
 export async function fetchNiftyIndex(): Promise<StockSeries | null> {
   try {
-    const timeout = new Promise<null>((r) => setTimeout(() => r(null), 1500))
-    return await Promise.race([fetchYahooNifty(), timeout])
+    const timeout = new Promise<null>((r) => setTimeout(() => r(null), 800))
+    const token = await getUpstoxToken()
+    if (!token) return null
+    const niftySeries = await Promise.race([
+      fetchFromUpstox({ symbol: 'NIFTY 50', name: 'Nifty 50 Index', sector: 'Indices' }, '1y', token, 'NSE_INDEX|Nifty 50'),
+      timeout
+    ])
+    return niftySeries
   } catch {
     return null
   }
