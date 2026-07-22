@@ -1185,9 +1185,10 @@ function applyTradingViewCalibration(
 export function evaluateStock(
   series: StockSeries,
   isNiftyBullish = true,
-  tvConsensus?: { summaryScore: number; maScore: number; oscScore: number }
+  tvConsensus?: { summaryScore: number; maScore: number; oscScore: number },
+  precomputedInd?: IndicatorSnapshot,
 ): Record<Timeframe, Signal> {
-  const ind = computeIndicators(series.candles)
+  const ind = precomputedInd ?? computeIndicators(series.candles)
   const signals = {
     BTST: evaluateBTST(series, ind, isNiftyBullish),
     SHORT_TERM: evaluateShortTerm(series, ind, isNiftyBullish),
@@ -1251,14 +1252,17 @@ export function evaluateUniverse(
   isNiftyBullish = true,
   tvConsensusMap?: Record<string, { summaryScore: number; maScore: number; oscScore: number }>
 ): UniverseResult {
-  const signals = allSeries.map((s) => ({
-    series: s,
-    sig: evaluateStock(s, isNiftyBullish, tvConsensusMap?.[s.symbol]),
-    sellBTST: evaluateSell(s, computeIndicators(s.candles), isNiftyBullish, 'BTST'),
-    sellST: evaluateSell(s, computeIndicators(s.candles), isNiftyBullish, 'SHORT_TERM'),
-    sellMT: evaluateSell(s, computeIndicators(s.candles), isNiftyBullish, 'MIDTERM'),
-    sellLT: evaluateSell(s, computeIndicators(s.candles), isNiftyBullish, 'LONG_TERM'),
-  }))
+  const signals = allSeries.map((s) => {
+    const snap = computeIndicators(s.candles)
+    return {
+      series: s,
+      sig: evaluateStock(s, isNiftyBullish, tvConsensusMap?.[s.symbol], snap),
+      sellBTST: evaluateSell(s, snap, isNiftyBullish, 'BTST'),
+      sellST: evaluateSell(s, snap, isNiftyBullish, 'SHORT_TERM'),
+      sellMT: evaluateSell(s, snap, isNiftyBullish, 'MIDTERM'),
+      sellLT: evaluateSell(s, snap, isNiftyBullish, 'LONG_TERM'),
+    }
+  })
 
   // BUY signals for each timeframe, sorted by ML Probability desc
   const btst = signals
