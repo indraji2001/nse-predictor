@@ -277,6 +277,37 @@ const paperTrade = {
 }
 
 // ---------------------------------------------------------------------------
+//  UniverseCache model (single-row per key fast JSON store for sub-second universe responses)
+// ---------------------------------------------------------------------------
+const universeCache = {
+  async findUnique(opts: { where: { key: string } }): Promise<{ key: string; payload: string; updatedAt: string } | null> {
+    try {
+      const rows = await d1Query(`SELECT * FROM "UniverseCache" WHERE "key" = ?`, [opts.where.key])
+      return rows[0] ?? null
+    } catch {
+      return null
+    }
+  },
+
+  async upsert(opts: { where: { key: string }; create: { key: string; payload: string }; update: { payload: string } }): Promise<any> {
+    try {
+      const key = opts.where.key
+      const payload = opts.update.payload ?? opts.create.payload
+      const now = new Date().toISOString()
+      await d1Exec(
+        `INSERT INTO "UniverseCache" ("key", "payload", "updatedAt") VALUES (?, ?, ?)
+         ON CONFLICT("key") DO UPDATE SET "payload" = excluded."payload", "updatedAt" = excluded."updatedAt"`,
+        [key, payload, now]
+      )
+      return { key, payload, updatedAt: now }
+    } catch (err) {
+      console.error('[D1] Error upserting UniverseCache:', err)
+      return null
+    }
+  },
+}
+
+// ---------------------------------------------------------------------------
 //  Public db-compatible object
 // ---------------------------------------------------------------------------
 export const d1db = {
@@ -284,6 +315,7 @@ export const d1db = {
   upstoxConfig,
   upstoxInstrument,
   paperTrade,
+  universeCache,
 
   // Raw SQL escape hatch (used by candle-cache for bulk upserts)
   async $executeRawUnsafe(sql: string): Promise<number> {
@@ -362,4 +394,10 @@ CREATE TABLE IF NOT EXISTS "PaperTrade" (
 CREATE INDEX IF NOT EXISTS "PaperTrade_symbol_idx"    ON "PaperTrade"("symbol");
 CREATE INDEX IF NOT EXISTS "PaperTrade_status_idx"    ON "PaperTrade"("status");
 CREATE INDEX IF NOT EXISTS "PaperTrade_timeframe_idx" ON "PaperTrade"("timeframe");
+
+CREATE TABLE IF NOT EXISTS "UniverseCache" (
+  "key"        TEXT PRIMARY KEY,
+  "payload"    TEXT NOT NULL,
+  "updatedAt"  TEXT NOT NULL DEFAULT (datetime('now'))
+);
 `

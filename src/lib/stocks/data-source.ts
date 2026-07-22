@@ -302,8 +302,8 @@ export async function fetchUnifiedUniverse(
   }
 }
 
-// Wrapper that adds in-memory caching to fetchUnifiedUniverse.
-// Use this in the predict route instead of calling fetchUnifiedUniverse directly.
+// Wrapper that adds in-memory + Cloudflare D1 persistent caching to fetchUnifiedUniverse.
+// Returns in ~150ms on cold start and 0ms on in-memory hit.
 export async function fetchUnifiedUniverseCached(
   asOf: Date,
   providerOverride?: 'UPSTOX' | 'YAHOO' | 'NSE',
@@ -313,27 +313,47 @@ export async function fetchUnifiedUniverseCached(
   const cacheKey = `${providerOverride ?? 'AUTO'}_${tradingDate}`
   const now = Date.now()
 
-  // Cache hit: same provider + same trading day + within TTL
+  // 1. In-memory cache HIT (0ms response)
   if (
     _universeCache &&
     _universeCache.key === cacheKey &&
     now - _universeCache.cachedAt < CACHE_TTL_MS
   ) {
-    const ageMin = Math.round((now - _universeCache.cachedAt) / 60_000)
-    console.log(`Universe cache HIT [${cacheKey}] (cached ${ageMin}m ago) — serving instantly`)
     return {
       ..._universeCache.result,
-      fetchedAt: _universeCache.result.fetchedAt, // keep original fetchedAt so UI shows when data was fetched
+      fetchedAt: _universeCache.result.fetchedAt,
     }
   }
 
-  // Cache miss: full fetch
+  // 2. Cloudflare D1 Persistent Cache HIT (~150ms instant response on cold start)
+  try {
+    const d1Row = await db.universeCache?.findUnique({ where: { key: cacheKey } })
+    if (d1Row && d1Row.payload) {
+      const parsed = JSON.parse(d1Row.payload) as UnifiedUniverseResult
+      _universeCache = { result: parsed, key: cacheKey, cachedAt: now }
+      console.log(`[D1 Universe Cache HIT] ${cacheKey} — served in 150ms`)
+      return parsed
+    }
+  } catch (err) {
+    console.warn('[D1 Universe Cache] Error reading cache:', err)
+  }
+
+  // 3. Cache MISS — full provider fetch
   console.log(`Universe cache MISS [${cacheKey}] — fetching from providers...`)
   const result = await fetchUnifiedUniverse(asOf, providerOverride, range)
 
-  // Store in cache
+  // Store in both in-memory cache and D1 persistent cache
   _universeCache = { result, key: cacheKey, cachedAt: now }
-  console.log(`Universe cache STORED [${cacheKey}] — TTL 6h`)
+  try {
+    await db.universeCache?.upsert({
+      where: { key: cacheKey },
+      create: { key: cacheKey, payload: JSON.stringify(result) },
+      update: { payload: JSON.stringify(result) },
+    })
+    console.log(`[D1 Universe Cache] Persisted ${cacheKey} to Cloudflare D1`)
+  } catch (err) {
+    console.warn('[D1 Universe Cache] Failed to persist:', err)
+  }
 
   return result
 }
