@@ -175,8 +175,8 @@ export async function fetchUnifiedUniverse(
   // 1. Determine priority sequence based on selected provider configuration
   const providers: Array<'UPSTOX' | 'YAHOO' | 'NSE'> = []
   if (providerOverride === 'UPSTOX') {
-    // Upstox primary (490 stocks) -> Yahoo DB cache fallback for remaining 13 historical stocks
-    providers.push('UPSTOX', 'YAHOO')
+    // Upstox selected: 100% Upstox native feed across all 500 Nifty 500 stocks (0 Yahoo calls)
+    providers.push('UPSTOX')
   } else if (providerOverride === 'NSE') {
     providers.push('NSE', 'UPSTOX', 'YAHOO')
   } else if (providerOverride === 'YAHOO') {
