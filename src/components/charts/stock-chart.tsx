@@ -97,6 +97,24 @@ const TV_MAPPINGS: Record<string, string> = {
   'PATELINT': 'PATINTLOG'
 }
 
+// Smart date label formatter — handles both ISO dates ("2026-07-22") and
+// intraday time strings ("07-16 09:15") without calling new Date() which
+// returns Invalid Date for the intraday format.
+function formatDateLabel(d: string | number, showYear = false): string {
+  if (d == null) return ''
+  const s = String(d)
+  // Intraday format: "MM-DD HH:MM" (no year, has a space)
+  if (s.includes(' ')) return s  // already human-readable, return as-is
+  // Full ISO date: "YYYY-MM-DD"
+  const dt = new Date(s)
+  if (isNaN(dt.getTime())) return s  // fallback: just show the raw string
+  return dt.toLocaleDateString('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    ...(showYear ? { year: 'numeric' } : {}),
+  })
+}
+
 export function StockChart({ candles, indicators, symbol }: Props) {
   const [showEMA, setShowEMA] = useState(true)
   const [showBB, setShowBB] = useState(true)
@@ -395,7 +413,11 @@ export function StockChart({ candles, indicators, symbol }: Props) {
                   <XAxis
                     dataKey="date"
                     tickFormatter={(d) => {
-                      const dt = new Date(d)
+                      const s = String(d)
+                      // Intraday format "MM-DD HH:MM" — show just time part
+                      if (s.includes(' ')) return s.split(' ')[1] ?? s
+                      const dt = new Date(s)
+                      if (isNaN(dt.getTime())) return s
                       return `${dt.getDate()}/${dt.getMonth() + 1}`
                     }}
                     tick={{ fontSize: 10 }}
@@ -416,7 +438,7 @@ export function StockChart({ candles, indicators, symbol }: Props) {
                       borderRadius: '6px',
                       fontSize: '11px',
                     }}
-                    labelFormatter={(d) => new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    labelFormatter={(d) => formatDateLabel(String(d), true)}
                     formatter={(v: number | number[], name: string) => {
                       if (Array.isArray(v)) return [`${formatINR(v[0])} – ${formatINR(v[1])}`, name]
                       return [formatINR(v), name]
@@ -556,9 +578,7 @@ export function StockChart({ candles, indicators, symbol }: Props) {
                     stroke="#6366f1"
                     fill="rgba(99,102,241,0.05)"
                     travellerWidth={8}
-                    tickFormatter={(v) => {
-                      try { return new Date(v).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) } catch { return '' }
-                    }}
+                    tickFormatter={(v) => formatDateLabel(String(v))}
                   />
                 </ComposedChart>
               </ResponsiveContainer>
@@ -584,7 +604,7 @@ export function StockChart({ candles, indicators, symbol }: Props) {
                         fontSize: '11px',
                       }}
                       formatter={(v: number) => [`${(v / 1e6).toFixed(2)}M shares`, 'Volume']}
-                      labelFormatter={(d) => new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                      labelFormatter={(d) => formatDateLabel(String(d))}
                     />
                     {/* Color volume bars by candle direction (green=up day, red=down day) */}
                     <Bar dataKey="volume" opacity={0.7} name="Volume">
