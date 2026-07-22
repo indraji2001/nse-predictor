@@ -1,19 +1,16 @@
 // Database client — selects the right backend at runtime:
 //
-//   PRODUCTION (Vercel + Cloudflare D1):
-//     CLOUDFLARE_ACCOUNT_ID + CLOUDFLARE_D1_DATABASE_ID + CLOUDFLARE_API_TOKEN
-//     → uses src/lib/d1-client.ts (pure-JS REST, no native binaries needed)
+//   Priority 1 — Cloudflare D1 (PRODUCTION target — free, unlimited writes)
+//     Requires: CLOUDFLARE_ACCOUNT_ID + CLOUDFLARE_D1_DATABASE_ID + CLOUDFLARE_API_TOKEN
 //
-//   LOCAL DEV (SQLite file, fallback):
-//     DATABASE_URL="file:./db/custom.db" → uses Prisma's default SQLite engine
-//     Useful for rapid local iteration without cloud credentials.
+//   Priority 2 — Turso / libSQL (legacy fallback — still works until D1 is active)
+//     Requires: DATABASE_URL="libsql://..." + TURSO_AUTH_TOKEN
 //
-// All callers import `db` from this file. The interface is identical
-// regardless of which backend is active.
+//   Priority 3 — Local SQLite file (local dev only)
+//     Requires: DATABASE_URL="file:./db/custom.db"
 
 import { d1db } from './d1-client'
 
-// Check if Cloudflare D1 credentials are configured
 function isD1Configured(): boolean {
   return !!(
     process.env.CLOUDFLARE_ACCOUNT_ID &&
@@ -22,28 +19,52 @@ function isD1Configured(): boolean {
   )
 }
 
-// Lazy Prisma client for local dev SQLite (only imported when D1 is not configured)
+function isTursoConfigured(): boolean {
+  const url = process.env.DATABASE_URL ?? ''
+  return (url.startsWith('libsql://') || url.startsWith('https://')) && !!process.env.TURSO_AUTH_TOKEN
+}
+
+// Lazy Prisma client — used for Turso OR local SQLite
 let _prismaClient: any = null
 async function getPrismaClient() {
   if (_prismaClient) return _prismaClient
+
   const { PrismaClient } = await import('@prisma/client')
-  _prismaClient = new PrismaClient({
-    log: process.env.NODE_ENV === 'development' ? ['warn', 'error'] : ['error'],
-  })
+
+  if (isTursoConfigured()) {
+    // Turso / libSQL remote — use the libSQL driver adapter (pure JS, serverless-friendly)
+    const { PrismaLibSQL } = await import('@prisma/adapter-libsql')
+    const adapter = new PrismaLibSQL({
+      url: process.env.DATABASE_URL!,
+      authToken: process.env.TURSO_AUTH_TOKEN,
+    })
+    _prismaClient = new PrismaClient({ adapter })
+  } else {
+    // Local SQLite file
+    _prismaClient = new PrismaClient({
+      log: process.env.NODE_ENV === 'development' ? ['warn', 'error'] : ['error'],
+    })
+  }
+
   return _prismaClient
 }
 
-// Proxy that routes every db.xxx call to either D1 or Prisma
+// Proxy that routes every db.xxx call to either D1 or Prisma/Turso
 function createDbProxy(): any {
   if (isD1Configured()) {
-    // Production: use Cloudflare D1 REST client
+    console.log('[db] Using Cloudflare D1')
     return d1db
   }
 
-  // Local dev: use Prisma SQLite (lazy-loaded to avoid import cost in production)
+  if (isTursoConfigured()) {
+    console.log('[db] Using Turso/libSQL (legacy fallback)')
+  } else {
+    console.log('[db] Using local SQLite')
+  }
+
+  // Prisma proxy (Turso or local SQLite)
   return new Proxy({} as any, {
     get(_target, prop: string) {
-      // Return a proxy for model-level operations (e.g. db.stockCandle.findMany)
       if (['stockCandle', 'upstoxConfig', 'upstoxInstrument', 'paperTrade'].includes(prop)) {
         return new Proxy({} as any, {
           get(_modelTarget, methodName: string) {
@@ -54,7 +75,6 @@ function createDbProxy(): any {
           },
         })
       }
-      // Raw SQL ($executeRawUnsafe, $queryRaw, etc.)
       if (prop.startsWith('$')) {
         return async (...args: any[]) => {
           const client = await getPrismaClient()
@@ -68,5 +88,7 @@ function createDbProxy(): any {
 
 // Singleton — reused across warm Lambda invocations
 const globalForDb = globalThis as unknown as { _appDb: any }
-export const db: typeof d1db = globalForDb._appDb ?? createDbProxy()
+
+// Always recreate on cold start so new env vars take effect on redeploy
+export const db: typeof d1db = createDbProxy()
 if (process.env.NODE_ENV !== 'production') globalForDb._appDb = db
