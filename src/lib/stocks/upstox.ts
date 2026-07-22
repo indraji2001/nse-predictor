@@ -518,6 +518,28 @@ async function fetchDayChunk(
   return null
 }
 
+// Calculate expected latest closed trading date in IST (Asia/Kolkata)
+function getLatestTradingDateIST(now: Date = new Date()): string {
+  const istDateStr = now.toLocaleDateString('en-US', { timeZone: 'Asia/Kolkata' })
+  const istTimeStr = now.toLocaleTimeString('en-US', { timeZone: 'Asia/Kolkata', hour12: false })
+  const [hour] = istTimeStr.split(':').map(Number)
+  
+  const d = new Date(istDateStr)
+  const dayOfWeek = d.getDay() // 0 = Sun, 6 = Sat
+
+  // If before 16:00 IST on a weekday, today's EOD candle is not ready yet -> target previous trading day
+  if (dayOfWeek >= 1 && dayOfWeek <= 5 && hour < 16) {
+    d.setDate(d.getDate() - 1)
+  }
+
+  // Adjust for weekends (Saturday/Sunday -> fallback to Friday)
+  while (d.getDay() === 0 || d.getDay() === 6) {
+    d.setDate(d.getDate() - 1)
+  }
+
+  return d.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' })
+}
+
 export async function fetchHistorical(
   meta: StockMeta,
   rangeOrDays: string | number = 130,
@@ -528,6 +550,7 @@ export async function fetchHistorical(
   const CHUNK_DAYS = 700
   const now = new Date()
   const todayStr = now.toISOString().slice(0, 10)
+  const expectedLatestDate = getLatestTradingDateIST(now)
 
   // Resolve requested range to calendar days (padded 1.5× for weekends + holidays)
   let tradingDays = 130
@@ -541,6 +564,7 @@ export async function fetchHistorical(
       case '4y':  tradingDays = 1008; break
       case '5y':  tradingDays = 1260; break
       case '10y': tradingDays = 2520; break
+      case 'MAX': tradingDays = 2520; break
       default:    tradingDays = 252;  break
     }
   }
@@ -580,7 +604,6 @@ export async function fetchHistorical(
     // A. Check if we need to backfill older historical data
     // Only attempt backfill if cached candles are insufficient (<220 bars) and cacheFirstDate > wantedFromStr
     if (cached.length < 220 && cacheFirstDate > wantedFromStr) {
-      console.log(`[Upstox Cache] Backfilling older data for ${meta.symbol}: ${wantedFromStr} to ${cacheFirstDate}`)
       await getKeys()
       if (token && encodedKey) {
         // Fetch older chunk
@@ -592,9 +615,9 @@ export async function fetchHistorical(
       }
     }
 
-    // B. Check if we need to fetch updates up to today (only if last candle is > 1 calendar day old)
-    const daysSinceLastCandle = Math.floor((now.getTime() - new Date(cacheLastDate).getTime()) / (1000 * 60 * 60 * 24))
-    if (daysSinceLastCandle >= 1) {
+    // B. Check if we need to fetch updates up to today
+    // Only fetch if cacheLastDate is OLDER than expected latest trading date
+    if (cacheLastDate < expectedLatestDate) {
       await getKeys()
       if (token && encodedKey) {
         const batch = await fetchDayChunk(encodedKey, token, cacheLastDate, todayStr)

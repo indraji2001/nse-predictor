@@ -201,11 +201,12 @@ export async function fetchUnifiedUniverse(
           // individual DB roundtrips and avoids re-downloading the 10 MB
           // instrument master for every missing symbol.
           const allSymbols = failed.map((item) => item.meta.symbol)
-          const oneYearAgoStr = new Date(Date.now() - 385 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
+          const daysBack = range === 'MAX' || range === '10y' ? 3650 : range === '5y' ? 1900 : range === '3y' ? 1150 : range === '2y' ? 780 : 385
+          const fromDateStr = new Date(Date.now() - daysBack * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
           const [upstoxToken, instrumentKeys, bulkCandlesMap] = await Promise.all([
             getUpstoxToken(),
             bulkGetInstrumentKeys(allSymbols),
-            bulkGetCachedCandles(allSymbols, 'day', 'UPSTOX', oneYearAgoStr),
+            bulkGetCachedCandles(allSymbols, 'day', 'UPSTOX', fromDateStr),
           ])
           if (!upstoxToken) {
             console.warn('Upstox: no access token, skipping')
