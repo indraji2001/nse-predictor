@@ -25,8 +25,8 @@ export async function bulkGetCachedCandles(
   if (!symbols || symbols.length === 0) return result
 
   try {
+    // Query all candles for this interval & source (avoiding 500 IN (?) parameters which exceeds Cloudflare D1 limit)
     const where: any = {
-      symbol: { in: symbols.map(s => s.toUpperCase()) },
       interval,
       source,
     }
